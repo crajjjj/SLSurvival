@@ -1,0 +1,46 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "77389|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 25
+	},
+	"float" :
+	{
+		"skillreq" : 10.0,
+		"weight" : 2.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Hide Helmet To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/HideHelmet.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"circlet",
+			"faceguard",
+			"gorget"
+		]
+	},
+	"formList" : 
+	{
+		"circlet" : 
+		[
+			
+		],
+		"faceguard" : 
+		[
+			
+		],
+		
+		"gorget" : 
+		[
+			"91448|TheAmazingWorldOfBikiniArmor.esp"
+		]
+	}
+}

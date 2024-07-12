@@ -1,0 +1,26 @@
+{
+	"formList" : 
+	{
+		"loadrace" : 
+		[
+			"101171|Dawnguard.esm",
+			"101174|Dawnguard.esm",
+			"98116|Dragonborn.esm",
+			"321413|Skyrim.esm",
+			"321413|Skyrim.esm",
+			"321413|Skyrim.esm",
+			"0xcd657|Skyrim.esm",
+			"0xeb872|Skyrim.esm",
+			"0x19fd3|Dawnguard.esm",
+			"0x131f5|Skyrim.esm",
+			"0x13204|Skyrim.esm",
+			"0x131f6|Skyrim.esm",
+			"0x131f7|Skyrim.esm",
+			"0x131fe|Skyrim.esm"
+		]
+	},
+	"intList" : 
+	{
+		"loadsize" : [ 1, 1, 1, 6, 6, 3, 3, 2, 2, 2, 2, 5, 4, 1 ]
+	}
+}

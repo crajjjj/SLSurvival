@@ -1,0 +1,52 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "77387|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 25
+	},
+	"float" :
+	{
+		"skillreq" : 10.0,
+		"weight" : 6.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Iron Boots To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/IronBoots.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"boots",
+			"thigh",
+			"poleyn"
+		]
+	},
+	"formList" : 
+	{
+		"boots" : 
+		[
+			"13256|TheAmazingWorldOfBikiniArmor.esp",
+			"13258|TheAmazingWorldOfBikiniArmor.esp",
+			"13260|TheAmazingWorldOfBikiniArmor.esp",
+			"13262|TheAmazingWorldOfBikiniArmor.esp",
+			"13264|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"thigh" : 
+		[
+			"13248|TheAmazingWorldOfBikiniArmor.esp",
+			"13250|TheAmazingWorldOfBikiniArmor.esp",
+			"13252|TheAmazingWorldOfBikiniArmor.esp",
+			"13254|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"poleyn" : 
+		[
+
+		]
+	}
+}

@@ -1,0 +1,51 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "312267|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 25
+	},
+	"float" :
+	{
+		"skillreq" : 35.0,
+		"weight" : 5.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Falmer Helmet To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/FalmerHelmet.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"circlet",
+			"faceguard",
+			"gorget"
+		]
+	},
+	"formList" : 
+	{
+		"circlet" : 
+		[
+			"28798|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"faceguard" : 
+		[
+			"30178|TheAmazingWorldOfBikiniArmor.esp",
+			"30180|TheAmazingWorldOfBikiniArmor.esp",
+			"30182|TheAmazingWorldOfBikiniArmor.esp",
+			"30184|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		
+		"gorget" : 
+		[
+			"28794|TheAmazingWorldOfBikiniArmor.esp",
+			"28796|TheAmazingWorldOfBikiniArmor.esp",
+			"58203|TheAmazingWorldOfBikiniArmor.esp"
+		]
+	}
+}

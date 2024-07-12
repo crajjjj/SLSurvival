@@ -1,0 +1,47 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "754637|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 55
+	},
+	"float" :
+	{
+		"skillreq" : 35.0,
+		"weight" : 4.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Falmer Boots To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/FalmerBoots.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"boots",
+			"thigh",
+			"poleyn"
+		]
+	},
+	"formList" : 
+	{
+		"boots" : 
+		[
+			"28780|TheAmazingWorldOfBikiniArmor.esp",
+			"28782|TheAmazingWorldOfBikiniArmor.esp",
+			"28784|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"thigh" : 
+		[
+			"32971|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"poleyn" : 
+		[
+
+		]
+	}
+}

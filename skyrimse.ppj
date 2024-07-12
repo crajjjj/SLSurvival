@@ -1,0 +1,107 @@
+<?xml version='1.0'?>
+<PapyrusProject xmlns="PapyrusProject.xsd" 
+    Flags="TESV_Papyrus_Flags.flg" 
+    Game="sse"
+    Output="scripts" 
+    Optimize="false" 
+    Release="false" 
+    Zip="true"
+    Package="true"
+    Final="false">
+    <Variables>
+        <!-- Set the name of your mod: -->
+        <Variable Name="ModName" Value="SLSurvival" />
+        <Variable Name="SkyrimScripts" Value="C:\SteamLibrary\steamapps\common\Skyrim Special Edition\Data\Source\Scripts" />
+        <!-- The folder where you store all of your mods -->
+        <Variable Name="ModsFolder" Value="..\" />
+        <!-- Optional folder with additional source code for imports -->
+        <Variable Name="ImportsFolder" Value=".\scripts\source" />
+    </Variables>
+    <Imports>
+        <Import>@ImportsFolder</Import>
+        <Import>.\dependencies\overwrite</Import>
+        <Import>.\dependencies\FNIS Behavior SE 7.6\Data\source\scripts</Import>
+        <Import>.\dependencies\FNIS Sexy Move SE 7.2\Data\Source\Scripts</Import>
+        <Import>.\dependencies\Stress And Trauma SE v1.0\scripts\source</Import>
+        <Import>.\dependencies\SexLab Separate Orgasm\Scripts\Source</Import>
+        <Import>.\dependencies\SLAXSE2022\scripts\Source</Import>
+        <Import>.\dependencies\Sexlab\scripts\Source</Import>
+        <Import>.\dependencies\Apropos2\Scripts\Source</Import>
+        <Import>.\dependencies\SlaveTats-1.3.0-beta-2 SE\Source\Scripts</Import>
+        <Import>.\dependencies\Devious Devices SE 5.1\00 Core\scripts\Source</Import>
+        <Import>.\dependencies\DDe - Source Scripts\Scripts\Source</Import>
+        <Import>.\dependencies\ConsoleUtil</Import>
+        <Import>.\dependencies\XP32 Maximum Skeleton Special Extended 4.67\Character Creation\MCM\assets\scripts\source</Import>
+        <Import>.\dependencies\ZaZ Animation Pack</Import>
+        <Import>.\dependencies\iwantWidgets\Source\Scripts</Import>
+        <Import>.\dependencies\iwantstatusbars\Source\Scripts</Import>
+        <Import>.\dependencies\SkyUI_5.1_SDK\Scripts\Source</Import>
+        <Import>.\dependencies\skyui-master\dist\Data\Scripts\Source</Import>
+        <Import>.\dependencies\Papyrus Extender\source\scripts</Import>
+        <Import>.\dependencies\JContainers SE\Data\scripts\source</Import>
+        <Import>.\dependencies\racemenu\scripts\source</Import>
+        <Import>C:\Playground\Skyrim\mods\SKSE\DynamicExpressionReplacer\dist\Source\Scripts</Import>
+        <Import>.\dependencies\PSQ\scripts\source</Import>
+        <Import>.\dependencies\eff\source\scripts</Import>
+        <Import>.\dependencies\UIExtensions\scripts\source</Import>
+        <Import>.\dependencies\slv</Import>
+        <Import>.\dependencies\Amputator Framework Tweaked SE\scripts\source</Import>
+        <Import>.\dependencies\SLIF</Import>
+        <Import>.\dependencies\Sex Lab - Sexual Fame 0.99\Scripts\Source</Import>
+        <Import>.\dependencies\Schlongs of Skyrim SE\scripts\source</Import>
+        <Import>.\dependencies\RealNeeds\scripts\source</Import>
+        <Import>.\dependencies\iNeed v1_90 Alpha\00 Core\scripts\source</Import>
+        <Import>.\dependencies\Bathing in Skyrim SE 1.43\Data\Scripts\Source</Import>
+        <Import>.\dependencies\SexLab_PaySexCrime_1.4.0\Scripts\Source</Import>
+        <Import>.\dependencies\SexLab Inflation Framework\Scripts\Source</Import>
+        <Import>.\dependencies\Fill Her Up Baka Edition 1.552V Source\Source</Import>
+        <Import>.\dependencies\EatingSleepingDrinking - KuNeruNomu --52269-4-1-4-1571555236\Scripts\Source</Import>
+        <Import>.\dependencies\Campfire-master\FrostDevKit\RequiredExternals\Scripts\Source</Import>
+        <Import>.\dependencies\Campfire-master\CampDevKit\RequiredExternals\Scripts\Source</Import>
+        <Import>.\dependencies\Frostfall 3.4.1 SE\scripts\source</Import>
+        <Import>.\dependencies\Campfire 1.12.1SEVR\scripts\source</Import>
+        <Import>.\dependencies\CheskoPapyrusShared-master\Scripts\Source</Import>
+        <Import>.\dependencies\Creature Framework 1.1.0-pre2A-SE\Scripts\Source</Import>
+        <Import>.\dependencies\Spank That Ass v4.8 BETA SE (27-Apr-2021)\scripts\source</Import>
+        <Import>.\dependencies\Devious Followers Redux\Core\Source\Scripts</Import>
+        <Import>.\dependencies\Milk Mod Economy\Scripts\Source</Import>
+        <Import>.\dependencies\Fertility Mode 3.0.1\04 SE Loose\scripts\source</Import>
+        <Import>.\dependencies\Simply Knock SE 1.0.3 Release-14098-1-0-3\scripts\source</Import>
+        <Import>.\dependencies\SlaveTatsSE-1.3.9\Source\Scripts</Import>
+        <Import>.\dependencies\Fade Tattoos Continued 2.0.0\scripts\source</Import>
+        <Import>.\dependencies\Rape Tattoos Continued 2.0.2\scripts\source</Import>
+        <Import>.\dependencies\Milk Addict\scripts\Source</Import>
+
+        <Import>@SkyrimScripts</Import>
+    </Imports>
+    <Folders>
+        <!-- Relative path to folder containing .psc Papyrus source code files for this project -->
+        <Folder>@ImportsFolder</Folder>
+    </Folders>
+    <!-- The following section is for .bsa archives. You can enable it by setting Package="true" in the PapyrusProject -->
+    <Packages Output=".">
+        <Package Name="@ModName" RootDir=".">
+            <Match In="interface">*</Match>
+            <Match In="scripts\source">*.psc</Match>
+            <Match In="scripts">*.pex</Match>
+            <Match In="seq">*</Match>
+            <Match In="sound">*</Match>
+        </Package>
+        <!-- If you have any texture files, uncomment the following to create a Textures .bsa archive with texture files -->
+        <!-- <Package Name="@ModName - Textures" RootDir=".">
+            <Include>*.dds</Include>
+        </Package> -->
+    </Packages>
+    <!-- The following section is for .zip archive. You can enable it by setting Zip="true" in the PapyrusProject -->
+    <ZipFiles Output="Build">
+        <ZipFile Name="@ModName" RootDir="." Compression="deflate">
+            <Match In="meshes\actors\character">*</Match>
+            <Match In="SKSE\Plugins">*.*</Match>
+            <Match In="textures">*</Match>
+            <Include NoRecurse="true">*.bsa</Include>
+            <Include>meta.ini</Include>
+            <Include>SL Survival.esp</Include>
+            <Include>readme.md</Include>
+        </ZipFile>
+    </ZipFiles>
+</PapyrusProject>

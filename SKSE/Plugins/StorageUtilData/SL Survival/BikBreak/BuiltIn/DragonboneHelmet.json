@@ -1,0 +1,52 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "77389|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 1050
+	},
+	"float" :
+	{
+		"skillreq" : 100.0,
+		"weight" : 8.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Dragonbone Helmet To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/DragonboneHelmet.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"circlet",
+			"faceguard",
+			"gorget"
+		]
+	},
+	"formList" : 
+	{
+		"circlet" : 
+		[
+			"25957|TheAmazingWorldOfBikiniArmor.esp",
+			"25959|TheAmazingWorldOfBikiniArmor.esp",
+			"25949|TheAmazingWorldOfBikiniArmor.esp",
+			"25954|TheAmazingWorldOfBikiniArmor.esp",
+			"25952|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"faceguard" : 
+		[
+			"25955|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		
+		"gorget" : 
+		[
+			"25973|TheAmazingWorldOfBikiniArmor.esp",
+			"25975|TheAmazingWorldOfBikiniArmor.esp",
+			"25977|TheAmazingWorldOfBikiniArmor.esp"
+		]
+	}
+}

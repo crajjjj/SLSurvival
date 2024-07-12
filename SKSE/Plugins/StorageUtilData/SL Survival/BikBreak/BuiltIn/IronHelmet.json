@@ -1,0 +1,65 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "77389|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 60
+	},
+	"float" :
+	{
+		"skillreq" : 10.0,
+		"weight" : 5.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Iron Helmet To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/IronHelmet.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"circlet",
+			"faceguard",
+			"gorget"
+		]
+	},
+	"formList" : 
+	{
+		"circlet" : 
+		[
+			"14696|TheAmazingWorldOfBikiniArmor.esp",
+			"14700|TheAmazingWorldOfBikiniArmor.esp",
+			"14702|TheAmazingWorldOfBikiniArmor.esp",
+			"14704|TheAmazingWorldOfBikiniArmor.esp",
+			"14698|TheAmazingWorldOfBikiniArmor.esp",
+			"14706|TheAmazingWorldOfBikiniArmor.esp",
+			"14708|TheAmazingWorldOfBikiniArmor.esp",
+			"14686|TheAmazingWorldOfBikiniArmor.esp",
+			"14692|TheAmazingWorldOfBikiniArmor.esp",
+			"14688|TheAmazingWorldOfBikiniArmor.esp",
+			"14694|TheAmazingWorldOfBikiniArmor.esp",
+			"14684|TheAmazingWorldOfBikiniArmor.esp",
+			"14690|TheAmazingWorldOfBikiniArmor.esp"
+			
+		],
+		"faceguard" : 
+		[
+			"16116|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		
+		"gorget" : 
+		[
+			"14670|TheAmazingWorldOfBikiniArmor.esp",
+			"13290|TheAmazingWorldOfBikiniArmor.esp",
+			"14672|TheAmazingWorldOfBikiniArmor.esp",
+			"14674|TheAmazingWorldOfBikiniArmor.esp",
+			"14676|TheAmazingWorldOfBikiniArmor.esp",
+			"16088|TheAmazingWorldOfBikiniArmor.esp",
+			"14678|TheAmazingWorldOfBikiniArmor.esp"
+		]
+	}
+}

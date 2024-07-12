@@ -1,0 +1,46 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "80224|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 275,
+		"weight" : 7
+	},
+	"float" :
+	{
+		"skillreq" : 85.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Ebony Boots To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/EbonyBoots.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"boots",
+			"thigh",
+			"poleyn"
+		]
+	},
+	"formList" : 
+	{
+		"boots" : 
+		[
+			"81567|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"thigh" : 
+		[
+			"84355|TheAmazingWorldOfBikiniArmor.esp",
+			"84357|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"poleyn" : 
+		[
+
+		]
+	}
+}

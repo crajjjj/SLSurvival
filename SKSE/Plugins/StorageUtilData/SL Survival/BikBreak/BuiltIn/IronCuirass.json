@@ -1,0 +1,101 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "77385|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 125
+	},
+	"float" :
+	{
+		"skillreq" : 10.0,
+		"weight" : 10.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Iron Cuirass To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/IronCuirass.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"bra",
+			"thong",
+			"abs",
+			"tasset",
+			"misc"
+		]
+	},
+	"formList" : 
+	{
+		"bra" : 
+		[
+			"13224|TheAmazingWorldOfBikiniArmor.esp",
+			"13226|TheAmazingWorldOfBikiniArmor.esp",
+			"13228|TheAmazingWorldOfBikiniArmor.esp",
+			"13230|TheAmazingWorldOfBikiniArmor.esp",
+			"13232|TheAmazingWorldOfBikiniArmor.esp",
+			"13234|TheAmazingWorldOfBikiniArmor.esp"
+			
+		],
+		"thong" : 
+		[
+			"11830|TheAmazingWorldOfBikiniArmor.esp",
+			"11832|TheAmazingWorldOfBikiniArmor.esp",
+			"11834|TheAmazingWorldOfBikiniArmor.esp",
+			"11836|TheAmazingWorldOfBikiniArmor.esp",
+			"11838|TheAmazingWorldOfBikiniArmor.esp",
+			"11840|TheAmazingWorldOfBikiniArmor.esp",
+			"11842|TheAmazingWorldOfBikiniArmor.esp",
+			"11844|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronl" : 
+		[
+			"16092|TheAmazingWorldOfBikiniArmor.esp",
+			"16100|TheAmazingWorldOfBikiniArmor.esp",
+			"16104|TheAmazingWorldOfBikiniArmor.esp",
+			"16108|TheAmazingWorldOfBikiniArmor.esp",
+			"16112|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronr" : 
+		[
+			"16090|TheAmazingWorldOfBikiniArmor.esp",
+			"16098|TheAmazingWorldOfBikiniArmor.esp",
+			"16102|TheAmazingWorldOfBikiniArmor.esp",
+			"16106|TheAmazingWorldOfBikiniArmor.esp",
+			"16110|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"abs" : 
+		[
+			"13236|TheAmazingWorldOfBikiniArmor.esp",
+			"13238|TheAmazingWorldOfBikiniArmor.esp",
+			"13240|TheAmazingWorldOfBikiniArmor.esp",
+			"13242|TheAmazingWorldOfBikiniArmor.esp",
+			"13244|TheAmazingWorldOfBikiniArmor.esp",
+			"13246|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"tasset" : 
+		[
+			"13278|TheAmazingWorldOfBikiniArmor.esp",
+			"13280|TheAmazingWorldOfBikiniArmor.esp",
+			"13282|TheAmazingWorldOfBikiniArmor.esp",
+			"13284|TheAmazingWorldOfBikiniArmor.esp",
+			"13286|TheAmazingWorldOfBikiniArmor.esp",
+			"13288|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"thigh" : 
+		[
+			"13248|TheAmazingWorldOfBikiniArmor.esp",
+			"13250|TheAmazingWorldOfBikiniArmor.esp",
+			"13252|TheAmazingWorldOfBikiniArmor.esp",
+			"13254|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"misc" : 
+		[
+			"16114|TheAmazingWorldOfBikiniArmor.esp"
+		]
+	}
+}

@@ -1,0 +1,62 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "847486|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 11,
+		"weight" : 4
+	},
+	"float" :
+	{
+		"skillreq" : 35.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Wolf Gloves To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/WolfGloves.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"gloves",
+			"bracers",
+			"pauldronl",
+			"pauldronr",
+			"elbow"
+		]
+	},
+	"formList" : 
+	{
+		"gloves" : 
+		[
+			"33016|TheAmazingWorldOfBikiniArmor.esp",
+			"34396|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"bracers" : 
+		[
+
+		],
+		"pauldronl" : 
+		[
+			"35794|TheAmazingWorldOfBikiniArmor.esp",
+			"35798|TheAmazingWorldOfBikiniArmor.esp",
+			"35802|TheAmazingWorldOfBikiniArmor.esp",
+			"35806|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronr" : 
+		[
+			"35792|TheAmazingWorldOfBikiniArmor.esp",
+			"35796|TheAmazingWorldOfBikiniArmor.esp",
+			"35800|TheAmazingWorldOfBikiniArmor.esp",
+			"35804|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"elbow" : 
+		[
+
+		]
+	}
+}

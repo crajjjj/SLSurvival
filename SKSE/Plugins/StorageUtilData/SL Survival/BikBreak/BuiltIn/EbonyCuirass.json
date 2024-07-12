@@ -1,0 +1,91 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "80225|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 1500,
+		"weight" : 35
+	},
+	"float" :
+	{
+		"skillreq" : 85.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Ebony Cuirass To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/EbonyCuirass.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"bra",
+			"thong",
+			"abs",
+			"tasset",
+			"misc"
+		]
+	},
+	"formList" : 
+	{
+		"bra" : 
+		[
+			"81559|TheAmazingWorldOfBikiniArmor.esp",
+			"81561|TheAmazingWorldOfBikiniArmor.esp",
+			"81563|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"thong" : 
+		[
+			"84359|TheAmazingWorldOfBikiniArmor.esp",
+			"84361|TheAmazingWorldOfBikiniArmor.esp",
+			"84363|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldron" : 
+		[
+			"84343|TheAmazingWorldOfBikiniArmor.esp",
+			"84341|TheAmazingWorldOfBikiniArmor.esp",
+			"84345|TheAmazingWorldOfBikiniArmor.esp",
+			"84349|TheAmazingWorldOfBikiniArmor.esp",
+			"84347|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronl" : 
+		[
+			"84343|TheAmazingWorldOfBikiniArmor.esp",
+			"84349|TheAmazingWorldOfBikiniArmor.esp"
+
+		],
+		"pauldronr" : 
+		[
+			"84341|TheAmazingWorldOfBikiniArmor.esp",
+			"84347|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"abs" : 
+		[
+			"81551|TheAmazingWorldOfBikiniArmor.esp",
+			"81553|TheAmazingWorldOfBikiniArmor.esp",
+			"81555|TheAmazingWorldOfBikiniArmor.esp",
+			"81557|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"tasset" : 
+		[
+			"84351|TheAmazingWorldOfBikiniArmor.esp",
+			"85748|TheAmazingWorldOfBikiniArmor.esp",
+			"84353|TheAmazingWorldOfBikiniArmor.esp",
+			"85746|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"thigh" : 
+		[
+			"84355|TheAmazingWorldOfBikiniArmor.esp",
+			"84357|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"misc" : 
+		[
+			"94226|TheAmazingWorldOfBikiniArmor.esp",
+			"94224|TheAmazingWorldOfBikiniArmor.esp",
+			"84335|TheAmazingWorldOfBikiniArmor.esp"
+		]
+	}
+}

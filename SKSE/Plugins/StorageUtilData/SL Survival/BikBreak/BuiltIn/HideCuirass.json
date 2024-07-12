@@ -1,0 +1,76 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "77385|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 50
+	},
+	"float" :
+	{
+		"skillreq" : 10.0,
+		"weight" : 5.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Hide Cuirass To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/HideCuirass.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"bra",
+			"thong",
+			"abs",
+			"tasset",
+			"misc"
+		]
+	},
+	"formList" : 
+	{
+		"bra" : 
+		[
+			"91432|TheAmazingWorldOfBikiniArmor.esp"			
+		],
+		"thong" : 
+		[
+			"91442|TheAmazingWorldOfBikiniArmor.esp",
+			"91444|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldron" : 
+		[
+			"91436|TheAmazingWorldOfBikiniArmor.esp",
+			"91438|TheAmazingWorldOfBikiniArmor.esp",
+			"91440|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronl" : 
+		[
+			"91438|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronr" : 
+		[
+			"91440|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"abs" : 
+		[
+			
+		],
+		"tasset" : 
+		[
+			"91434|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"thigh" : 
+		[
+			"91450|TheAmazingWorldOfBikiniArmor.esp",
+			"91452|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"misc" : 
+		[
+			"91446|TheAmazingWorldOfBikiniArmor.esp",
+			"91426|TheAmazingWorldOfBikiniArmor.esp"
+		]
+	}
+}

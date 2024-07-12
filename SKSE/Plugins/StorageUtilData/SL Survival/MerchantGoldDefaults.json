@@ -1,0 +1,11 @@
+{
+	"int" : 
+	{
+		"vendorgoldapothecary" : 500,
+		"vendorgoldblacksmith" : 1000,
+		"vendorgoldblacksmithtown" : 500,
+		"vendorgoldmisc" : 750,
+		"vendorgoldspells" : 500,
+		"vendorgoldstreetvendor" : 50
+	}
+}

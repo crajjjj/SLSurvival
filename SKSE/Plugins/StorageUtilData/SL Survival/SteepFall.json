@@ -1,0 +1,35 @@
+{
+	"int" : 
+	{
+		"itemstripcountmin" : 1,
+		"itemstripcountmax" : 3,
+		"falldetectionevent" : 1
+	},
+	"float" : 
+	{
+		"fallheight" : 150.0,
+		"crawlallowance" : 60.0,
+		"horsefallheight" : 300.0,
+		"falldamagereduction" : 90.0,
+		"fallforcemultiplier" : 1.0,
+		"whirlwind1height" : 100.0,
+		"whirlwind1duration" : 1.5,
+		"whirlwind2height" : 200.0,
+		"whirlwind2duration" : 2.0,
+		"whirlwind3height" : 300.0,
+		"whirlwind3duration" : 2.5,
+		"etherealallowance" : 999999.9,
+		"stripchance" : 40.0,
+		"stripforcemin" : 40.0,
+		"stripforcemax" : 100.0,
+		"daystodumplostitems" : 3.0, 
+		"objectcollisionfallchance" : 100.0,
+		"furniturefallchance" : 100.0,
+		"lostitemswidgetx" : 740.0,
+		"lostitemswidgety" : 0.0
+	},
+	"string" : 
+	{
+		"lostitemsstring" : "Nearby Lost Items: "
+	}
+}

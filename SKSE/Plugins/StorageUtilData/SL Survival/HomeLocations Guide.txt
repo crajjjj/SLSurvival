@@ -1,0 +1,7 @@
+A list of home objects necessary to calculate which home to send you to. 
+
+_worldobjects and _destinationobjects are a 1:1 map of locations. 
+
+_worldobjects: An object outside your home. Probably easiest to use one of the outside doors. This is used to calculate which home is the closest. Distance to objects must use objects in the outside world. Can not use objects in interiors. 
+
+_destinationobjects: You will be teleported to this object. Probably best to use the CocHeadingMarker. 

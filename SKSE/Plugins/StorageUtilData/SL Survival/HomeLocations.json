@@ -1,0 +1,175 @@
+{
+	"formList" : 
+	{
+		"whiterun_worldobjects" : 
+		[
+			"108281|Skyrim.esm",
+			"23053|pchsWartimes.esp"
+		],
+		"whiterun_destinationobjects" : 
+		[
+			"1059481|Skyrim.esm",
+			"22841|pchsWartimes.esp"
+		],
+		
+		"solitude_worldobjects" : 
+		[
+			"23058|Skyrim.esm",
+			"23058|Skyrim.esm",
+			"23062|Skyrim.esm"
+		],
+		"solitude_destinationobjects" : 
+		[
+			"23058|Skyrim.esm",
+			"23058|Skyrim.esm",
+			"23062|Skyrim.esm"
+		],
+		
+		"markarth_worldobjects" : 
+		[
+			"23058|Skyrim.esm",
+			"23058|Skyrim.esm",
+			"23062|Skyrim.esm"
+		],
+		"markarth_destinationobjects" : 
+		[
+			"23058|Skyrim.esm",
+			"23058|Skyrim.esm",
+			"23062|Skyrim.esm"
+		],
+		
+		"windhelm_worldobjects" : 
+		[
+			"23058|Skyrim.esm",
+			"23058|Skyrim.esm",
+			"23062|Skyrim.esm"
+		],
+		"windhelm_destinationobjects" : 
+		[
+			"23058|Skyrim.esm",
+			"23058|Skyrim.esm",
+			"23062|Skyrim.esm"
+		],
+		
+		"riften_worldobjects" : 
+		[
+			"23058|Skyrim.esm",
+			"23058|Skyrim.esm",
+			"23062|Skyrim.esm"
+		],
+		"riften_destinationobjects" : 
+		[
+			"23058|Skyrim.esm",
+			"23058|Skyrim.esm",
+			"23062|Skyrim.esm"
+		],
+		
+		"falkreath_worldobjects" : 
+		[
+			"23058|Skyrim.esm",
+			"23058|Skyrim.esm",
+			"23062|Skyrim.esm"
+		],
+		"falkreath_destinationobjects" : 
+		[
+			"23058|Skyrim.esm",
+			"23058|Skyrim.esm",
+			"23062|Skyrim.esm"
+		],
+		
+		"morthal_worldobjects" : 
+		[
+			"23058|Skyrim.esm",
+			"23058|Skyrim.esm",
+			"23062|Skyrim.esm"
+		],
+		"morthal_destinationobjects" : 
+		[
+			"23058|Skyrim.esm",
+			"23058|Skyrim.esm",
+			"23062|Skyrim.esm"
+		],
+		
+		"dawnstar_worldobjects" : 
+		[
+			"23058|Skyrim.esm",
+			"23058|Skyrim.esm",
+			"23062|Skyrim.esm"
+		],
+		"dawnstar_destinationobjects" : 
+		[
+			"23058|Skyrim.esm",
+			"23058|Skyrim.esm",
+			"23062|Skyrim.esm"
+		],
+		
+		"winterhold_worldobjects" : 
+		[
+			"23058|Skyrim.esm",
+			"23058|Skyrim.esm",
+			"23062|Skyrim.esm"
+		],
+		"winterhold_destinationobjects" : 
+		[
+			"23058|Skyrim.esm",
+			"23058|Skyrim.esm",
+			"23062|Skyrim.esm"
+		]
+	},
+	"stringList" : 
+	{
+		"whiterun" : 
+		[
+			"Skyrim.esm",
+			"pchsWartimes.esp"
+		],
+		"solitude" : 
+		[
+			"Skyrim.esm",
+			"Skyrim.esm",
+			"Skyrim.esm"
+		],
+		"markarth" : 
+		[
+			"Skyrim.esm",
+			"Skyrim.esm",
+			"Skyrim.esm"
+		],
+		"windhelm" : 
+		[
+			"Skyrim.esm",
+			"Skyrim.esm",
+			"Skyrim.esm"
+		],
+		"riften" : 
+		[
+			"Skyrim.esm",
+			"Skyrim.esm",
+			"Skyrim.esm"
+		],
+		"falkreath" : 
+		[
+			"Skyrim.esm",
+			"Skyrim.esm",
+			"Skyrim.esm"
+		],
+		"morthal" : 
+		[
+			"Skyrim.esm",
+			"Skyrim.esm",
+			"Skyrim.esm"
+		],
+		"dawnstar" : 
+		[
+			"Skyrim.esm",
+			"Skyrim.esm",
+			"Skyrim.esm"
+		],
+		"winterhold" : 
+		[
+			"Skyrim.esm",
+			"Skyrim.esm",
+			"Skyrim.esm"
+		]
+	}
+}

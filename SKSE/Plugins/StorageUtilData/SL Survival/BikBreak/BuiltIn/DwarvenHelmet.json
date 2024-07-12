@@ -1,0 +1,51 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "80207|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 200,
+		"weight" : 12
+	},
+	"float" :
+	{
+		"skillreq" : 35.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Iron Helmet To Iron Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/DwarvenHelmet.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"circlet",
+			"faceguard",
+			"gorget"
+		]
+	},
+	"formList" : 
+	{
+		"circlet" : 
+		[
+			"80168|TheAmazingWorldOfBikiniArmor.esp",
+			"78745|TheAmazingWorldOfBikiniArmor.esp",
+			"78747|TheAmazingWorldOfBikiniArmor.esp",
+			"78751|TheAmazingWorldOfBikiniArmor.esp"
+			
+		],
+		"faceguard" : 
+		[
+		],
+		"gorget" : 
+		[
+			"78741|TheAmazingWorldOfBikiniArmor.esp",
+			"78727|TheAmazingWorldOfBikiniArmor.esp",
+			"78729|TheAmazingWorldOfBikiniArmor.esp",
+			"78731|TheAmazingWorldOfBikiniArmor.esp"
+		]
+	}
+}

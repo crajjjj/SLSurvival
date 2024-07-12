@@ -1,0 +1,153 @@
+{
+	"formList" : 
+	{
+		"creatures" : 
+		[
+			"882861|Skyrim.esm",/* Hare */
+			"1111671|Skyrim.esm",/* Fox */
+			"127530|Skyrim.esm",/* Goat */
+			"127360|Skyrim.esm",/* Dog */
+			"106469|Skyrim.esm",/* Skeever */
+			"128679|Skyrim.esm",/* Wolf */
+			"150590|Dragonborn.esm",/* Bristleback */
+			"127517|Skyrim.esm",/* Spider small */
+			"133340|Dragonborn.esm",/* Riekling */
+			"127538|Skyrim.esm",/* Horse */
+			"270266|Skyrim.esm",/* Deer */
+			"102924|Skyrim.esm",/* Sabrecat */
+			"127310|Skyrim.esm",/* Bear */
+			"127624|Skyrim.esm",/* Spriggan */
+			"127314|Skyrim.esm",/* Chaurus */
+			"176089|Skyrim.esm",/* Spider large */
+			"127625|Skyrim.esm",/* Troll */
+			"127718|Skyrim.esm",/* Werewolf */
+			"127525|Skyrim.esm"/* Giant */
+		],
+		"dragonborn.esm" :
+		[
+			"121289|Dragonborn.esm"/* Riekling */
+		],
+		"skytest-realisticanimals&predators.esm" :
+		[
+			"3435|SkyTEST-RealisticAnimals&Predators.esm",
+			"3436|SkyTEST-RealisticAnimals&Predators.esm",
+			"3437|SkyTEST-RealisticAnimals&Predators.esm",
+			"3438|SkyTEST-RealisticAnimals&Predators.esm",
+			"3439|SkyTEST-RealisticAnimals&Predators.esm",
+			"3440|SkyTEST-RealisticAnimals&Predators.esm",
+			"3441|SkyTEST-RealisticAnimals&Predators.esm",
+			"3442|SkyTEST-RealisticAnimals&Predators.esm",
+			"3443|SkyTEST-RealisticAnimals&Predators.esm",
+			"3444|SkyTEST-RealisticAnimals&Predators.esm",
+			"3445|SkyTEST-RealisticAnimals&Predators.esm",
+			"68934|SkyTEST-RealisticAnimals&Predators.esm",
+			"3446|SkyTEST-RealisticAnimals&Predators.esm",
+			"3447|SkyTEST-RealisticAnimals&Predators.esm",
+			"3448|SkyTEST-RealisticAnimals&Predators.esm",
+			"3449|SkyTEST-RealisticAnimals&Predators.esm",
+			"3450|SkyTEST-RealisticAnimals&Predators.esm",
+			"3451|SkyTEST-RealisticAnimals&Predators.esm",
+			"3452|SkyTEST-RealisticAnimals&Predators.esm",
+			"3453|SkyTEST-RealisticAnimals&Predators.esm",
+			"3454|SkyTEST-RealisticAnimals&Predators.esm",
+			"3455|SkyTEST-RealisticAnimals&Predators.esm",
+			"3456|SkyTEST-RealisticAnimals&Predators.esm",
+			"3457|SkyTEST-RealisticAnimals&Predators.esm",
+			"192185|SkyTEST-RealisticAnimals&Predators.esm",
+			"3458|SkyTEST-RealisticAnimals&Predators.esm",
+			"3459|SkyTEST-RealisticAnimals&Predators.esm",
+			"78633|SkyTEST-RealisticAnimals&Predators.esm",
+			"3460|SkyTEST-RealisticAnimals&Predators.esm",
+			"3461|SkyTEST-RealisticAnimals&Predators.esm",
+			"3462|SkyTEST-RealisticAnimals&Predators.esm",
+			"3463|SkyTEST-RealisticAnimals&Predators.esm",
+			"186589|SkyTEST-RealisticAnimals&Predators.esm",
+			"3464|SkyTEST-RealisticAnimals&Predators.esm",
+			"3465|SkyTEST-RealisticAnimals&Predators.esm",
+			"3466|SkyTEST-RealisticAnimals&Predators.esm",
+			"3467|SkyTEST-RealisticAnimals&Predators.esm",
+			"3468|SkyTEST-RealisticAnimals&Predators.esm",
+			"3469|SkyTEST-RealisticAnimals&Predators.esm",
+			"3470|SkyTEST-RealisticAnimals&Predators.esm",
+			"3471|SkyTEST-RealisticAnimals&Predators.esm",
+			"3472|SkyTEST-RealisticAnimals&Predators.esm",
+			"3473|SkyTEST-RealisticAnimals&Predators.esm",
+			"75865|SkyTEST-RealisticAnimals&Predators.esm",
+			"3474|SkyTEST-RealisticAnimals&Predators.esm",
+			"3475|SkyTEST-RealisticAnimals&Predators.esm",
+			"3476|SkyTEST-RealisticAnimals&Predators.esm",
+			"3477|SkyTEST-RealisticAnimals&Predators.esm",
+			"3478|SkyTEST-RealisticAnimals&Predators.esm",
+			"3479|SkyTEST-RealisticAnimals&Predators.esm",
+			"3480|SkyTEST-RealisticAnimals&Predators.esm",
+			"3481|SkyTEST-RealisticAnimals&Predators.esm",
+			"3483|SkyTEST-RealisticAnimals&Predators.esm",
+			"3484|SkyTEST-RealisticAnimals&Predators.esm",
+			"3485|SkyTEST-RealisticAnimals&Predators.esm",
+			"3486|SkyTEST-RealisticAnimals&Predators.esm",
+			"3487|SkyTEST-RealisticAnimals&Predators.esm",
+			"3488|SkyTEST-RealisticAnimals&Predators.esm",
+			"3489|SkyTEST-RealisticAnimals&Predators.esm",
+			"26004|SkyTEST-RealisticAnimals&Predators.esm",
+			"3490|SkyTEST-RealisticAnimals&Predators.esm",
+			"3491|SkyTEST-RealisticAnimals&Predators.esm",
+			"3492|SkyTEST-RealisticAnimals&Predators.esm",
+			"3482|SkyTEST-RealisticAnimals&Predators.esm"
+		]
+	},
+	"floatList" :
+	{
+		"tiers" :
+		[
+			1.0,
+			1.0,
+			1.0,
+			2.0,
+			2.0,
+			3.0,
+			4.0,
+			4.0,
+			4.0,
+			5.0,
+			6.0,
+			7.0,
+			8.0,
+			9.0,
+			10.0,
+			10.0,
+			11.0,
+			12.0,
+			13.0
+		]
+	},
+	"stringList" :
+	{
+		"names" :
+		[
+			"Hare",
+			"Fox",
+			"Goat",
+			"Dog",
+			"Skeever",
+			"Wolf",
+			"Bristleback",
+			"Small Spider",
+			"Riekling",
+			"Horse",
+			"Deer",
+			"Sabrecat",
+			"Bear",
+			"Spriggan",
+			"Chaurus",
+			"Large Spider",
+			"Troll",
+			"Werewolf",
+			"Giant"
+		],
+		"factionmods" :
+		[
+			"Dragonborn.esm",
+			"SkyTEST-RealisticAnimals&Predators.esm"
+		]
+	}
+}

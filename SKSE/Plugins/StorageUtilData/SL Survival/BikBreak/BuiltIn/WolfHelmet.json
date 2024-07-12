@@ -1,0 +1,51 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "312272|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 125,
+		"weight" : 4
+	},
+	"float" :
+	{
+		"skillreq" : 35.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Wolf Helmet To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/WolfHelmet.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"circlet",
+			"faceguard",
+			"gorget"
+		]
+	},
+	"formList" : 
+	{
+		"circlet" : 
+		[
+			"34404|TheAmazingWorldOfBikiniArmor.esp",
+			"34406|TheAmazingWorldOfBikiniArmor.esp",
+			"34408|TheAmazingWorldOfBikiniArmor.esp"
+			
+		],
+		"faceguard" : 
+		[
+			"33012|TheAmazingWorldOfBikiniArmor.esp",
+			"33014|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		
+		"gorget" : 
+		[
+			"34398|TheAmazingWorldOfBikiniArmor.esp",
+			"34400|TheAmazingWorldOfBikiniArmor.esp"
+		]
+	}
+}

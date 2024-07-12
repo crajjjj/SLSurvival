@@ -1,0 +1,60 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "77382|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 10
+	},
+	"float" :
+	{
+		"skillreq" : 10.0,
+		"weight" : 1.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Hide Gloves To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/HideGloves.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"gloves",
+			"bracers",
+			"pauldron",
+			"elbow"
+		]
+	},
+	"formList" : 
+	{
+		"gloves" : 
+		[
+			"91430|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"bracers" : 
+		[
+
+		],
+		"pauldron" : 
+		[
+			"91436|TheAmazingWorldOfBikiniArmor.esp",
+			"91438|TheAmazingWorldOfBikiniArmor.esp",
+			"91440|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronl" : 
+		[
+			"91438|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronr" : 
+		[
+			"91440|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"elbow" : 
+		[
+
+		]
+	}
+}

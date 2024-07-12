@@ -1,0 +1,1 @@
+ScriptName iDDeResBeltScr Extends zadBeltScript  

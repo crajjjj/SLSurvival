@@ -1,0 +1,18 @@
+{
+    "intList" : 
+    {
+        "mouthopenlefteyehalfclosed" : [ 12, 100, 1, 100, 0, 55, -1 ],
+        "mouthopenrighteyehalfclosed" : [ 12, 100, 1, 100, 1, 60, -1 ],
+        "mouthopeneyesopenlookup" : [ 12, 100, 1, 100, 11, 100, -1 ]
+        
+    },
+    "stringList" : 
+    {
+        "facelist" : 
+        [
+            "mouthopenlefteyehalfclosed",
+            "mouthopenrighteyehalfclosed",
+            "mouthopeneyesopenlookup"
+        ]
+    }
+}

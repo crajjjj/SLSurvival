@@ -1,0 +1,48 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "118169|Dragonborn.esm"
+	},
+	"int" :
+	{
+		"value" : 550
+	},
+	"float" :
+	{
+		"skillreq" : 60.0,
+		"weight" : 7
+	},
+	"string" :
+	{
+		"cobjname" : "Break Nordic Carved Helmet To Nordic Carved Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/Custom/NordicBikiniHelmet.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"circlet",
+			"faceguard",
+			"gorget"
+		]
+	},
+	"formList" : 
+	{
+		"circlet" : 
+		[
+		
+		],
+		"faceguard" : 
+		[
+			"14063|Notverigud Nordic Carved Bikini.esp",
+			"14064|Notverigud Nordic Carved Bikini.esp"
+		],
+		
+		"gorget" : 
+		[
+			"14067|Notverigud Nordic Carved Bikini.esp",
+			"14068|Notverigud Nordic Carved Bikini.esp"
+		]
+	}
+}

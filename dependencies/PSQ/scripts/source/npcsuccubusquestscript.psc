@@ -1,0 +1,4 @@
+ScriptName NPCSuccubusQuestScript Extends Quest
+
+SexLabFramework Property SexLab Auto
+PlayerSuccubusQuestScript Property PSQ Auto

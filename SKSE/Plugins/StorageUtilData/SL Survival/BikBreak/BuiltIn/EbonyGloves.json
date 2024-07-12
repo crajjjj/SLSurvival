@@ -1,0 +1,65 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "80226|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 275,
+		"weight" : 7
+	},
+	"float" :
+	{
+		"skillreq" : 85.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Ebony Gloves To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/EbonyGloves.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"gloves",
+			"bracers",
+			"pauldron",
+			"elbow"
+		]
+	},
+	"formList" : 
+	{
+		"gloves" : 
+		[
+			"81569|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"bracers" : 
+		[
+
+		],
+		"pauldron" : 
+		[
+			"84343|TheAmazingWorldOfBikiniArmor.esp",
+			"84341|TheAmazingWorldOfBikiniArmor.esp",
+			"84345|TheAmazingWorldOfBikiniArmor.esp",
+			"84349|TheAmazingWorldOfBikiniArmor.esp",
+			"84347|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronl" : 
+		[
+			"84343|TheAmazingWorldOfBikiniArmor.esp",
+			"84349|TheAmazingWorldOfBikiniArmor.esp"
+
+		],
+		"pauldronr" : 
+		[
+			"84341|TheAmazingWorldOfBikiniArmor.esp",
+			"84347|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"elbow" : 
+		[
+
+		]
+	}
+}

@@ -1,0 +1,52 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "80219|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 125,
+		"weight" : 9
+	},
+	"float" :
+	{
+		"skillreq" : 60.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Steel Plate Boots To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/NordPlateBoots.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"boots",
+			"thigh",
+			"poleyn"
+		]
+	},
+	"formList" : 
+	{
+		"boots" : 
+		[
+			"7607|TheAmazingWorldOfBikiniArmor.esp",
+			"7609|TheAmazingWorldOfBikiniArmor.esp",
+			"7613|TheAmazingWorldOfBikiniArmor.esp",
+			"7611|TheAmazingWorldOfBikiniArmor.esp",
+			"7615|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"thigh" : 
+		[
+			"9042|TheAmazingWorldOfBikiniArmor.esp",
+			"9044|TheAmazingWorldOfBikiniArmor.esp",
+			"9046|TheAmazingWorldOfBikiniArmor.esp",
+			"9048|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"poleyn" : 
+		[
+
+		]
+	}
+}

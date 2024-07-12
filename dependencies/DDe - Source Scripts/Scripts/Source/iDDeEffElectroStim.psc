@@ -1,0 +1,1 @@
+Scriptname iDDeEffElectroStim Extends zadElectroStimEffect

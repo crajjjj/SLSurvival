@@ -1,0 +1,66 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "80206|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 85,
+		"weight" : 8
+	},
+	"float" :
+	{
+		"skillreq" : 35.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Iron Gloves To Iron Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/DwarvenGloves.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"gloves",
+			"bracers",
+			"pauldron",
+			"elbow"
+		]
+	},
+	"formList" : 
+	{
+		"gloves" : 
+		[
+			"78701|TheAmazingWorldOfBikiniArmor.esp",
+			"78703|TheAmazingWorldOfBikiniArmor.esp",
+			"78705|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldron" : 
+		[
+			"78753|TheAmazingWorldOfBikiniArmor.esp",
+			"78759|TheAmazingWorldOfBikiniArmor.esp",
+			"78757|TheAmazingWorldOfBikiniArmor.esp",
+			"78763|TheAmazingWorldOfBikiniArmor.esp",
+			"78761|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronl" : 
+		[
+			"78759|TheAmazingWorldOfBikiniArmor.esp",
+			"78763|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronr" : 
+		[
+			"78757|TheAmazingWorldOfBikiniArmor.esp",
+			"78761|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"bracers" : 
+		[
+
+		],
+		"elbow" : 
+		[
+
+		]
+	}
+}

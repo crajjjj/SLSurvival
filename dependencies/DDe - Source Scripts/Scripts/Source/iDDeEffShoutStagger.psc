@@ -1,0 +1,1 @@
+ScriptName iDDeEffShoutStagger Extends zadShoutStaggerEffect

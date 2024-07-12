@@ -1,0 +1,13 @@
+OverlayColors.json:
+
+You are limited to 128 color entries! Skyrim array limitation.
+Color list: https://www.rapidtables.com/web/color/RGB_Color.html
+
+Overlays folder:
+Drop overlay json files here to add them to the list of available overlay files in game. 
+OverlayTemplate.json can be copied and customized to create your own.
+
+Overlay mods usualy come with a script to add the overlays to racemenu. If you check the psc file you should be able to pull the texture paths easily enough. 
+
+WARPAINTS!!
+Note on warpaints: Warpaints seem to be different to face paints. The textures are mostly black and are probably inverted at some point in game. Warpaint mods will give your character a black face when applied as a face paint so they shouldn't really be used with this feature. Face paints are fine. How do I tell if a texture is a warpaint and not a face paint? The source script will add them via 'AddWarpaint()' and not 'AddFacePaint()'. Or the texture will be mostly black. 

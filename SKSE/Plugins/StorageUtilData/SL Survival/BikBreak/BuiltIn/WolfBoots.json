@@ -1,0 +1,50 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "847484|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 11,
+		"weight" : 4
+	},
+	"float" :
+	{
+		"skillreq" : 35.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Wolf Boots To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/WolfBoots.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"boots",
+			"thigh",
+			"poleyn"
+		]
+	},
+	"formList" : 
+	{
+		"boots" : 
+		[
+			"32986|TheAmazingWorldOfBikiniArmor.esp",
+			"32988|TheAmazingWorldOfBikiniArmor.esp",
+			"32990|TheAmazingWorldOfBikiniArmor.esp",
+			"32991|TheAmazingWorldOfBikiniArmor.esp",
+			"32993|TheAmazingWorldOfBikiniArmor.esp",
+			"32994|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"thigh" : 
+		[
+			"35808|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"poleyn" : 
+		[
+
+		]
+	}
+}

@@ -1,0 +1,1 @@
+ScriptName iDDeEffTraining Extends zadTrainingEffect

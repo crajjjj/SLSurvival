@@ -1,0 +1,89 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "307851|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 400
+	},
+	"float" :
+	{
+		"skillreq" : 85.0,
+		"weight" : 45.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Blades Cuirass To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/BladesCuirass.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"bra",
+			"thong",
+			"abs",
+			"tasset",
+			"misc"
+		]
+	},
+	"formList" : 
+	{
+		"bra" : 
+		[
+			"71671|TheAmazingWorldOfBikiniArmor.esp",
+			"73055|TheAmazingWorldOfBikiniArmor.esp",
+			"73057|TheAmazingWorldOfBikiniArmor.esp",
+			"73059|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"thong" : 
+		[
+			"73061|TheAmazingWorldOfBikiniArmor.esp",
+			"73063|TheAmazingWorldOfBikiniArmor.esp",
+			"73065|TheAmazingWorldOfBikiniArmor.esp",
+			"73067|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronl" : 
+		[
+			"73071|TheAmazingWorldOfBikiniArmor.esp",
+			"73075|TheAmazingWorldOfBikiniArmor.esp",
+			"73079|TheAmazingWorldOfBikiniArmor.esp",
+			"73083|TheAmazingWorldOfBikiniArmor.esp",
+			"75899|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronr" : 
+		[
+			"73069|TheAmazingWorldOfBikiniArmor.esp",
+			"73073|TheAmazingWorldOfBikiniArmor.esp",
+			"73077|TheAmazingWorldOfBikiniArmor.esp",
+			"73081|TheAmazingWorldOfBikiniArmor.esp",
+			"75897|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"abs" : 
+		[
+			"74476|TheAmazingWorldOfBikiniArmor.esp",
+			"74478|TheAmazingWorldOfBikiniArmor.esp",
+			"75893|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"tasset" : 
+		[
+			"74494|TheAmazingWorldOfBikiniArmor.esp",
+			"74500|TheAmazingWorldOfBikiniArmor.esp",
+			"74496|TheAmazingWorldOfBikiniArmor.esp",
+			"74502|TheAmazingWorldOfBikiniArmor.esp",
+			"74498|TheAmazingWorldOfBikiniArmor.esp",
+			"74504|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"thigh" : 
+		[
+			"74506|TheAmazingWorldOfBikiniArmor.esp",
+			"75895|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"misc" : 
+		[
+			"74492|TheAmazingWorldOfBikiniArmor.esp"
+		]
+	}
+}

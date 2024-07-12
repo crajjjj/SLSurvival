@@ -1,0 +1,2 @@
+ScriptName iDDeResArmCuffsScr Extends zadRestraintArmsScript
+

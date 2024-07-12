@@ -1,0 +1,56 @@
+The main purpose of steep fall is to get you captured/enslaved/defeated or have your licences processed or any other bad force greet. 
+Falling to ridiculous heights should still kill you IMO to discourage running down mountains. 
+
+Steep Fall automatically applies perks 'DeathResist' and 'FallDamageReduction' when falling to (respectively):
+A) Help you survive physical and magic attacks while ragdolled so that defeat/FG mods can have their way with you when you get back up. 
+B) Help you survive reasonable falls.
+
+Doing certain things while ragdolled can be buggy (esp other animations).
+
+JSON SETTINGS:
+
+fallheight = The difference in height you can change between checks. 
+If your change is higher than this you'll fall. If it's lower then nothing will happen. 
+Set this too high and you'll never fall. Set it too low and you'll fall all the time as if the ground was made of wet fish. 
+
+crawlallowance = An extra allowance to the height you can change while crawling. 
+Crawling will allow you to climb steeper slopes without falling over.
+
+falldetectionevent = Chance to create a detection event when falling potentially revealing you while sneaking. Acceptable values: 0 or 1. 
+The chance to create a detection event is inversely proportional to your sneak skill. Higher sneak = less chance to create event. 
+If the player yelps when falling while sneaking then a detection event was created. 
+
+horsefallheight = The difference in height you can change between checks while riding a horse. Depending on how fast the horses are in your setup you might want to increase this.
+
+falldamagereduction = Reduces fall damage. Only when steep falling. Accepted values: 99.0, 90.0, 80.0, 50.0. (EG: 90.0 will reduce fall damage by 90%)
+
+fallforcemultiplier = How much force to apply to the player when falling. Have fun ;)
+
+whirlwind1height = First word of whirlwind sprint allows you to fall/climb an extra amount without falling. 
+whirlwind1duration = How long this extra allowance lasts for in seconds. 
+
+whirlwind2 = Second word of whirlwind sprint
+whirlwind3 = Third word of whirlwind sprint
+
+etherealallowance = How far you can fall with 'Become Ethereal' and not fall over. Default = a lot.
+
+itemstripcountmin = The minimum number of items to try to strip the player of when falling.
+itemstripcountmax = The maximum number of items to try to strip the player of when falling.
+stripchance = The chance, per strip count, that an item is successfully striped from the player when falling.
+
+stripforcemin = When an item is stripped from the player this is the minimum amount of force applied to the item to send it flying. 
+stripforcemax = When an item is stripped from the player this is the maximum amount of force applied to the item to send it flying. 
+Note: that the player, other actors or other collisons can hit items as they drop sending them flying further than the settings here. 
+
+daystodumplostitems = How long in days before dropped items are sent to the lost & found shop to be sold back to the player.
+Note: that if you are dropping a lot of items constantly then items can be sent to the shop sooner due to a limited number of aliases.
+Changing this will only affect newly dropped items.
+
+objectcollisionfallchance = Knocking over objects has this much chance of sending you flying. 
+Note: Unfortunately because this is run on dialogue events it requires that you're not in combat and there's a friendly Npc nearby. Event doesn't fire as often as you'd think so default chance is high. 
+
+furniturefallchance = The chance to fall over when jumping on furniture. Caveats: Same as above.
+
+lostitemswidgetx = The 'X' position of the lost item count widget
+
+lostitemswidgety = The 'y' position of the lost item count widget

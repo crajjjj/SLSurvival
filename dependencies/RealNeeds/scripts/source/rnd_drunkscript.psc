@@ -1,0 +1,1 @@
+Scriptname RND_DrunkScript extends activemagiceffect

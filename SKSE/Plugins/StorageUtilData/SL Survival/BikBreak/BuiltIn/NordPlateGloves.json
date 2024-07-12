@@ -1,0 +1,68 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "80221|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 125,
+		"weight" : 6
+	},
+	"float" :
+	{
+		"skillreq" : 60.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Steel Plate Gloves To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/NordPlateGloves.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"gloves",
+			"bracers",
+			"pauldron",
+			"elbow"
+		]
+	},
+	"formList" : 
+	{
+		"gloves" : 
+		[
+			"7617|TheAmazingWorldOfBikiniArmor.esp",
+			"7619|TheAmazingWorldOfBikiniArmor.esp",
+			"7621|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"bracers" : 
+		[
+
+		],
+		"pauldron" : 
+		[
+			"7633|TheAmazingWorldOfBikiniArmor.esp",
+			"7635|TheAmazingWorldOfBikiniArmor.esp",
+			"7637|TheAmazingWorldOfBikiniArmor.esp",
+			"7639|TheAmazingWorldOfBikiniArmor.esp",
+			"7641|TheAmazingWorldOfBikiniArmor.esp",
+			"7643|TheAmazingWorldOfBikiniArmor.esp",
+			"7645|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronl" : 
+		[
+			"7639|TheAmazingWorldOfBikiniArmor.esp",
+			"7643|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronr" : 
+		[
+			"7641|TheAmazingWorldOfBikiniArmor.esp",
+			"7645|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"elbow" : 
+		[
+
+		]
+	}
+}

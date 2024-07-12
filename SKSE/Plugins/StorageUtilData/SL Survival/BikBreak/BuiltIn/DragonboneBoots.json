@@ -1,0 +1,50 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "77387|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 425
+	},
+	"float" :
+	{
+		"skillreq" : 100.0,
+		"weight" : 8.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Dragonbone Boots To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/DragonboneBoots.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"boots",
+			"thigh",
+			"poleyn"
+		]
+	},
+	"formList" : 
+	{
+		"boots" : 
+		[
+			"25961|TheAmazingWorldOfBikiniArmor.esp",
+			"25963|TheAmazingWorldOfBikiniArmor.esp",
+			"25965|TheAmazingWorldOfBikiniArmor.esp",
+			"25967|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"thigh" : 
+		[
+			"24549|TheAmazingWorldOfBikiniArmor.esp",
+			"24551|TheAmazingWorldOfBikiniArmor.esp",
+			"24553|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"poleyn" : 
+		[
+
+		]
+	}
+}

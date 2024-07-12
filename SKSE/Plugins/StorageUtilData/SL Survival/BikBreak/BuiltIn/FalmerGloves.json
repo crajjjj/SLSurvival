@@ -1,0 +1,62 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "754639|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 55
+	},
+	"float" :
+	{
+		"skillreq" : 35.0,
+		"weight" : 4.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Falmer Gloves To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/FalmerGloves.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"gloves",
+			"bracers",
+			"pauldronl",
+			"pauldronr",
+			"elbow"
+		]
+	},
+	"formList" : 
+	{
+		"gloves" : 
+		[
+			"28786|TheAmazingWorldOfBikiniArmor.esp",
+			"28788|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"bracers" : 
+		[
+
+		],
+		"pauldronl" : 
+		[
+			"27384|TheAmazingWorldOfBikiniArmor.esp",
+			"27387|TheAmazingWorldOfBikiniArmor.esp",
+			"27389|TheAmazingWorldOfBikiniArmor.esp",
+			"27391|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronr" : 
+		[
+			"27383|TheAmazingWorldOfBikiniArmor.esp",
+			"27381|TheAmazingWorldOfBikiniArmor.esp",
+			"27393|TheAmazingWorldOfBikiniArmor.esp",
+			"27395|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"elbow" : 
+		[
+
+		]
+	}
+}

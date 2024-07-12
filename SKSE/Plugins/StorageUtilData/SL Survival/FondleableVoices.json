@@ -1,0 +1,36 @@
+{
+	"formList" : 
+	{
+		"customvoices" : [  ],
+		"dawnguardvoices" : [ "33618094|Dawnguard.esm", "33625729|Dawnguard.esm", "33625735|Dawnguard.esm" ],
+		"dragonbornvoices" : [ "67242204|Dragonborn.esm", "67259441|Dragonborn.esm", "67259454|Dragonborn.esm" ],
+		"skyrimvoices" : 
+		[
+			"127310|Skyrim.esm",
+			"127314|Skyrim.esm",
+			"1092191|Skyrim.esm",
+			"127327|Skyrim.esm",
+			"270266|Skyrim.esm",
+			"127360|Skyrim.esm",
+			"170283|Skyrim.esm",
+			"127437|Skyrim.esm",
+			"127442|Skyrim.esm",
+			"1111671|Skyrim.esm",
+			"176089|Skyrim.esm",
+			"127517|Skyrim.esm",
+			"127525|Skyrim.esm",
+			"127530|Skyrim.esm",
+			"127532|Skyrim.esm",
+			"882861|Skyrim.esm",
+			"127533|Skyrim.esm",
+			"127538|Skyrim.esm",
+			"127623|Skyrim.esm",
+			"102924|Skyrim.esm",
+			"106469|Skyrim.esm",
+			"127624|Skyrim.esm",
+			"127625|Skyrim.esm",
+			"127718|Skyrim.esm",
+			"128679|Skyrim.esm"
+		]
+	}
+}

@@ -1,0 +1,27 @@
+https://steamcommunity.com/sharedfiles/filedetails/?id=187155077
+
+"mouthopenlefteyehalfclosed" : [ 12, 100, 1, 100, 0, 40, -1 ]
+
+"mouthopenlefteyehalfclosed" - Purely descriptive. Must also be listed in 'facelist' to be selectable.
+
+Int array is broken up in three groups of twos + whether or not to equip a random tongue
+
+1st group (Expressions):
+12, 100
+12 = facial expression
+100 = strength of that expression
+
+2nd Group (Phoneme - mouth):
+1, 100
+1 = PhoneMe
+100 = strength of that PhoneMe
+
+3rd group (Modifier - eyes)
+0 = modifier
+100 = strength of that Modifier
+
+Last digit (tongue)
+Whether or not to equip a tongue. 
+-2 = don't equip any tongue
+-1 = Equip a random tongue
+0 - 15 = Equip a specific tongue. Should match the AIO menu tongue list.

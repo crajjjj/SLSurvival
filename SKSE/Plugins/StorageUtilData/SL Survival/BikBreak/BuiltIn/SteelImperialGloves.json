@@ -1,0 +1,66 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "1011491|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 55,
+		"weight" : 4
+	},
+	"float" :
+	{
+		"skillreq" : 35.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Steel Nordic Gauntlets To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/SteelGloves.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"gloves",
+			"bracers",
+			"pauldronl",
+			"pauldronr",
+			"elbow"
+		]
+	},
+	"formList" : 
+	{
+		"gloves" : 
+		[
+			"18934|TheAmazingWorldOfBikiniArmor.esp",
+			"18936|TheAmazingWorldOfBikiniArmor.esp",
+			"18938|TheAmazingWorldOfBikiniArmor.esp",
+			"18940|TheAmazingWorldOfBikiniArmor.esp",
+			"18942|TheAmazingWorldOfBikiniArmor.esp",
+			"18944|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"bracers" : 
+		[
+
+		],
+		"pauldronl" : 
+		[
+			"18961|TheAmazingWorldOfBikiniArmor.esp",
+			"18965|TheAmazingWorldOfBikiniArmor.esp",
+			"20351|TheAmazingWorldOfBikiniArmor.esp",
+			"20355|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronr" : 
+		[
+			"18959|TheAmazingWorldOfBikiniArmor.esp",
+			"18963|TheAmazingWorldOfBikiniArmor.esp",
+			"20349|TheAmazingWorldOfBikiniArmor.esp",
+			"20353|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"elbow" : 
+		[
+
+		]
+	}
+}

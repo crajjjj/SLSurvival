@@ -1,0 +1,2 @@
+ScriptName iDDeResBlindfoldScr Extends zadBlindfoldScript
+

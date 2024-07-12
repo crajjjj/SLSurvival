@@ -1,0 +1,47 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "80227|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 750,
+		"weight" : 10
+	},
+	"float" :
+	{
+		"skillreq" : 85.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Ebony Helmet To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/EbonyHelmet.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"circlet",
+			"faceguard",
+			"gorget"
+		]
+	},
+	"formList" : 
+	{
+		"circlet" : 
+		[
+			"94228|TheAmazingWorldOfBikiniArmor.esp"	
+		],
+		"faceguard" : 
+		[
+			"84337|TheAmazingWorldOfBikiniArmor.esp",
+			"84339|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		
+		"gorget" : 
+		[
+			"82952|TheAmazingWorldOfBikiniArmor.esp"
+		]
+	}
+}

@@ -1,0 +1,53 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "118168|Dragonborn.esm"
+	},
+	"int" :
+	{
+		"value" : 220
+	},
+	"float" :
+	{
+		"skillreq" : 60.0,
+		"weight" : 6
+	},
+	"string" :
+	{
+		"cobjname" : "Break Nordic Carved Gloves To Nordic Carved Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/Custom/NordicBikiniGloves.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"gloves",
+			"bracers",
+			"pauldron",
+			"elbow"
+		]
+	},
+	"formList" : 
+	{
+		"gloves" : 
+		[
+			"14066|Notverigud Nordic Carved Bikini.esp",
+			"14065|Notverigud Nordic Carved Bikini.esp"
+		],
+		"bracers" : 
+		[
+
+		],
+		"pauldron" : 
+		[
+			"14072|Notverigud Nordic Carved Bikini.esp",
+			"14073|Notverigud Nordic Carved Bikini.esp",
+			"14074|Notverigud Nordic Carved Bikini.esp"
+		],
+		"elbow" : 
+		[
+
+		]
+	}
+}

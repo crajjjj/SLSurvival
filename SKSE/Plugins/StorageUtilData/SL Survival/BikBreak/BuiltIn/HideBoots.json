@@ -1,0 +1,46 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "77387|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 10
+	},
+	"float" :
+	{
+		"skillreq" : 10.0,
+		"weight" : 1.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Hide Boots To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/HideBoots.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"boots",
+			"thigh",
+			"poleyn"
+		]
+	},
+	"formList" : 
+	{
+		"boots" : 
+		[
+			"91428|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"thigh" : 
+		[
+			"91450|TheAmazingWorldOfBikiniArmor.esp",
+			"91452|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"poleyn" : 
+		[
+
+		]
+	}
+}

@@ -1,0 +1,57 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "77382|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 25
+	},
+	"float" :
+	{
+		"skillreq" : 35.0,
+		"weight" : 2.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Leather Gloves To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/LeatherGloves.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"gloves",
+			"bracers",
+			"pauldronl",
+			"pauldronr",
+			"elbow"
+		]
+	},
+	"formList" : 
+	{
+		"gloves" : 
+		[
+			"6187|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronl" : 
+		[
+			"7575|TheAmazingWorldOfBikiniArmor.esp",
+			"7577|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronr" : 
+		[
+			"7579|TheAmazingWorldOfBikiniArmor.esp",
+			"7581|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"bracers" : 
+		[
+
+		],
+		"elbow" : 
+		[
+
+		]
+	}
+}

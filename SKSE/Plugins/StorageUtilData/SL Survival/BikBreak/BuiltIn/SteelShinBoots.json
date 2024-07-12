@@ -1,0 +1,52 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "1011489|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 55,
+		"weight" : 8
+	},
+	"float" :
+	{
+		"skillreq" : 35.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Steel Cuffed Boots To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/SteelBoots.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"boots",
+			"thigh",
+			"poleyn"
+		]
+	},
+	"formList" : 
+	{
+		"boots" : 
+		[
+			"18924|TheAmazingWorldOfBikiniArmor.esp",
+			"18926|TheAmazingWorldOfBikiniArmor.esp",
+			"18928|TheAmazingWorldOfBikiniArmor.esp",
+			"18930|TheAmazingWorldOfBikiniArmor.esp",
+			"18932|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"thigh" : 
+		[
+			"23137|TheAmazingWorldOfBikiniArmor.esp",
+			"23139|TheAmazingWorldOfBikiniArmor.esp",
+			"23141|TheAmazingWorldOfBikiniArmor.esp",
+			"65942|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"poleyn" : 
+		[
+
+		]
+	}
+}

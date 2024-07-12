@@ -1,0 +1,45 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "77389|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 60
+	},
+	"float" :
+	{
+		"skillreq" : 35.0,
+		"weight" : 2.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Leather Helmet To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/LeatherHelmet.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"circlet",
+			"faceguard",
+			"gorget"
+		]
+	},
+	"formList" : 
+	{
+		"circlet" : 
+		[
+			"6193|TheAmazingWorldOfBikiniArmor.esp"			
+		],
+		"faceguard" : 
+		[
+			
+		],
+		
+		"gorget" : 
+		["6191|TheAmazingWorldOfBikiniArmor.esp"
+		]
+	}
+}

@@ -1,0 +1,79 @@
+{
+	"float" : 
+	{
+		"campfatigue_haypile" : 0.02,
+		"campfatigue_bedroll" : 0.01,
+		"campfatigue_ground" : 0.1,
+		
+		"campfatigue_outdoor_sheltered" : 0.01,
+		"campfatigue_outdoor_unsheltered" : 0.03,
+		
+		"time_night_begin" : 21.0,
+		"time_morning_begin" : 4.0,
+		"time_day_begin" : 12.0,
+		"time_evening_begin" : 18.0,
+		
+		"time_pen_evening" : 0.0,
+		"time_pen_night" : -0.1,
+		"time_pen_morning" : 0.1,
+		"time_pen_day" : 0.2,
+		
+		"time_pen_vamp_evening" : 0.0,
+		"time_pen_vamp_night" : 0.2,
+		"time_pen_vamp_morning" : -0.1,
+		"time_pen_vamp_day" : -0.2,
+
+		"cuirass_naked" : -0.05,
+		"cuirass_cloth" : 0.05,
+		"cuirass_armor" : 0.2,
+		
+		"bed_ground" : 0.4,
+		"bed_haypile" : 0.15,
+		"bed_bedroll" : 0.10,
+		"bed_bed" : -0.10,
+		
+		"location_outdoor_unsheltered" : 0.3,
+		"location_outdoor_sheltered" : 0.1,
+		"location_indoor" : -0.05,
+
+		"weather_severe" : 0.2,
+		"weather_calm" : 0.0,
+		
+		"temp_cold" : 0.2,
+		"temp_neutral" : 0.0,
+		"temp_warm" : -0.05,
+		"temp_warm_fire" : -0.05,
+		
+		"arousal_satisfied" : -0.15,
+		"arousal_wet" : -0.07,
+		"arousal_horny" : 0.07,
+		"arousal_lustful" : 0.15,
+		
+		"mme_milkfullnessmult" : 1.0,
+		
+		"sta_devicefactormult" : 1.0,
+		
+		"hunger_rnd_glutted" : 0.0,
+		"hunger_rnd_satisfied" : -0.05,
+		"hunger_rnd_slightlyhungry" : 0.0,
+		"hunger_rnd_hungry" : 0.1,
+		"hunger_rnd_veryhungry" : 0.15,
+		"hunger_rnd_starving" : 0.3,
+		
+		"thirst_rnd_quenched" : -0.05,
+		"thirst_rnd_slightlythirsty" : 0.0,
+		"thirst_rnd_thirsty" : 0.1,
+		"thirst_rnd_verythirsty" : 0.15,
+		"thirst_rnd_dehydrated" : 0.3,
+		
+		"hunger_ineed_satiated" : -0.05,
+		"hunger_ineed_mildhunger" : 0.0,
+		"hunger_ineed_moderatehunger" : 0.15,
+		"hunger_ineed_severehunger" : 0.3,
+		
+		"thirst_ineed_wellhydrated" : -0.05,
+		"thirst_ineed_mildthirst" : 0.0,
+		"thirst_ineed_moderatethirst" : 0.15,
+		"thirst_ineed_severethirst" : 0.3
+	}
+}

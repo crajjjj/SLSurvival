@@ -1,0 +1,62 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "77382|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 425
+	},
+	"float" :
+	{
+		"skillreq" : 100.0,
+		"weight" : 8.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Dragonbone Gloves To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/DragonboneGloves.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"gloves",
+			"bracers",
+			"pauldronl",
+			"pauldronr",
+			"elbow"
+		]
+	},
+	"formList" : 
+	{
+		"gloves" : 
+		[
+			"25969|TheAmazingWorldOfBikiniArmor.esp",
+			"25971|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronl" : 
+		[
+			"24557|TheAmazingWorldOfBikiniArmor.esp",
+			"24561|TheAmazingWorldOfBikiniArmor.esp",
+			"24565|TheAmazingWorldOfBikiniArmor.esp",
+			"24569|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronr" : 
+		[
+			"24555|TheAmazingWorldOfBikiniArmor.esp",
+			"24559|TheAmazingWorldOfBikiniArmor.esp",
+			"24563|TheAmazingWorldOfBikiniArmor.esp",
+			"24567|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"bracers" : 
+		[
+
+		],
+		"elbow" : 
+		[
+
+		]
+	}
+}

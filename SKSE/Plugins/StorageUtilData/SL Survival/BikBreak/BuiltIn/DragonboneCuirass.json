@@ -1,0 +1,86 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "77385|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 2125
+	},
+	"float" :
+	{
+		"skillreq" : 100.0,
+		"weight" : 40.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Dragonbone Cuirass To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/DragonboneCuirass.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"bra",
+			"thong",
+			"abs",
+			"tasset",
+			"misc"
+		]
+	},
+	"formList" : 
+	{
+		"bra" : 
+		[
+			"24521|TheAmazingWorldOfBikiniArmor.esp",
+			"24523|TheAmazingWorldOfBikiniArmor.esp",
+			"24525|TheAmazingWorldOfBikiniArmor.esp",
+			"24527|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"thong" : 
+		[
+			"24529|TheAmazingWorldOfBikiniArmor.esp",
+			"24531|TheAmazingWorldOfBikiniArmor.esp",
+			"24533|TheAmazingWorldOfBikiniArmor.esp",
+			"24535|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronl" : 
+		[
+			"24557|TheAmazingWorldOfBikiniArmor.esp",
+			"24561|TheAmazingWorldOfBikiniArmor.esp",
+			"24565|TheAmazingWorldOfBikiniArmor.esp",
+			"24569|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronr" : 
+		[
+			"24555|TheAmazingWorldOfBikiniArmor.esp",
+			"24559|TheAmazingWorldOfBikiniArmor.esp",
+			"24563|TheAmazingWorldOfBikiniArmor.esp",
+			"24567|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"abs" : 
+		[
+			"24537|TheAmazingWorldOfBikiniArmor.esp",
+			"24539|TheAmazingWorldOfBikiniArmor.esp",
+			"24541|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"tasset" : 
+		[
+			"24543|TheAmazingWorldOfBikiniArmor.esp",
+			"24545|TheAmazingWorldOfBikiniArmor.esp",
+			"24547|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"thigh" : 
+		[
+			"24549|TheAmazingWorldOfBikiniArmor.esp",
+			"24551|TheAmazingWorldOfBikiniArmor.esp",
+			"24553|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"misc" : 
+		[
+			"25981|TheAmazingWorldOfBikiniArmor.esp",
+			"25979|TheAmazingWorldOfBikiniArmor.esp"
+		]
+	}
+}

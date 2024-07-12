@@ -1,0 +1,1 @@
+ScriptName iDDeEffShockVib Extends zadShockVibEffect

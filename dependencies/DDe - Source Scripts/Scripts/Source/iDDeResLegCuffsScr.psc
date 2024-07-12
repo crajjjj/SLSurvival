@@ -1,0 +1,1 @@
+ScriptName iDDeResLegCuffsScr Extends zadRestraintLegsScript 

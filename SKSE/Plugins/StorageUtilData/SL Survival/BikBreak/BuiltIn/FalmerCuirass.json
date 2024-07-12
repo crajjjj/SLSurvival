@@ -1,0 +1,94 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "754635|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 275
+	},
+	"float" :
+	{
+		"skillreq" : 35.0,
+		"weight" : 20.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Falmer Cuirass To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/FalmerCuirass.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"bra",
+			"thong",
+			"abs",
+			"tasset",
+			"misc"
+		]
+	},
+	"formList" : 
+	{
+		"bra" : 
+		[
+			"27363|TheAmazingWorldOfBikiniArmor.esp",
+			"27364|TheAmazingWorldOfBikiniArmor.esp",
+			"27365|TheAmazingWorldOfBikiniArmor.esp",
+			"27366|TheAmazingWorldOfBikiniArmor.esp",
+			"30189|TheAmazingWorldOfBikiniArmor.esp",
+			"27376|TheAmazingWorldOfBikiniArmor.esp",
+			"27373|TheAmazingWorldOfBikiniArmor.esp",
+			"27374|TheAmazingWorldOfBikiniArmor.esp",
+			"27375|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"thong" : 
+		[
+			"27368|TheAmazingWorldOfBikiniArmor.esp",
+			"27369|TheAmazingWorldOfBikiniArmor.esp",
+			"27370|TheAmazingWorldOfBikiniArmor.esp",
+			"27371|TheAmazingWorldOfBikiniArmor.esp",
+			"27372|TheAmazingWorldOfBikiniArmor.esp",
+			"32952|TheAmazingWorldOfBikiniArmor.esp",
+			"27400|TheAmazingWorldOfBikiniArmor.esp",
+			"27378|TheAmazingWorldOfBikiniArmor.esp",
+			"27379|TheAmazingWorldOfBikiniArmor.esp",
+			"27380|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronl" : 
+		[
+			"27384|TheAmazingWorldOfBikiniArmor.esp",
+			"27387|TheAmazingWorldOfBikiniArmor.esp",
+			"27389|TheAmazingWorldOfBikiniArmor.esp",
+			"27391|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"pauldronr" : 
+		[
+			"27383|TheAmazingWorldOfBikiniArmor.esp",
+			"27381|TheAmazingWorldOfBikiniArmor.esp",
+			"27393|TheAmazingWorldOfBikiniArmor.esp",
+			"27395|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"abs" : 
+		[
+			"27399|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"tasset" : 
+		[
+			"32973|TheAmazingWorldOfBikiniArmor.esp",
+			"32977|TheAmazingWorldOfBikiniArmor.esp",
+			"32975|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"thigh" : 
+		[
+			"32971|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"misc" : 
+		[
+			"28790|TheAmazingWorldOfBikiniArmor.esp",
+			"28792|TheAmazingWorldOfBikiniArmor.esp",
+			"30188|TheAmazingWorldOfBikiniArmor.esp"
+		]
+	}
+}

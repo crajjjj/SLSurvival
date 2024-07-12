@@ -1,0 +1,74 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "118167|Dragonborn.esm"
+	},
+	"int" :
+	{
+		"value" : 1600
+	},
+	"float" :
+	{
+		"skillreq" : 60.0,
+		"weight" : 37
+	},
+	"string" :
+	{
+		"cobjname" : "Break Nordic Carved Cuirass To Nordic Carved Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/Custom/NordicBikiniCuirass.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"bra",
+			"thong",
+			"abs",
+			"tasset",
+			"misc"
+		]
+	},
+	"formList" : 
+	{
+		"bra" : 
+		[
+			"14058|Notverigud Nordic Carved Bikini.esp",
+			"14059|Notverigud Nordic Carved Bikini.esp",
+			"14060|Notverigud Nordic Carved Bikini.esp"
+		],
+		"thong" : 
+		[
+			"14080|Notverigud Nordic Carved Bikini.esp",
+			"14081|Notverigud Nordic Carved Bikini.esp",
+			"14082|Notverigud Nordic Carved Bikini.esp"
+		],
+		"pauldron" : 
+		[
+			"14072|Notverigud Nordic Carved Bikini.esp",
+			"14073|Notverigud Nordic Carved Bikini.esp",
+			"14074|Notverigud Nordic Carved Bikini.esp"
+		],
+		"abs" : 
+		[
+			"14054|Notverigud Nordic Carved Bikini.esp",
+			"14055|Notverigud Nordic Carved Bikini.esp",
+			"14056|Notverigud Nordic Carved Bikini.esp"
+		],
+		"tasset" : 
+		[
+			"14076|Notverigud Nordic Carved Bikini.esp",
+			"14077|Notverigud Nordic Carved Bikini.esp",
+			"14078|Notverigud Nordic Carved Bikini.esp"
+		],
+		"thigh" : 
+		[
+			"14079|Notverigud Nordic Carved Bikini.esp"
+		],
+		"misc" : 
+		[
+			"14069|Notverigud Nordic Carved Bikini.esp",
+			"14057|Notverigud Nordic Carved Bikini.esp"
+		]
+	}
+}

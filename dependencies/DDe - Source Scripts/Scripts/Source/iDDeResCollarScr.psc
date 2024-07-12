@@ -1,0 +1,2 @@
+ScriptName iDDeResCollarScr Extends zadCollarScript 
+

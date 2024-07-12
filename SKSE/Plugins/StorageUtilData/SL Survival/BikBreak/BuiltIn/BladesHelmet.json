@@ -1,0 +1,50 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "307855|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 200
+	},
+	"float" :
+	{
+		"skillreq" : 85.0,
+		"weight" : 12.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Blades Helmet To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/BladesHelmet.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"circlet",
+			"faceguard",
+			"gorget"
+		]
+	},
+	"formList" : 
+	{
+		"circlet" : 
+		[
+			"74508|TheAmazingWorldOfBikiniArmor.esp"
+		],
+		"faceguard" : 
+		[
+			
+		],
+		
+		"gorget" : 
+		[
+			"74486|TheAmazingWorldOfBikiniArmor.esp",
+			"74488|TheAmazingWorldOfBikiniArmor.esp",
+			"74490|TheAmazingWorldOfBikiniArmor.esp",
+			"74510|TheAmazingWorldOfBikiniArmor.esp",
+			"54019|TheAmazingWorldOfBikiniArmor.esp"
+		]
+	}
+}
