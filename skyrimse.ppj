@@ -40,7 +40,6 @@
         <Import>.\dependencies\Papyrus Extender\source\scripts</Import>
         <Import>.\dependencies\JContainers SE\Data\scripts\source</Import>
         <Import>.\dependencies\racemenu\scripts\source</Import>
-        <Import>C:\Playground\Skyrim\mods\SKSE\DynamicExpressionReplacer\dist\Source\Scripts</Import>
         <Import>.\dependencies\PSQ\scripts\source</Import>
         <Import>.\dependencies\eff\source\scripts</Import>
         <Import>.\dependencies\UIExtensions\scripts\source</Import>
