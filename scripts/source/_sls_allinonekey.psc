@@ -3420,10 +3420,18 @@ Function ToggleHelloComments()
 EndFunction
 
 Function AddItemMenu()
+	Spell aimSpell
 	If Game.GetModByName("AddItemMenuLE.esp") != 255
-		(Game.GetFormFromFile(0x00895C, "AddItemMenuLE.esp") as Spell).Cast(PlayerRef, PlayerRef)
+		aimSpell = Game.GetFormFromFile(0x00895C, "AddItemMenuLE.esp") as Spell
 	ElseIf Game.GetModByName("AddItemMenuSE.esp") != 255
-		(Game.GetFormFromFile(0x16E801, "AddItemMenuSE.esp") as Spell).Cast(PlayerRef, PlayerRef)
+		aimSpell = Game.GetFormFromFile(0x16E801, "AddItemMenuSE.esp") as Spell
+	ElseIf Game.GetLightModByName("AddItemMenuSE.esp") != 255
+		; ESL-flagged build (towawot): FormIDs are compacted, so AIM_Power is local 0x801,
+		; and GetModByName can't see light plugins -- must detect via GetLightModByName.
+		aimSpell = Game.GetFormFromFile(0x000801, "AddItemMenuSE.esp") as Spell
+	EndIf
+	If aimSpell
+		aimSpell.Cast(PlayerRef, PlayerRef)
 	Else
 		Debug.Notification("AddItemMenu not found in your load order")
 	EndIf
