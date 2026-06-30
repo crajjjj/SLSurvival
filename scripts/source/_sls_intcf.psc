@@ -1,10 +1,16 @@
 Scriptname _SLS_IntCf Hidden
 
 Int Function GetArousalThreshold(Quest McmQuest) Global
-	Return (McmQuest as CFConfigMenu).GenArousalThreshold
+	CreatureFrameworkConfig Config = McmQuest as CreatureFrameworkConfig
+	If Config
+		Return Config.GenArousalThreshold
+	EndIf
+	Return -2 ; CF config unavailable - sentinel the caller ignores
 EndFunction
 
 Function SetArousalThreshold(Quest McmQuest, Int Threshold) Global
-	(McmQuest as CFConfigMenu).GenArousalThreshold = Threshold
+	CreatureFrameworkConfig Config = McmQuest as CreatureFrameworkConfig
+	If Config
+		Config.GenArousalThreshold = Threshold
+	EndIf
 EndFunction
-
