@@ -2,8 +2,8 @@ Scriptname _SLS_PlayerDirt extends Quest
 
 Event OnInit()
 	If Self.IsRunning()
-		RegisterForModEvent("Bis_BatheEvent", "OnBis_BatheEvent")
-		If Game.GetModByName("Bathing in Skyrim - Main.esp") != 255
+		RegisterForModEvent("BiS_WashActorFinish", "OnBiS_WashActorFinish")
+		If Game.GetModByName("Bathing in Skyrim.esp") != 255
 			GoToState("Installed")
 		EndIf
 	EndIf
@@ -16,7 +16,7 @@ EndFunction
 Event OnUpdateGameTime()
 EndEvent
 
-Event OnBis_BatheEvent(Form akActor)
+Event OnBiS_WashActorFinish(Form akBathingActor, Form akWashProp = none, Bool abUsingSoap = false)
 	; BiS was not initially installed but is now
 	GoToState("Installed")
 EndEvent
@@ -30,7 +30,7 @@ EndFunction
 
 State Installed
 	Event OnBeginState()
-		mzinDirtinessPercentage = Game.GetFormFromFile(0x000DA8, "Bathing in Skyrim - Main.esp") as GlobalVariable
+		mzinDirtinessPercentage = Game.GetFormFromFile(0x000DA8, "Bathing in Skyrim.esp") as GlobalVariable
 		RegisterForModEvent("HookAnimationEnd", "OnAnimationEnd")
 		UpdateLocalDirtyness()
 		BeginUpdates()
@@ -42,8 +42,8 @@ State Installed
 		RegisterForSingleUpdateGameTime(1.0)
 	EndEvent
 	
-	Event OnBis_BatheEvent(Form akActor)
-		If akActor && (akActor as Actor) == PlayerRef
+	Event OnBiS_WashActorFinish(Form akBathingActor, Form akWashProp = none, Bool abUsingSoap = false)
+		If akBathingActor && (akBathingActor as Actor) == PlayerRef
 			UpdateLocalDirtyness()
 		EndIf
 	EndEvent
@@ -56,6 +56,9 @@ State Installed
 	EndEvent
 	
 	Function UpdateLocalDirtyness()
+		If (!mzinDirtinessPercentage)
+			mzinDirtinessPercentage = Game.GetFormFromFile(0x000DA8, "Bathing in Skyrim.esp") as GlobalVariable
+		EndIf
 		_SLS_PlayerDirtyness.SetValue(mzinDirtinessPercentage.GetValue())
 	EndFunction
 EndState
