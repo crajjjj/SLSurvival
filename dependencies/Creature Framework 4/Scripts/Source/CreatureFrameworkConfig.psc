@@ -1,39 +1,43 @@
-Scriptname CFConfigMenu extends SKI_ConfigBase
+Scriptname CreatureFrameworkConfig extends SKI_ConfigBase
 {The Mod Configuration Menu script | Creature Framework}
 
 ; General properties
-CFQuestMain property MainQuest auto
 CreatureFramework property API auto hidden
 
 ; General settings
 bool property GenSexLab = true auto hidden
 bool property GenAroused = true auto hidden
-int property GenArousalThreshold = 50 auto hidden
-
-; Gender settings
-int property GndDefault = 0 auto hidden
-bool property GndMaleFallback = true auto hidden
-bool property GndUseSexLab = true auto hidden
-bool property GndSexLabExcludeTransformations = true auto hidden
+int property GenArousalThreshold = 35 auto hidden
 
 ; Debug settings
-bool property DbgOutputLog = true auto hidden
+bool property DbgOutputLog = false auto hidden
 bool property DbgOutputConsole = false auto hidden
 
 ; Performance settings
-int property PrfCloakRate = 5 auto hidden
-int property PrfCloakDuration = 1 auto hidden
-int property PrfCloakRange = 288 auto hidden
-int property PrfCloakCooldown = 60 auto hidden
-int property PrfArousalPollRate = 10 auto hidden
-int property PrfFormDBClearRate = 15 auto hidden
-int property PrfGenderClearRate = 15 auto hidden
+GlobalVariable property CFCloakCreatures auto ; To enhace the performance since now the cloak just detect the creatures without aroused body.
+int property PrfCloakCreatures hidden
+	int function get()
+		return 	CFCloakCreatures.GetValueInt()
+	endFunction
+	function set(int value)
+		CFCloakCreatures.SetValueInt(value)
+	endFunction
+endProperty
+
+GlobalVariable property CFCloakRange auto ; To be used as the PrfCloakRange for the aliaas conditions, i don't replace the PrfCloakRange to avoid issues for now.
+float property PrfCloakRange hidden
+	float function get()
+		return 	CFCloakRange.GetValue()
+	endFunction
+	function set(float value)
+		CFCloakRange.SetValue(value)
+	endFunction
+endProperty
+
+Float property PrfTimeout = 15.0 auto hidden
 
 ; Puppeteer settings
 int property PupTargetKey = 49 auto hidden
-
-; The default gender entries
-string[] genders
 
 ; Creatures page stuff
 int jCreatureRacesArr
@@ -44,12 +48,12 @@ int creaturePage
 
 ; Get the version of the mod
 int function GetVersion()
-	return CreatureFrameworkUtil.GetVersion()
+	return CreatureFrameworkUtility.GetVersion()
 endFunction
 
 ; Get the textual representation of the version of the mod
 string function GetVersionString()
-	return CreatureFrameworkUtil.GetVersionString()
+	return CreatureFrameworkUtility.GetVersionString()
 endFunction
 
 ; The mod has been updated
@@ -62,11 +66,6 @@ event OnGameReload()
 	parent.OnGameReload()
 	Utility.Wait(3)
 
-	genders = new string[3]
-	genders[0] = "$Random"
-	genders[1] = "$Male"
-	genders[2] = "$Female"
-
 	Pages = new string[4]
 	Pages[0] = "$General"
 	Pages[1] = "$Performance"
@@ -74,10 +73,8 @@ event OnGameReload()
 	Pages[3] = "$Puppeteer"
 
 	creaturePage = 1
-
-	API = CreatureFrameworkUtil.GetAPI()
+	API = CreatureFrameworkUtility.GetAPI()
 	API.Initialize()
-	MainQuest.Maintenance()
 endEvent
 
 ; The config menu has been opened
@@ -130,9 +127,9 @@ endFunction
 
 
 
-;/----------------------------------------\
- | Page: General                          |
- \----------------------------------------/;
+;----------------------------------------------------------------
+; Page: General							|
+;----------------------------------------------------------------
 
 ; Make the options for the general page
 function PageGeneral()
@@ -154,29 +151,14 @@ function PageGeneral()
 	else
 		AddSliderOption("$CF_SettingName_GenArousalThreshold", GenArousalThreshold, "{0}", OPTION_FLAG_DISABLED)
 	endIf
+
 	AddEmptyOption()
-
-	AddHeaderOption("$Genders")
-	AddMenuOptionST("GND_Default", "$CF_SettingName_GndDefault", genders[GndDefault])
-	AddToggleOptionST("GND_MaleFallback", "$CF_SettingName_GndMaleFallback", GndMaleFallback)
-	if API.IsSexLabInstalled()
-		AddToggleOptionST("GND_UseSexLab", "$CF_SettingName_GndUseSexLab", GndUseSexLab)
-	else
-		AddToggleOptionST("GND_UseSexLab", "$CF_SettingName_GndUseSexLab", GndUseSexLab, OPTION_FLAG_DISABLED)
-	endIf
-	if API.IsSexLabInstalled() && GndUseSexLab
-		AddToggleOptionST("GND_SexLabExcludeTransformations", "$CF_SettingName_GndSexLabExcludeTransformations", GndSexLabExcludeTransformations)
-	else
-		AddToggleOptionST("GND_SexLabExcludeTransformations", "$CF_SettingName_GndSexLabExcludeTransformations", GndSexLabExcludeTransformations, OPTION_FLAG_DISABLED)
-	endIf
-
-	SetCursorPosition(1)
-
 	AddHeaderOption("$Debug")
 	AddToggleOptionST("DBG_OutputLog", "$CF_SettingName_DbgOutputLog", DbgOutputLog)
 	AddToggleOptionST("DBG_OutputConsole", "$CF_SettingName_DbgOutputConsole", DbgOutputConsole)
 	AddTextOptionST("DBG_Dump", "$CF_SettingName_DbgDump", "")
-	AddEmptyOption()
+
+	SetCursorPosition(1)
 
 	AddHeaderOption("$Cleaning")
 	AddTextOptionST("CLN_ClearEvents", "$CF_SettingName_ClnClearEvents", "")
@@ -184,12 +166,9 @@ function PageGeneral()
 	AddTextOptionST("CLN_ClearCreatures", "$CF_SettingName_ClnClearCreatures", "")
 	if API.IsMuckingAboutAllowed()
 		AddTextOptionST("CLN_Reregister", "$CF_SettingName_ClnReregister", "")
-	else
-		AddTextOptionST("CLN_Reregister", "$CF_SettingName_ClnReregister", "", OPTION_FLAG_DISABLED)
-	endIf
-	if API.IsMuckingAboutAllowed()
 		AddTextOptionST("CLN_Uninstall", "$CF_SettingName_ClnUninstall", "")
 	else
+		AddTextOptionST("CLN_Reregister", "$CF_SettingName_ClnReregister", "", OPTION_FLAG_DISABLED)
 		AddTextOptionST("CLN_Uninstall", "$CF_SettingName_ClnUninstall", "", OPTION_FLAG_DISABLED)
 	endIf
 endFunction
@@ -214,12 +193,12 @@ state GEN_Aroused
 	event OnSelectST()
 		GenAroused = !GenAroused
 		SetToggleOptionValueST(GenAroused)
-		ModEvent.Send(ModEvent.Create("CFInternal_ArousedSettingChanged"))
+		API.ArousedSettingChanged()
 	endEvent
 	event OnDefaultST()
 		GenAroused = true
 		SetToggleOptionValueST(GenAroused)
-		ModEvent.Send(ModEvent.Create("CFInternal_ArousedSettingChanged"))
+		API.ArousedSettingChanged()
 	endEvent
 	event OnHighlightST()
 		SetInfoText("$CF_SettingInfo_GenAroused")
@@ -230,101 +209,22 @@ endState
 state GEN_ArousalThreshold
 	event OnSliderOpenST()
 		SetSliderDialogStartValue(GenArousalThreshold)
-		SetSliderDialogDefaultValue(50)
+		SetSliderDialogDefaultValue(35.0)
 		SetSliderDialogRange(0, 100)
 		SetSliderDialogInterval(1)
 	endEvent
 	event OnSliderAcceptST(float value)
 		GenArousalThreshold = value as int
 		SetSliderOptionValueST(GenArousalThreshold)
-		ModEvent.Send(ModEvent.Create("CFInternal_ArousedSettingChanged"))
+		API.ArousedSettingChanged()
 	endEvent
 	event OnDefaultST()
-		GenArousalThreshold = 50
+		GenArousalThreshold = 35
 		SetSliderOptionValueST(GenArousalThreshold)
-		ModEvent.Send(ModEvent.Create("CFInternal_ArousedSettingChanged"))
+		API.ArousedSettingChanged()
 	endEvent
 	event OnHighlightST()
 		SetInfoText("$CF_SettingInfo_GenArousalThreshold")
-	endEvent
-endState
-
-; Gender setting: Default gender (menu)
-state GND_Default
-	event OnMenuOpenST()
-		SetMenuDialogStartIndex(GndDefault)
-		SetMenuDialogDefaultIndex(0)
-		SetMenuDialogOptions(genders)
-	endEvent
-	event OnMenuAcceptST(int index)
-		GndDefault = index
-		SetMenuOptionValueST(genders[GndDefault])
-	endEvent
-	event OnDefaultST()
-		GndDefault = 0
-		SetMenuOptionValueST(genders[GndDefault])
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$CF_SettingInfo_GndDefault")
-	endEvent
-endState
-
-; Gender setting: Male fallback (toggle)
-state GND_MaleFallback
-	event OnSelectST()
-		GndMaleFallback = !GndMaleFallback
-		SetToggleOptionValueST(GndMaleFallback)
-	endEvent
-	event OnDefaultST()
-		GndMaleFallback = true
-		SetToggleOptionValueST(GndMaleFallback)
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$CF_SettingInfo_GndMaleFallback")
-	endEvent
-endState
-
-; Gender setting: Use SexLab gender (toggle)
-state GND_UseSexLab
-	event OnSelectST()
-		GndUseSexLab = !GndUseSexLab
-		SetToggleOptionValueST(GndUseSexLab)
-		ForcePageReset()
-	endEvent
-	event OnDefaultST()
-		GndUseSexLab = true
-		SetToggleOptionValueST(GndUseSexLab)
-		ForcePageReset()
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$CF_SettingInfo_GndUseSexLab")
-	endEvent
-endState
-
-; Gender setting: Ignore SexLab gender for transformations (toggle)
-state GND_SexLabExcludeTransformations
-	event OnSelectST()
-		GndSexLabExcludeTransformations = !GndSexLabExcludeTransformations
-		SetToggleOptionValueST(GndSexLabExcludeTransformations)
-	endEvent
-	event OnDefaultST()
-		GndSexLabExcludeTransformations = true
-		SetToggleOptionValueST(GndSexLabExcludeTransformations)
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$CF_SettingInfo_GndSexLabExcludeTransformations")
-	endEvent
-endState
-
-; Gender setting: Reset genders (text)
-state GND_Reset
-	event OnSelectST()
-		if ShowMessage("$CF_Message_ConfirmResetGenders", true, "$Yes", "$No")
-			API.ClearOverrideGenders(ShowMessage("$CF_Message_ResetGendersType", true, "$Unloaded", "$All"))
-		endIf
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$CF_SettingInfo_GndReset")
 	endEvent
 endState
 
@@ -335,7 +235,7 @@ state DBG_OutputLog
 		SetToggleOptionValueST(DbgOutputLog)
 	endEvent
 	event OnDefaultST()
-		DbgOutputLog = true
+		DbgOutputLog = false
 		SetToggleOptionValueST(DbgOutputLog)
 	endEvent
 	event OnHighlightST()
@@ -350,7 +250,7 @@ state DBG_OutputConsole
 		SetToggleOptionValueST(DbgOutputConsole)
 	endEvent
 	event OnDefaultST()
-		DbgOutputConsole = true
+		DbgOutputConsole = false
 		SetToggleOptionValueST(DbgOutputConsole)
 	endEvent
 	event OnHighlightST()
@@ -395,7 +295,7 @@ endState
 state CLN_ClearCreatures
 	event OnSelectST()
 		if ShowMessage("$CF_Message_ConfirmClearCreatures", true, "$Yes", "$No")
-			ModEvent.Send(ModEvent.Create("CFInternal_ClearCreatures"))
+			API.ClearCreatures()
 		endIf
 	endEvent
 	event OnHighlightST()
@@ -422,15 +322,11 @@ state CLN_Uninstall
 	event OnSelectST()
 		if API.IsMuckingAboutAllowed()
 			if ShowMessage("$CF_Message_ConfirmUninstall", true, "$Yes", "$No")
-				ModEvent.Send(ModEvent.Create("CFInternal_ClearCreatures"))
-				ModEvent.Send(ModEvent.Create("CFInternal_Uninstall"))
-				API.UnregisterAllMods()
-				API.ClearOverrideGenders()
-				API.ClearFormDB()
+				API.Uninstall()
 				ForcePageReset()
 			endIf
 		else
-			CFDebug.Log("[Config] Not uninstalling; no mucking about!")
+			CreatureFrameworkUtility.Log("[Config] Not uninstalling; no mucking about!")
 		endIf
 	endEvent
 	event OnHighlightST()
@@ -440,87 +336,55 @@ endState
 
 
 
-;/----------------------------------------\
- | Page: Performance                      |
- \----------------------------------------/;
+;----------------------------------------------------------------
+; Page: Performance						|
+;----------------------------------------------------------------
 
 ; Make the options for the performance page
 function PagePerformance()
 	SetCursorFillMode(TOP_TO_BOTTOM)
 	AddHeaderOption("$Performance")
-	AddSliderOptionST("PRF_CloakRate", "$CF_SettingName_PrfCloakRate", PrfCloakRate, "$CF_SettingFormat_Seconds")
-	AddSliderOptionST("PRF_CloakDuration", "$CF_SettingName_PrfCloakDuration", PrfCloakDuration, "$CF_SettingFormat_SecondsDecimal")
-	AddSliderOptionST("PRF_CloakRange", "$CF_SettingName_PrfCloakRange", PrfCloakRange / 192.0, "$CF_SettingFormat_CellsDecimal")
-	AddSliderOptionST("PRF_CloakCooldown", "$CF_SettingName_PrfCloakCooldown", PrfCloakCooldown, "$CF_SettingFormat_Seconds")
-	if API.IsArousedEnabled()
-		AddSliderOptionST("PRF_ArousalPollRate", "$CF_SettingName_PrfArousalPollRate", PrfArousalPollRate, "$CF_SettingFormat_Seconds")
-	else
-		AddSliderOption("$CF_SettingName_PrfArousalPollRate", PrfArousalPollRate, "$CF_SettingFormat_Seconds", OPTION_FLAG_DISABLED)
-	endIf
-	AddSliderOptionST("PRF_FormDBClearRate", "$CF_SettingName_PrfFormDBClearRate", PrfFormDBClearRate, "$CF_SettingFormat_Minutes")
-	AddSliderOptionST("PRF_GenderClearRate", "$CF_SettingName_PrfGenderClearRate", PrfGenderClearRate, "$CF_SettingFormat_Minutes")
+	AddSliderOptionST("PRF_CloakRange", "$CF_SettingName_PrfCloakRange", PrfCloakRange)
+	AddSliderOptionST("PRF_CloakMaxCreature", "$CF_SettingName_PrfCloakMaxCreatures", PrfCloakCreatures, "{0}")
+	AddSliderOptionST("PRF_CloakCooldown", "$CF_SettingName_PrfCloakCooldown", PrfTimeout, "$CF_SettingFormat_Seconds")
 endFunction
 
-; Performance setting: Cloak rate (slider)
-state PRF_CloakRate
+; Performance setting: Cloak Max Creature (slider)
+state PRF_CloakMaxCreature
 	event OnSliderOpenST()
-		SetSliderDialogStartValue(PrfCloakRate)
-		SetSliderDialogDefaultValue(5)
-		SetSliderDialogRange(0, 60)
-		SetSliderDialogInterval(1)
+		SetSliderDialogStartValue(PrfCloakCreatures)
+		SetSliderDialogDefaultValue(6)
+		SetSliderDialogRange(0, API.CFQuestDetectCreature.GetNumAliases())
+		SetSliderDialogInterval(2)
 	endEvent
 	event OnSliderAcceptST(float value)
-		PrfCloakRate = value as int
-		SetSliderOptionValueST(PrfCloakRate, "$CF_SettingFormat_Seconds")
-		ModEvent.Send(ModEvent.Create("CFInternal_CloakSettingChanged"))
+		PrfCloakCreatures = value as int
+		SetSliderOptionValueST(PrfCloakCreatures, "{0}")
 	endEvent
 	event OnDefaultST()
-		PrfCloakRate = 5
-		SetSliderOptionValueST(PrfCloakRate, "$CF_SettingFormat_Seconds")
+		PrfCloakCreatures = 6
+		SetSliderOptionValueST(PrfCloakCreatures, "{0}")
 	endEvent
 	event OnHighlightST()
-		SetInfoText("$CF_SettingInfo_PrfCloakRate")
-	endEvent
-endState
-
-; Performance setting: Cloak duration (slider)
-state PRF_CloakDuration
-	event OnSliderOpenST()
-		SetSliderDialogStartValue(PrfCloakDuration)
-		SetSliderDialogDefaultValue(1)
-		SetSliderDialogRange(0.25, 5)
-		SetSliderDialogInterval(0.25)
-	endEvent
-	event OnSliderAcceptST(float value)
-		PrfCloakDuration = value as int
-		SetSliderOptionValueST(PrfCloakDuration, "$CF_SettingFormat_SecondsDecimal")
-	endEvent
-	event OnDefaultST()
-		PrfCloakDuration = 1
-		SetSliderOptionValueST(PrfCloakDuration, "$CF_SettingFormat_SecondsDecimal")
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$CF_SettingInfo_PrfCloakDuration")
+		SetInfoText("$CF_SettingInfo_PrfCloakMaxCreatures")
 	endEvent
 endState
 
 ; Performance setting: Cloak range (slider)
 state PRF_CloakRange
 	event OnSliderOpenST()
-		SetSliderDialogStartValue(PrfCloakRange / 192.0)
-		SetSliderDialogDefaultValue(1.5)
-		SetSliderDialogRange(0.25, 3)
-		SetSliderDialogInterval(0.25)
+		SetSliderDialogStartValue(PrfCloakRange)
+		SetSliderDialogDefaultValue(2000.0)
+		SetSliderDialogRange(1000.0, 4000.0)
+		SetSliderDialogInterval(200.0)
 	endEvent
 	event OnSliderAcceptST(float value)
-		PrfCloakRange = (value * 192) as int
-		CreatureFrameworkUtil.GetCloakSpell().SetNthEffectMagnitude(0, PrfCloakRange)
-		SetSliderOptionValueST(value, "$CF_SettingFormat_CellsDecimal")
+		PrfCloakRange = value
+		SetSliderOptionValueST(value)
 	endEvent
 	event OnDefaultST()
-		PrfCloakRange = 288
-		CreatureFrameworkUtil.GetCloakSpell().SetNthEffectMagnitude(0, PrfCloakRange)
-		SetSliderOptionValueST(1.5, "$CF_SettingFormat_CellsDecimal")
+		PrfCloakRange = 2000.0
+		SetSliderOptionValueST(2000.0)
 	endEvent
 	event OnHighlightST()
 		SetInfoText("$CF_SettingInfo_PrfCloakRange")
@@ -530,98 +394,29 @@ endState
 ; Performance setting: Cloak cooldown (slider)
 state PRF_CloakCooldown
 	event OnSliderOpenST()
-		SetSliderDialogStartValue(PrfCloakCooldown)
-		SetSliderDialogDefaultValue(60)
-		SetSliderDialogRange(5, 600)
-		SetSliderDialogInterval(5)
+		SetSliderDialogStartValue(PrfTimeout)
+		SetSliderDialogDefaultValue(15.0)
+		SetSliderDialogRange(5.0, 30.0)
+		SetSliderDialogInterval(5.0)
 	endEvent
 	event OnSliderAcceptST(float value)
-		PrfCloakCooldown = value as int
-		CreatureFrameworkUtil.GetCreatureApplySpell().SetNthEffectDuration(0, PrfCloakCooldown)
-		SetSliderOptionValueST(PrfCloakCooldown, "$CF_SettingFormat_Seconds")
+		PrfTimeout = value
+		SetSliderOptionValueST(PrfTimeout, "$CF_SettingFormat_Seconds")
+		API.TimeSettingChanged()
 	endEvent
 	event OnDefaultST()
-		PrfCloakCooldown = 60
-		CreatureFrameworkUtil.GetCreatureApplySpell().SetNthEffectDuration(0, PrfCloakCooldown)
-		SetSliderOptionValueST(PrfCloakCooldown, "$CF_SettingFormat_Seconds")
+		PrfTimeout = 15.0
+		SetSliderOptionValueST(PrfTimeout, "$CF_SettingFormat_Seconds")
+		API.TimeSettingChanged()
 	endEvent
 	event OnHighlightST()
 		SetInfoText("$CF_SettingInfo_PrfCloakCooldown")
 	endEvent
 endState
 
-; Performance setting: Arousal poll rate (slider)
-state PRF_ArousalPollRate
-	event OnSliderOpenST()
-		SetSliderDialogStartValue(PrfArousalPollRate)
-		SetSliderDialogDefaultValue(10)
-		SetSliderDialogRange(0, 60)
-		SetSliderDialogInterval(1)
-	endEvent
-	event OnSliderAcceptST(float value)
-		PrfArousalPollRate = value as int
-		SetSliderOptionValueST(PrfArousalPollRate, "$CF_SettingFormat_Seconds")
-	endEvent
-	event OnDefaultST()
-		PrfArousalPollRate = 10
-		SetSliderOptionValueST(PrfArousalPollRate, "$CF_SettingFormat_Seconds")
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$CF_SettingInfo_PrfArousalPollRate")
-	endEvent
-endState
-
-; Performance setting: Form DB clear rate (slider)
-state PRF_FormDBClearRate
-	event OnSliderOpenST()
-		SetSliderDialogStartValue(PrfFormDBClearRate)
-		SetSliderDialogDefaultValue(15)
-		SetSliderDialogRange(0, 120)
-		SetSliderDialogInterval(1)
-	endEvent
-	event OnSliderAcceptST(float value)
-		PrfFormDBClearRate = value as int
-		API.ResetFormDBClearTimer()
-		SetSliderOptionValueST(PrfFormDBClearRate, "$CF_SettingFormat_Minutes")
-	endEvent
-	event OnDefaultST()
-		PrfFormDBClearRate = 15
-		API.ResetFormDBClearTimer()
-		SetSliderOptionValueST(PrfFormDBClearRate, "$CF_SettingFormat_Minutes")
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$CF_SettingInfo_PrfFormDBClearRate")
-	endEvent
-endState
-
-; Performance setting: Gender clear rate (slider)
-state PRF_GenderClearRate
-	event OnSliderOpenST()
-		SetSliderDialogStartValue(PrfGenderClearRate)
-		SetSliderDialogDefaultValue(15)
-		SetSliderDialogRange(0, 120)
-		SetSliderDialogInterval(1)
-	endEvent
-	event OnSliderAcceptST(float value)
-		PrfGenderClearRate = value as int
-		API.ResetGenderClearTimer()
-		SetSliderOptionValueST(PrfGenderClearRate, "$CF_SettingFormat_Minutes")
-	endEvent
-	event OnDefaultST()
-		PrfGenderClearRate = 15
-		API.ResetGenderClearTimer()
-		SetSliderOptionValueST(PrfGenderClearRate, "$CF_SettingFormat_Minutes")
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$CF_SettingInfo_PrfGenderClearRate")
-	endEvent
-endState
-
-
-
-;/----------------------------------------\
- | Page: Creatures                        |
- \----------------------------------------/;
+;----------------------------------------------------------------
+; Page: Creatures						|
+;----------------------------------------------------------------
 
 ; Make the options for the creatures page
 function PageCreatures()
@@ -632,14 +427,14 @@ function PageCreatures()
 		jCreatureRacesArr = API.GetRegisteredRaces()
 		JValue.Retain(jCreatureRacesArr)
 		creaturesRaceCount = JArray.Count(jCreatureRacesArr)
-		creaturePages = Math.Ceiling(creaturesRaceCount / 5.0)
+		creaturePages = Math.Ceiling(creaturesRaceCount / 10.0)
 		if creaturePages < 1
 			creaturePages = 1
 		endIf
 		if creaturePage > creaturePages
 			creaturePage = 1
 		endIf
-		CFDebug.Log("[Config] Creatures page opened; Race count: " + creaturesRaceCount + "; pages: " + creaturePages + "; current page: " + creaturePage)
+		CreatureFrameworkUtility.Log("[Config] Creatures page opened; Race count: " + creaturesRaceCount + "; pages: " + creaturePages + "; current page: " + creaturePage)
 	endIf
 
 	; Make the paginator
@@ -656,8 +451,8 @@ function PageCreatures()
 	AddEmptyOption()
 
 	; Get the relevant chunk of the races array
-	int startIndex = (creaturePage - 1) * 5
-	int endIndex = startIndex + 5
+	int startIndex = (creaturePage - 1) * 10
+	int endIndex = startIndex + 10
 	if endIndex > creaturesRaceCount
 		endIndex = creaturesRaceCount
 	endIf
@@ -676,9 +471,9 @@ function PageCreatures()
 			int skinsSize = JArray.Count(jSkinsArr)
 
 			; Add fake skin (we do this separately to make sure it's the first option in the list)
-			if JArray.FindForm(jSkinsArr, API.FakeSkin) != -1
+			if JArray.FindForm(jSkinsArr, API.CFFakeSkin) != -1
 				; Get the active mod name
-				string theModName = API.GetActiveModName(raceForm, API.FakeSkin)
+				string theModName = API.GetActiveModName(raceForm, API.CFFakeSkin)
 				if theModName == ""
 					theModName = "$Disabled"
 				endIf
@@ -687,7 +482,7 @@ function PageCreatures()
 				int jCreatureOptionMap = JMap.Object()
 				JMap.SetInt(jCreatureOptionMap, "id", AddMenuOption("$All skins", theModName))
 				JMap.SetForm(jCreatureOptionMap, "race", raceForm)
-				JMap.SetForm(jCreatureOptionMap, "skin", API.FakeSkin)
+				JMap.SetForm(jCreatureOptionMap, "skin", API.CFFakeSkin)
 				JArray.AddObj(jCreatureOptionsArr, jCreatureOptionMap)
 			endIf
 
@@ -696,7 +491,7 @@ function PageCreatures()
 			while s < skinsSize
 				Armor skinForm = JArray.GetForm(jSkinsArr, s) as Armor
 
-				if skinForm != API.FakeSkin
+				if skinForm != API.CFFakeSkin
 					; Get the active mod name
 					string theModName = API.GetActiveModName(raceForm, skinForm)
 					if theModName == ""
@@ -849,15 +644,15 @@ endEvent
 
 
 
-;/----------------------------------------\
- | Page: Puppeteer                        |
- \----------------------------------------/;
+;----------------------------------------------------------------
+; Page: Puppeteer						|
+;----------------------------------------------------------------
 
 ; Make the options for the puppeteer page
 function PagePuppeteer()
 	Actor puppet = API.GetPuppet()
 	if puppet
-		string name = CreatureFrameworkUtil.GetActorName(puppet)
+		string name = CreatureFrameworkUtility.GetActorName(puppet)
 		Race raceForm = puppet.GetRace()
 		string raceName = API.GetRaceName(raceForm)
 		if raceName == ""
@@ -879,10 +674,7 @@ function PagePuppeteer()
 		if API.IsActorActive(puppet)
 			active = "$Yes"
 		endIf
-		string hasEffect = "$No"
-		if puppet.HasMagicEffect(CreatureFrameworkUtil.GetCreatureEffect())
-			hasEffect = "$Yes"
-		endIf
+
 		string aroused = "$No"
 		if API.IsAroused(puppet)
 			aroused = "$Yes"
@@ -892,9 +684,6 @@ function PagePuppeteer()
 		if API.IsArousedInstalled()
 			arousalRating = puppet.GetFactionRank(API.ArousedFaction)
 		endIf
-		string gender = API.GetGenderText(API.GetGender(puppet))
-		string genderSource = API.GetGenderSourceText(API.GetGenderSource(puppet))
-
 		SetCursorFillMode(TOP_TO_BOTTOM)
 
 		AddTextOption("$Puppet", name, OPTION_FLAG_DISABLED)
@@ -908,7 +697,6 @@ function PagePuppeteer()
 
 		AddHeaderOption("$Status")
 		AddTextOption("$Active", active, OPTION_FLAG_DISABLED)
-		AddTextOption("$Has effect", hasEffect, OPTION_FLAG_DISABLED)
 		AddTextOptionST("PUP_TriggerUpdate", "$CF_SettingName_PupTriggerUpdate", "")
 
 		SetCursorPosition(1)
@@ -916,17 +704,16 @@ function PagePuppeteer()
 		AddKeyMapOptionST("PUP_TargetKey", "$CF_SettingName_PupTargetKey", PupTargetKey)
 		AddEmptyOption()
 
-		AddHeaderOption("$Gender")
-		AddTextOption("$Gender", gender, OPTION_FLAG_DISABLED)
-		AddTextOption("$Gender source", genderSource, OPTION_FLAG_DISABLED)
-		AddMenuOptionST("PUP_OverrideGender", "$CF_SettingName_PupOverrideGender", API.GetGenderText(API.GetOverrideGender(puppet)))
-		AddEmptyOption()
-
 		AddHeaderOption("$Arousal")
 		AddTextOption("$Aroused", aroused, OPTION_FLAG_DISABLED)
 		AddTextOption("$Arousal source", arousalSource, OPTION_FLAG_DISABLED)
-		AddTextOption("$SexLab Aroused rating", arousalRating, OPTION_FLAG_DISABLED)
-		AddMenuOptionST("PUP_OverrideArousal", "$CF_SettingName_PupOverrideArousal", API.GetOverrideArousalText(API.GetOverrideArousal(puppet)))
+		if API.IsArousedInstalled()
+			int Arousal = puppet.GetFactionRank(API.ArousedFaction)
+			AddSliderOptionST("PUP_OverrideArousal", "$SexLab Aroused rating", Arousal)
+		else
+			AddTextOption("$SexLab Aroused rating", arousalRating, OPTION_FLAG_DISABLED)	
+		endIf
+
 	else
 		SetCursorFillMode(LEFT_TO_RIGHT)
 		AddTextOption("$CF_Message_NoPuppetTarget", "", OPTION_FLAG_DISABLED)
@@ -950,7 +737,7 @@ state PUP_TargetKey
 		if continue
 			PupTargetKey = newKeyCode
 			SetKeyMapOptionValueST(PupTargetKey)
-			ModEvent.Send(ModEvent.Create("CFInternal_PuppetTargetKeyChanged"))
+			API.PuppetTargetKeyChange()
 		endIf
 	endEvent
 	event OnDefaultST()
@@ -972,54 +759,22 @@ state PUP_TriggerUpdate
 	endEvent
 endState
 
-; Puppeteer setting: Override gender (menu)
-state PUP_OverrideGender
-	event OnMenuOpenST()
-		SetMenuDialogStartIndex(API.GetOverrideGender(API.GetPuppet()))
-		SetMenuDialogDefaultIndex(0)
-		SetMenuDialogOptions(API.GetGenderTexts())
-	endEvent
-	event OnMenuAcceptST(int index)
-		Actor puppet = API.GetPuppet()
-		API.SetOverrideGender(puppet, index)
-		SetMenuOptionValueST(API.GetGenderText(index))
-		API.TriggerUpdateForActor(puppet)
-		ForcePageReset()
-	endEvent
-	event OnDefaultST()
-		Actor puppet = API.GetPuppet()
-		API.SetOverrideGender(puppet, 0)
-		SetMenuOptionValueST(API.GetGenderText(0))
-		API.TriggerUpdateForActor(puppet)
-		ForcePageReset()
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$CF_SettingInfo_PupOverrideGender")
-	endEvent
-endState
-
-; Puppeteer setting: Override arousal (menu)
+; Puppeteer setting: Override Aroused rating (Slider)
 state PUP_OverrideArousal
-	event OnMenuOpenST()
-		SetMenuDialogStartIndex(API.GetOverrideArousal(API.GetPuppet()))
-		SetMenuDialogDefaultIndex(0)
-		SetMenuDialogOptions(API.GetOverrideArousalTexts())
+	event OnSliderOpenST() 
+		int Arousal = API.GetPuppet().GetFactionRank(API.ArousedFaction)
+		SetSliderDialogStartValue(Arousal)
+		SetSliderDialogDefaultValue(Arousal)
+		SetSliderDialogRange(0, 100)
+		SetSliderDialogInterval(1)
 	endEvent
-	event OnMenuAcceptST(int index)
+	event OnSliderAcceptST(float value)
 		Actor puppet = API.GetPuppet()
-		API.SetOverrideArousal(puppet, index)
-		SetMenuOptionValueST(API.GetOverrideArousalText(index))
-		API.TriggerUpdateForActor(puppet)
-		ForcePageReset()
-	endEvent
-	event OnDefaultST()
-		Actor puppet = API.GetPuppet()
-		API.SetOverrideArousal(puppet, 0)
-		SetMenuOptionValueST(API.GetOverrideArousalText(0))
-		API.TriggerUpdateForActor(puppet)
-		ForcePageReset()
+		SetSliderOptionValueST(value as int)
+		API.SexLabAroused.SetActorExposure(puppet, value as int)
+		puppet.SetFactionRank(API.ArousedFaction, value as int)
 	endEvent
 	event OnHighlightST()
-		SetInfoText("$CF_SettingInfo_PupOverrideArousal")
+		SetInfoText("$CF_SettingName_PupOverrideArousal")
 	endEvent
 endState

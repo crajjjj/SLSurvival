@@ -1,48 +1,24 @@
-Scriptname CreatureFrameworkUtil hidden
+Scriptname CreatureFrameworkUtility hidden
 {Utility script | Creature Framework}
 
 ; Get the version of the mod
 int function GetVersion() global
-	return 10021
+	return 40000
 endFunction
 
 ; Get the textual representation of the version of the mod
 string function GetVersionString() global
-	return "1.1.0-pre2"
+	return "4.0"
 endFunction
 
 ; Get the framework script
 CreatureFramework function GetAPI() global
-	return Game.GetFormFromFile(0xD62, "CreatureFramework.esm") as CreatureFramework
+	return Game.GetFormFromFile(0xCF01, "CreatureFramework.esm") as CreatureFramework
 endFunction
 
 ; Get the configuration script
-CFConfigMenu function GetConfig() global
-	return Game.GetFormFromFile(0xD63, "CreatureFramework.esm") as CFConfigMenu
-endFunction
-
-; Get the main quest
-CFQuestMain function GetMainQuest() global
-	return Game.GetFormFromFile(0xD64, "CreatureFramework.esm") as CFQuestMain
-endFunction
-
-Spell function GetCloakSpell() global
-	return Game.GetFormFromFile(0x22EE, "CreatureFramework.esm") as Spell
-endFunction
-
-; Get the creature spell
-Spell function GetCreatureSpell() global
-	return Game.GetFormFromFile(0x2854, "CreatureFramework.esm") as Spell
-endFunction
-
-; Get the creature apply spell
-Spell function GetCreatureApplySpell() global
-	return Game.GetFormFromFile(0x48A2, "CreatureFramework.esm") as Spell
-endFunction
-
-; Get the creature effect
-MagicEffect function GetCreatureEffect() global
-	return Game.GetFormFromFile(0x2853, "CreatureFramework.esm") as MagicEffect
+CreatureFrameworkConfig function GetConfig() global
+	return Game.GetFormFromFile(0xCF02, "CreatureFramework.esm") as CreatureFrameworkConfig
 endFunction
 
 ; Get the key of a JMap that corresponds to the index of a JArray of its keys
@@ -155,7 +131,9 @@ function AddAndEquipArmor(Actor actorForm, Armor armorForm) global
 	if actorForm.GetItemCount(armorForm) == 0
 		actorForm.AddItem(armorForm, 1, true)
 	endIf
-	actorForm.EquipItem(armorForm, false, true)
+	while !(actorForm.IsEquipped(armorForm))
+		actorForm.EquipItem(armorForm, false, true)
+	endWhile
 endFunction
 
 ; Equip an item or a spell to an actor
@@ -241,4 +219,15 @@ Form[] function FormArrayFromJArray(int obj) global
 	endWhile
 	JValue.Release(obj)
 	return array
+endFunction
+
+; Send a debug message to the Papyrus log and the console if debugging is enabled
+function Log(string _message) global
+	CreatureFrameworkConfig config = GetConfig()
+	if config.DbgOutputLog
+		Debug.Trace("[CF]" + _message)
+	endIf
+	if config.DbgOutputConsole
+		MiscUtil.PrintConsole("[CF]" + _message)
+	endIf
 endFunction
