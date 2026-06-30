@@ -57,6 +57,10 @@ Treat `tif__*`, `pf__*`, `prkf__*`, `qf__*` as machine-generated. Edit only with
 
 Script properties filled via the Creation Kit in `SL Survival.esp` must **not** be removed from `.psc` files even if unused in code — removing them breaks the form binding and the script fails to load. To truly remove one you must also clear it in the ESP. When in doubt, leave it as dead weight.
 
+## Dialogue Authoring (Creation Kit)
+
+- **Never use angle brackets in player dialogue prompts.** Player choice text like `<Walk away>` renders as **invisible/blank dialogue** in-game — the engine treats `<...>` as markup and eats it. Use square brackets instead: `[Walk away]`. This text lives in the plugin's DIAL/INFO records (edit in the CK), not in the `.psc` sources, so it can't be fixed by recompiling — fix it on the topic in `SL Survival.esp`.
+
 ## Papyrus Language Notes
 
 ### Control flow
