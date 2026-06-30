@@ -9,6 +9,7 @@ Event OnInit()
 		RegisterForModEvent("HookAnimationStarting", "OnAnimationStarting")
 		RegisterForModEvent("_SLS_PlayerSwallowedCum", "On_SLS_PlayerSwallowedCum")
 		RegisterForModEvent("_SLS_IntCoverShutdown", "On_SLS_IntCoverShutdown")
+		RegisterForModEvent("_SLS_BfConception", "On_SLS_BfConception")
 		RegForEvents()
 		RegisterForSingleUpdateGameTime(1.0)
 	EndIf
@@ -46,21 +47,55 @@ Event OnUpdateGameTime()
 		ModWildlingPoints(((Fhu.GetCurrentCumAnal(PlayerRef) + Fhu.GetCurrentCumVaginal(PlayerRef)) / ((Fhu.GetCumCapacityMax() * 2.0)) * MitigateFactor * 2.0), "Cum in holes")
 	EndIf
 	
-	; Pregnancy -FM
+	; Pregnancy (prefer Beeing Female, fall back to Fertility Mode). Creature pregnancy =
+	; the father is a creature (father race's voice type vs CreatureTiers) OR an Estrus-type
+	; pregnancy (Chaurus/Spider/Dwemer), which BF tracks separately from its own state.
 	If Fm.GetIsInterfaceActive()
-		Race akRace = Fm.GetPregnancyRace(PlayerRef)
-		If akRace
-			VoiceType akVoice = akRace.GetDefaultVoiceType(female = false)
-			Int Index = JsonUtil.FormListFind("SL Survival/CreatureTiers.json", "creatures", akVoice)
-			If Index > -1 ; Creature pregnancy
-				Float Tier = JsonUtil.FloatListGet("SL Survival/CreatureTiers.json", "tiers", Index)
+		Bool Pregnant = Fm.GetIsPregnant(PlayerRef)
+		Bool CreaturePreg = false
+		If Pregnant
+			Race akRace = Fm.GetPregnancyRace(PlayerRef)
+			If akRace && JsonUtil.FormListFind("SL Survival/CreatureTiers.json", "creatures", akRace.GetDefaultVoiceType(female = false)) > -1
+				CreaturePreg = true
+			EndIf
+		EndIf
+		If Fm.IsPregnantByCreature(PlayerRef) ; Estrus Chaurus/Spider/Dwemer
+			Pregnant = true
+			CreaturePreg = true
+		EndIf
+		If Pregnant
+			If CreaturePreg
 				ModWildlingPoints(3.0 * MitigateFactor, "Creature pregnancy")
 			Else
 				ModWildlingPoints(1.0 * MitigateFactor, "Normal pregnancy")
 			EndIf
 		EndIf
 	EndIf
-	
+
+	; BF insemination - viable sperm still inside adds to the feral state, weighted by
+	; how bestial the donor is (creature donors count for more).
+	If Fm.GetIsInterfaceActive()
+		Actor[] Donors = Fm.GetRelevantSpermActors(PlayerRef)
+		If Donors ; BF returns a None array when the player has no tracked sperm
+			Int d = 0
+			Float SpermPoints = 0.0
+			While d < Donors.Length
+				If Donors[d]
+					Float DonorTier = GetCreatureTier(Donors[d])
+					If DonorTier > 0.0 ; creature donor
+						SpermPoints += DonorTier * 0.5
+					Else
+						SpermPoints += 0.25
+					EndIf
+				EndIf
+				d += 1
+			EndWhile
+			If SpermPoints > 0.0
+				ModWildlingPoints(SpermPoints * MitigateFactor, "Inseminated")
+			EndIf
+		EndIf
+	EndIf
+
 	; Crawling
 	CrawlTimeUpdate(MitigateFactor, UpdateTime)
 	;ModWildlingPoints(CrawlTimeThisHour * MitigateFactor, "Crawling Time")
@@ -220,6 +255,19 @@ EndEvent
 Event OnSexLabOrgasmSeparate(Form ActorRef, Int tid)
 	;Bool HasPlayer = Sexlab.FindPlayerController() == tid
 	OrgasmEvent(ActorRef = ActorRef as Actor, tid = tid, HasPlayer = Sexlab.FindPlayerController() == tid)
+EndEvent
+
+; Beeing Female reports the player conceived. Award a one-time bonus when the father is a
+; creature (relayed from BF via the _SLS_InterfaceFm unified pregnancy interface).
+Event On_SLS_BfConception(Int ChildCount, Form Father0)
+	Actor FatherActor = Father0 as Actor
+	If FatherActor
+		Float Tier = GetCreatureTier(FatherActor)
+		If Tier > 0.0 ; conceived by a creature
+			ModWildlingPoints(Tier * 1.5, PlayerRef.GetDisplayName() + " conceived by " + FatherActor.GetRace().GetName())
+			Debug.Notification("You feel the seed of a beast quicken within you...")
+		EndIf
+	EndIf
 EndEvent
 
 Event On_SLS_PlayerSwallowedCum(Form akSource, Bool Swallowed, Float LoadSize, Float LoadSizeBase, Bool IsCumPotion)

@@ -20,11 +20,10 @@ Faction Property slaFrustration Auto
 Faction Property slaExposureRate Auto
 Faction Property slaTrauma Auto
 
-GlobalVariable Property sla_NextMaintenance Auto  
+
+GlobalVariable Property sla_NextMaintenance Auto
 
 Int Property slaArousalCap = 100 AutoReadOnly
-
-SexLabFramework Property sexLab auto
 
 Actor Property playerRef Auto
 
@@ -84,15 +83,19 @@ Int Function GetGenderPreference(Actor who, Bool forConfig = False)
 		
 		;;; Doombell algorithm - I think this overprivileged bisexuality, so instead of 35 | 30 | 35, I have 40 | 20 | 40
         ; TODO - toggle for bisexuality so it can be disabled altogether for PC or NPCs seperately.
-		Int ratio = SexLab.Stats.GetSexuality(who)
-		if ratio > 60
-			genderPreference =  1 - who.GetLeveledActorBase().GetSex()
-		ElseIf ratio < 30
-			genderPreference =  who.GetLeveledActorBase().GetSex()
-		Else
-			genderPreference =  2
-		EndIf
-	
+
+		if !slaMain.sexlabPlugin.IsInterfaceActive()
+			genderPreference = 2
+		else
+			Int ratio = slaMain.sexlabPlugin.getSexuality(who)
+			if ratio > 60
+				genderPreference =  1 - who.GetLeveledActorBase().GetSex()
+			ElseIf ratio < 30
+				genderPreference =  who.GetLeveledActorBase().GetSex()
+			Else
+				genderPreference =  2
+			EndIf
+		endif
 	EndIf
 	
 	Return genderPreference
@@ -147,8 +150,8 @@ EndFunction
 
 
 Float Function GetActorExposureRate(Actor who)
-{Deprecated}
-	Return -2.0
+	{Deprecated}
+	Return 1.0
 EndFunction
 
 
@@ -166,15 +169,26 @@ EndFunction
 
 Int Function GetActorExposure(Actor who)
 	{Deprecated}
-	return slaMain.defaultPlugin.GetExposureLegacy(who) as Int
+	float currentTeasing = 0
+	if slaMain.defaultPlugin.ddPlugin.IsInterfaceActive()
+		currentTeasing = slaMain.GetDynamicEffectValueByName(who, sla_ddplugin.getDDTeasingEffectName()) 
+	endif
+	float currentTotal = currentTeasing + slaMain.defaultPlugin.GetExposureLegacy(who) 
+	return currentTotal as Int
 EndFunction
 
 
 Int Function SetActorExposure(Actor who, Int newActorExposure)
-	{Deprecated}
-	int diff = newActorExposure - GetActorExposure(who)
+	float currentTeasing = 0
+    if slaMain.defaultPlugin.ddPlugin.IsInterfaceActive()
+        currentTeasing = slaMain.GetDynamicEffectValueByName(who, sla_ddplugin.getDDTeasingEffectName())
+    endif
+    float currentTotal =  currentTeasing + slaMain.defaultPlugin.GetExposureLegacy(who)
+    float diff = newActorExposure - currentTotal
+	
+    ; apply the diff to the legacy exposure, leaving teasing unchanged
     slaMain.defaultPlugin.ModExposureLegacy(who, diff)
-	Return GetActorExposure(who)
+    return GetActorExposure(who)
 EndFunction
 
 
@@ -188,9 +202,18 @@ Float Function GetActorTimeRate(Actor who)
 	return 1.0
 EndFunction
  
+Float Function SetActorTimeRate(Actor who, Float timeRate)
+	{Deprecated}
+	return 1.0
+EndFunction
+
 Float Function UpdateActorTimeRate(Actor who, Float timeRateDelta)
 	{Deprecated}
 	return 0.0
+EndFunction
+
+Function UpdateActorOrgasmDate(Actor who)
+	slaMain.defaultPlugin.OnOrgasm(who, 0.0)
 EndFunction
 
 Float Function GetActorDaysSinceLastOrgasm(Actor who)
@@ -203,7 +226,8 @@ Float Function GetActorDaysSinceLastOrgasm(Actor who)
 	
 	If (lastOrgasmTime < -1.0)
         ; Orgasm not yet; set try SexLab
-		Return SexLab.Stats.DaysSinceLastSex(who)
+		
+		Return slaMain.sexlabPlugin.daysSinceLastSex(who)
 	EndIf
 	
 	Return Utility.GetCurrentGameTime() - lastOrgasmTime
@@ -220,18 +244,12 @@ Float Function GetActorDaysSinceLastRape(Actor who)
 	
 	If (lastRapeTime < -1.0)
         ; Rape not yet; set try SexLab
-		Return SexLab.Stats.DaysSinceLastSex(who)
+		Return slaMain.sexlabPlugin.daysSinceLastSex(who)
 	EndIf
 	
 	Return Utility.GetCurrentGameTime() - lastRapeTime
     
 EndFunction
-
-
-Function UpdateActorOrgasmDate(Actor who)
-
-EndFunction
-
 
 Bool Function IsActorArousalLocked(Actor who)
 
@@ -292,23 +310,20 @@ int Function GetActorArousal(Actor who)
 EndFunction
 
 Actor Function GetMostArousedActorInLocation()
-
 	Return slaConfig.slaMostArousedActorInLocation
-    
 EndFunction
 
 
 Function UpdateSOSPosition(Actor who, Int actorArousal)
-
+	Faction animFaction = slaMain.sexlabPlugin.getSLAnimatingFaction()
 	If !who || !slaConfig.IsUseSOS
 		Return
-	ElseIf who.IsInFaction(SexLab.AnimatingFaction)
+	ElseIf (animFaction && who.IsInFaction(animFaction)) || slaMain.ostimPlugin.isInScene(who)
 		Return
 	EndIf
 	
 	Int erectionPosition = (actorArousal / 4) - 14;
 	HandleErection(who,  erectionPosition)
-    
 EndFunction
 
 

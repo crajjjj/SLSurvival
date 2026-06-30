@@ -22,17 +22,17 @@ Event OnUpdate()
 		PlayerRef = Game.getPlayer()
 	endif
 	if(!PlayerRef.Is3dLoaded())
-		debug.trace("Player 3d Not Loaded, waiting a bit")
+		slax.warning("sla_ConfigHelper: Player 3d Not Loaded, waiting a bit")
 		RegisterForSingleUpdate(2)
 		return
 	endif
 	ResetQuests()
-	;Debug.notification("SexLab Aroused upgraded to version " + getVersion())
+	;Debug.notification("SLO Aroused NG upgraded to version " + getVersion())
 
 endEvent
 
 function ResetQuests()
-	debug.trace("Sla resetting all quests")
+	slax.info("sla_ConfigHelper: Sla resetting all quests")
 	;slaConfigScr slaConfig = Quest.GetQuest("sla_Config") As slaConfigScr
 	slaMainScr slaMain = Quest.GetQuest("sla_Main") As slaMainScr
 	slaInternalScr slaInternal = Quest.GetQuest("sla_Internal") As slaInternalScr
@@ -51,7 +51,7 @@ function ResetQuests()
 ;	slaConfig.Reset()
 	slaInternal.Reset()
 	slaFramework.Reset()
-	debug.notification("Sexlab Aroused is ready to use")
+	debug.notification("SLOANG is ready to use")
 	
 endFunction
 

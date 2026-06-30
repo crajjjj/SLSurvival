@@ -365,7 +365,7 @@ EndFunction
 Function AutoSuck(Actor akTarget)
 	If Init.SlsCreatureEvents
 		;Float Arousal = StorageUtil.GetFloatValue(akTarget, "SLAroused.ActorExposure")
-		Float Arousal = akTarget.GetFactionRank(Game.GetFormFromFile(0x03FC36, "SexLabAroused.esm") as Faction)
+		Float Arousal = _SLS_IntSlax.GetArousal(akTarget)
 		sslBaseAnimation[] AnimsOral = Sexlab.GetCreatureAnimationsByRaceTags(2, akTarget.GetLeveledActorBase().GetRace(), "Blowjob,Oral", TagSuppress = "Cunnilingus", RequireAll = false)
 		;Debug.Messagebox(akTarget.GetLeveledActorBase().GetRace())
 		If AnimsOral.Length > 0 && Arousal > Menu.CumAddictAutoSuckCreatureArousal && Util.GetLoadFullnessMod(akTarget) > 0.7
@@ -416,7 +416,7 @@ EndEvent
 Function CumDesperationEffects(Int HungerState)
 	If StorageUtil.GetIntValue(Menu, "CumAddictDayDream", Missing = 1) == 1
 	;Debug.Messagebox("Arousal: " + PlayerRef.GetFactionRank(Game.GetFormFromFile(0x03FC36, "SexLabAroused.esm") as Faction) + "\nvalue: " + StorageUtil.GetFloatValue(Menu, "CumAddictDayDreamArousal", Missing = 101.0))
-		If HungerState >= 2 || (PlayerRef.GetFactionRank(Game.GetFormFromFile(0x03FC36, "SexLabAroused.esm") as Faction)) >= StorageUtil.GetFloatValue(Menu, "CumAddictDayDreamArousal", Missing = 101.0) ; Hungry or worse
+		If HungerState >= 2 || _SLS_IntSlax.GetArousal(PlayerRef) >= StorageUtil.GetFloatValue(Menu, "CumAddictDayDreamArousal", Missing = 101.0) ; Hungry or worse
 			If !IsDaydreaming
 				IsDaydreaming = true
 				MushroomSwap(DoCocks = true)
@@ -619,7 +619,7 @@ Function OrgasmEvent(Form ActorRef, Int tid)
 		
 		If ActorRef == None ; Not SLSO. Need to determine source of cum
 			Int i = SexActors.Length
-			While !ActorRef && ActorRef == PlayerRef
+			While (!ActorRef || ActorRef == PlayerRef) && i > 0 ; keep scanning back for a non-player source; i > 0 guards against underflowing the array
 				i -= 1
 				ActorRef = SexActors[i]
 			EndWhile

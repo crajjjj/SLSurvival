@@ -577,7 +577,7 @@ Function FondleArousalIncrease(Actor akActor, Bool IncFondleCount)
 	EndIf
 	StorageUtil.SetFloatValue(akActor, "SLAroused.ActorExposure", Arousal)
 	/;
-	ModArousal(akActor, CreatureFondleCount)
+	_SLS_IntSlax.FondleArousal(akActor, CreatureFondleCount)
 	If IncFondleCount
 		CreatureFondleCount += 1.0
 	EndIf
@@ -1162,11 +1162,11 @@ EndFunction
 
 Function FondleMakeHarder(Actor akTarget)
 	FadeToBlack.Apply()
-	Int ArousalBefore = akTarget.GetFactionRank(Game.GetFormFromFile(0x03FC36, "SexLabAroused.esm") as Faction)
-	ModArousal(akTarget, CreatureFondleCount + 2.0)
+	Int ArousalBefore = _SLS_IntSlax.GetArousal(akTarget)
+	_SLS_IntSlax.FondleArousal(akTarget, CreatureFondleCount + 2.0)
 	Utility.Wait(2.0)
 	PassHours(0.5)
-	Int ArousalAfter = akTarget.GetFactionRank(Game.GetFormFromFile(0x03FC36, "SexLabAroused.esm") as Faction)
+	Int ArousalAfter = _SLS_IntSlax.GetArousal(akTarget)
 	Debug.Messagebox("You spend some time stroking his enormous member with your hands, grinding your ass against him and teasing him with your mouth and tongue.\n\nYou've increased his arousal by " + (ArousalAfter - ArousalBefore) + " points. \nNew arousal: " + ArousalAfter)
 EndFunction
 ;/
@@ -1517,7 +1517,7 @@ Function CloseLockpickMenu()
 EndFunction
 
 Function SendChainQuestsEvent(Quest QuestToStop, Quest QuestToStart)
-	Int ChainQuests = ModEvent.Create("_SLS_Int_ChainQuestsEvent")
+	Int ChainQuests = ModEvent.Create("_SLS_Int_ChainQuests") ; must match _SLS_ChainQuests' RegisterForModEvent name
 	If (ChainQuests)
 		ModEvent.PushForm(ChainQuests, QuestToStop)
 		ModEvent.PushForm(ChainQuests, QuestToStart)

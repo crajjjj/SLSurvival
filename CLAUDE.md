@@ -2,7 +2,7 @@
 
 Large Skyrim SE gameplay/survival overhaul mod. Pure **Papyrus** (`.psc` → `.pex`), no SKSE plugin of its own. ~812 source scripts. Heavily integrates with dozens of optional LoversLab/survival mods through a consistent adapter layer (see *Adapter Architecture* — it is the most important thing in this project).
 
-Current version: **0.685** (`meta.ini`).
+Current version: **0.700** (`meta.ini`).
 
 ## Git Commits
 Do **not** include a `Co-Authored-By` trailer in commit messages. Commits should look authored solely by the user (matches the convention in the user's other Skyrim mods).

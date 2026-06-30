@@ -90,6 +90,7 @@ Form Function FindSchlongByName(String SchlongName)
 EndFunction
 
 Form Function GetSchlong(Actor akActor)
+	Return None
 EndFunction
 
 Function SetSchlong(Actor akActor, Form Schlong)

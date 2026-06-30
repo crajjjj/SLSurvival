@@ -17,7 +17,7 @@ Event OnAnimationEvent(ObjectReference akSource, string asEventName) ; In case s
 EndEvent
 
 Event OnUpdate()
-	Util.ModArousal(TargetActor, 2.0)
+	_SLS_IntSlax.TeaseArousal(TargetActor, 2.0)
 	If Counter <= 0
 		Devious.DoMoan(TargetActor)
 		Counter = Utility.RandomInt(0, 2)

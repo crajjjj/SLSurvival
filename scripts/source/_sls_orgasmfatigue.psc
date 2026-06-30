@@ -42,6 +42,7 @@ Function RegisterForEvents()
 	EndIf
 	RegisterForModEvent("PlayerOrgasmStart", "On_MmeOrgasmEvent")
 	RegisterForModEvent("DeviceActorOrgasm", "OnDeviceActorOrgasm")
+	RegisterForModEvent("_SLS_BfLabor", "On_SLS_BfLabor") ; Beeing Female childbirth -> fatigue
 	RegisterForSleep()
 	RegisterForSingleUpdateGameTime(24.0)
 EndFunction
@@ -86,6 +87,18 @@ EndEvent
 Event On_MmeOrgasmEvent(string eventName, string strArg, float numArg, Form sender)
 	;Debug.Messagebox("MME Orgasm")
 	OutOfSexOrgasmEvent()
+EndEvent
+
+; Beeing Female reports the player gave birth -> add fatigue (scaled by number of babies),
+; recovered like ordinary sexual fatigue (sleep etc.).
+Event On_SLS_BfLabor(Int ChildCount, Form Father0)
+	Int Babies = ChildCount
+	If Babies < 1
+		Babies = 1
+	EndIf
+	AdjustOrgasmCount(LaborFatigue * Babies)
+	SetFatigue()
+	Debug.Notification("Giving birth has left me exhausted.")
 EndEvent
 
 Function OutOfSexOrgasmEvent()
@@ -205,6 +218,7 @@ Float Property OrgasmCount = 0.0 Auto Hidden
 Float Property DailyOrgasmCount = 0.0 Auto Hidden
 Float Property OrgasmThreshold = 1.0 Auto Hidden
 Float Property OrgasmRecoveryPerHour = 0.8 Auto Hidden
+Float Property LaborFatigue = 4.0 Auto Hidden ; Fatigue (orgasm-equivalents) added per baby at childbirth (Beeing Female)
 
 Spell[] FatigueSpellList
 String[] FatigeStrs

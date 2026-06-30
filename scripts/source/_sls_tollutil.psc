@@ -643,7 +643,11 @@ EndFunction
 /;
 Int Function GetTollJobsTotal(Bool IsSlavetown, Bool HairyPussyTax)
 	If IsSlavetown
-		Return SlaverunJobFactor + ((HairyPussyTax as Int) * 2)
+		Int Total = SlaverunJobFactor + ((HairyPussyTax as Int) * 2)
+		If Total < 1 ; SlaverunJobFactor can be 0 from the MCM; clamp so GetTollCost's /JobsTotal never divides by zero
+			Total = 1
+		EndIf
+		Return Total
 	EndIf
 	Return 1 + (HairyPussyTax as Int)
 EndFunction

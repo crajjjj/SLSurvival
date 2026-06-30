@@ -357,16 +357,12 @@ Float Function GetNextBreedingSession(Actor akActor)
 	If Game.GetModByName("dcc-soulgem-oven-000.esm") != 255
 		Float GemCount = Sgo.ActorGemGetCount(PlayerRef) as Float
 		Float GemsMax = Sgo.GetGemCapacityMax() as Float
-		Pregnancy = GemCount / GemsMax
+		If GemsMax > 0.0 ; guard: SGO returns 0 capacity when absent/uninitialized -> avoid NaN propagating into the breeding timer
+			Pregnancy = GemCount / GemsMax
+		EndIf
 		;Debug.Messagebox("GemCount: " + GemCount + "\nGemsMax: " + GemsMax)
 		
-	ElseIf Game.GetModByName("BeeingFemale.esm") != 255
-		Int BfPreg = StorageUtil.GetIntValue(PlayerRef, "FW.CurrentState")
-		If BfPreg >= 4 && BfPreg <= 6
-			Pregnancy = 1.0
-		EndIf
-		
-	ElseIf Game.GetModByName("Fertility Mode.esm") != 255
+	ElseIf Fm.GetIsInterfaceActive() ; Beeing Female preferred over Fertility Mode (handled in the interface)
 		If Fm.GetIsPregnant(PlayerRef)
 			Pregnancy = 1.0
 		EndIf
@@ -388,6 +384,11 @@ Float Function GetNextBreedingSession(Actor akActor)
 	EndIf
 	/;
 	HoursToNextBreeding += CumFilled * BreedingCooloffCumFilled
+
+	; BF insemination - viable seed already inside delays the next breeding
+	If Fm.GetIsInterfaceActive()
+		HoursToNextBreeding += (Fm.GetRelevantSpermCount(PlayerRef) as Float) * BreedingCooloffInseminated
+	EndIf
 
 	Bool DidSwallow = StorageUtil.GetIntValue(akActor, "_SLS_PlayerDrankCumTemp", Missing = -1) == 1
 	If DidSwallow
@@ -437,7 +438,7 @@ Function DisplayStats(Actor akTarget)
 	EndIf
 	
 	ListMenu.AddEntryItem("Damage Resist: " + (akTarget.GetAv("DamageResist") as Int))
-	ListMenu.AddEntryItem("Arousal: " + akTarget.GetFactionRank(Game.GetFormFromFile(0x03FC36, "SexLabAroused.esm") as Faction) + "%")
+	ListMenu.AddEntryItem("Arousal: " + _SLS_IntSlax.GetArousal(akTarget) + "%")
 	ListMenu.AddEntryItem("Cum Fullness: " + (Util.GetLoadFullnessMod(akTarget) as Int) + "%")
 	ListMenu.OpenMenu(akTarget)
 	;Return ListMenu.GetResultInt()
@@ -748,7 +749,6 @@ Function Revive(Actor akActor)
 		akActor.RestoreAv("Health", 5 - akActor.GetAv("Health"))
 		/;
 	EndIf
-	Debug.Messagebox("Enemy: " + akEnemy + "\nDist: " + akEnemy.GetDistance(PlayerRef))
 EndFunction
 
 Function RefreshAllPackages()
@@ -799,7 +799,7 @@ Function Fondle(Actor akTarget)
 	_SLS_CreatureForceGreet.Stop()
 	(akTarget as Actor).EvaluatePackage()
 
-	Debug.Notification(akTarget.GetBaseObject().GetName() + " arousal level: " + (akTarget as Actor).GetFactionRank(Game.GetFormFromFile(0x03FC36, "SexLabAroused.esm") as Faction))
+	Debug.Notification(akTarget.GetBaseObject().GetName() + " arousal level: " + _SLS_IntSlax.GetArousal(akTarget as Actor))
 
 	; begin
 	TalkingCreature.ForceRefTo(akTarget)
@@ -1278,6 +1278,7 @@ Float Property BreedingCooloffBase = 3.0 Auto Hidden
 Float Property BreedingCooloffPregnancy = 12.0 Auto Hidden
 Float Property BreedingCooloffCumCovered = 6.0 Auto Hidden
 Float Property BreedingCooloffCumFilled = 12.0 Auto Hidden
+Float Property BreedingCooloffInseminated = 2.0 Auto Hidden
 Float Property SwallowBonus = 12.0 Auto Hidden
 
 Float SleepBeginTime

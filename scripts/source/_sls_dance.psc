@@ -56,7 +56,7 @@ Float Function GetPreparationFactor()
 EndFunction
 
 Float Function GetExperienceFactor()
-	LastExpFactor = (0.5 * (StorageUtil.GetIntValue(PlayerRef, "_SLS_DanceExp") / 100)) + (0.5 * (StorageUtil.GetIntValue(PlayerRef, "_SLS_DanceExp" + LastDance) / 10))
+	LastExpFactor = (0.5 * (StorageUtil.GetIntValue(PlayerRef, "_SLS_DanceExp") / 100.0)) + (0.5 * (StorageUtil.GetIntValue(PlayerRef, "_SLS_DanceExp" + LastDance) / 10.0))
 	Return LastExpFactor
 EndFunction
 
@@ -104,9 +104,9 @@ Float Function GetFashionFactorOverall()
 		FashionFactor += GetFashionFactor("yps_ToeNailPolishColor", "yps_ToeNailPolishSmudged")
 		
 		If StorageUtil.GetIntValue(None, "YpsCurrentHairLengthStage") < 8 ; Less than shoulder length = penalty (need to check 4 is shoulder length)
-			FashionFactor += (-0.3 * ((8 - StorageUtil.GetIntValue(None, "YpsCurrentHairLengthStage")) / 8))
+			FashionFactor += (-0.3 * ((8 - StorageUtil.GetIntValue(None, "YpsCurrentHairLengthStage")) / 8.0))
 		Else
-			FashionFactor += (0.3 * (StorageUtil.GetIntValue(None, "YpsCurrentHairLengthStage") / 21))
+			FashionFactor += (0.3 * (StorageUtil.GetIntValue(None, "YpsCurrentHairLengthStage") / 21.0))
 		EndIf
 		Return FashionFactor
 	EndIf
@@ -435,8 +435,8 @@ Function BuildDancesArray()
 			
 			Int j = 0
 			While j < JsonUtil.StringListCount("SL Survival/DanceAnims.json", ModName)
-				Debug.Trace("_SLS_: BuildDancesArray(): Adding: " + JsonUtil.StringListGet("SL Survival/DanceAnims.json", ModName, i))
-				StorageUtil.StringListAdd(Self, "_SLS_DanceAnimsTemp", JsonUtil.StringListGet("SL Survival/DanceAnims.json", ModName, i))
+				Debug.Trace("_SLS_: BuildDancesArray(): Adding: " + JsonUtil.StringListGet("SL Survival/DanceAnims.json", ModName, j))
+				StorageUtil.StringListAdd(Self, "_SLS_DanceAnimsTemp", JsonUtil.StringListGet("SL Survival/DanceAnims.json", ModName, j))
 				j += 1
 			EndWhile
 		Else

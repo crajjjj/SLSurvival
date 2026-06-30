@@ -67,6 +67,7 @@
         <Import>.\dependencies\Devious Followers Redux\Core\Source\Scripts</Import>
         <Import>.\dependencies\Milk Mod Economy\Scripts\Source</Import>
         <Import>.\dependencies\Fertility Mode 3.0.1\04 SE Loose\scripts\source</Import>
+        <Import>.\dependencies\Beeing Female NG\Source\Scripts</Import>
         <Import>.\dependencies\Simply Knock SE 1.0.3 Release-14098-1-0-3\scripts\source</Import>
         <Import>.\dependencies\SlaveTatsSE-1.3.9\Source\Scripts</Import>
         <Import>.\dependencies\Fade Tattoos Continued 2.0.0\scripts\source</Import>
@@ -74,6 +75,15 @@
         <Import>.\dependencies\Milk Addict\scripts\Source</Import>
 
         <Import>@SkyrimScripts</Import>
+        <!-- After @SkyrimScripts: the live Data SLA sources resolve slaMainScr/slaFrameworkScr (they
+             compile cleanly); this bundle only supplies SloangNative.psc, which Data lacks. The bundle's
+             own 3.2.x slaMainScr is intentionally shadowed (it needs SexlabStatistics, an optional SLP
+             script absent here). Runtime uses the installed SLA NG 3.2+ pex regardless. -->
+        <Import>.\dependencies\Sexlab Aroused NG\Core\Source\Scripts</Import>
+        <!-- PPLUS imported LAST so it only supplies scripts the bundled SexLab lacks (e.g. SexLabStatistics).
+             It is NOT the SexLab compile target: PPLUS's voice/config scripts use SexLabUtil native globals
+             and a Lovense dependency, and don't compile mixed with the bundled/Data SexLab here. -->
+        <Import>.\dependencies\SexLab Framework PPLUS\Source\Scripts</Import>
     </Imports>
     <Folders>
         <!-- Relative path to folder containing .psc Papyrus source code files for this project -->

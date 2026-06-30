@@ -394,7 +394,7 @@ EndFunction
 
 Function PortPlayerToHomeByCrimeFaction(Actor akActor)
 	Form[] HomeDoors = LocOps.DoGetHomeDoorList(GetTownStringByCrimeFaction(akActor))
-	If HomeDoors
+	If HomeDoors && HomeDoors.Length > 0 ; a non-None but empty list would index Doors[0] out of bounds in GetClosestObjectInArray
 		ObjectReference ClosestDoor = GetClosestObjectInArray(HomeDoors)
 		If ClosestDoor.IsLocked()
 			ClosestDoor.Lock(abLock = false, abAsOwner = true)

@@ -14,7 +14,7 @@ Int Property slaArousalOfMostArousedActorInLoc Auto
 
 ReferenceAlias Property follower Auto
 
-Bool Property isDesireSpell Auto
+Bool Property isDesireSpell Auto 
 Bool Property isUseSOS Auto
 Bool Property isExtendedNPCNaked Auto
 Bool Property wantsPurging = false Auto Hidden
@@ -41,7 +41,8 @@ String keyIllegalArmor
 String keyPoshArmor
 String keyRaggedArmor
 String keyKillerHeels
-String[] pageKeys
+String keyClothingArmor
+String[] pageKeys ; unused — never read
 ; FOLDEND - Keys
 
 ; FOLDSTART - Keywords
@@ -85,9 +86,19 @@ Int illegalArmorValue
 Int poshArmorValue
 Int raggedArmorValue
 Int killerHeelsValue
+Int clothingArmorValue
 
 Form[] bikiniArmors ; May not really be bikini armors, but that's what I'm trying to locate.
 Int[] bikiniSliderValues
+Int[] bikiniClothingValues
+String[] customKeywordIds
+Int customKeywordCount
+Int[] customKeywordValues
+Int[] customKeywordToggleOIDs
+Int[] bikiniCustomKeywordValues
+Int[] bikiniCustomKeywordToggleOIDs
+Int kidLineCount ; transient: count of lines emitted during the most recent ExportToKID() run
+String kidNL ; transient: cached real LF newline (StringUtil.AsChar(10)) used during KID export
 ; FOLDEND - Variables
 
 ; FOLDSTART - OIDs
@@ -145,7 +156,12 @@ Int slootyToggleOID
 Int illegalToggleOID
 Int poshToggleOID
 Int raggedToggleOID
+Int clothingToggleOID
 Int[] bikiniToggleOIDs
+Int[] bikiniClothingToggleOIDs
+Int registerKeywordOID
+Int removeKeywordOID
+Int exportKidFileOID
 
 ; FOLDEND - OIDs
 
@@ -160,37 +176,103 @@ Armor[] emptyArmorArray
 
 
 Int Function GetVersion()
-	return 29
+    Return       30200002
+	;	0.00.00000
+    ; 1.0.0   -> 10000000
+    ; 1.1.0   -> 10100000
+    ; 1.1.1  ->  10100001
+    ; 1.61  ->   16100000
+    ; 10.61.20 ->106100020
+EndFunction
+
+String Function GetVersionString()
+    Return "3.2.2"
 EndFunction
 
 
+Event OnConfigInit()
+	ModName="SLO Aroused NG"
+	ResetConstants()
+    Debug.Notification("SLO Aroused NG: MCM menu initialized")
+EndEvent
+
 Event OnVersionUpdate(int newVersion)
-
     ResetConstants()
-    
-	If (((newVersion >= 7) && (CurrentVersion < 7)) || (Pages.length < 4))
-		Debug.Trace(self + ": Updating MCM menus to version " + newVersion)
 
+	If (((newVersion >= 7) && (CurrentVersion < 7)) || (Pages.length < 4))
+		slax.info(self + ": Updating MCM menus to version " + newVersion)
 		InitSlotMaskValues()
 	EndIf
-    
+
 	If((CurrentVersion > 0) && (CurrentVersion < 28))
-    
 		Debug.Notification("Updating Aroused Redux to version " + GetVersion() + "...")
 		sla_ConfigHelper helper = Quest.getQuest("sla_ConfigHelper") As sla_ConfigHelper
 		helper.ResetAllQuests()
-        
 	Endif
     
+    if !slaMain
+        slaMain = Quest.GetQuest("sla_Main") as slaMainScr
+    endif
+
+    If (slaMain && (newVersion >= 30000003) && (CurrentVersion < 30100001) && (CurrentVersion > 30000000))
+        slax.Info("Updating MCM. Cleaning options for pre 3.1.1 versions. Previous version:" + CurrentVersion + ".New version:" + newVersion)
+        If (slaMain.defaultPlugin.ddPlugin.IsInterfaceActive())
+            slaMain.UnregisterPlugin(slaMain.defaultPlugin.ddPlugin)
+            slaMain.defaultPlugin.ddPlugin.ClearOptions()
+            slaMain.RegisterPlugin(slaMain.defaultPlugin.ddPlugin)
+        EndIf
+        If (slaMain.defaultPlugin.IsInterfaceActive())
+            slaMain.UnregisterPlugin(slaMain.defaultPlugin)
+            slaMain.defaultPlugin.ClearOptions()
+            slaMain.RegisterPlugin(slaMain.defaultPlugin)
+        EndIf
+        If (slaMain.ostimPlugin.IsInterfaceActive())
+             slaMain.UnregisterPlugin(slaMain.ostimPlugin)
+             slaMain.ostimPlugin.ClearOptions()
+             slaMain.RegisterPlugin(slaMain.ostimPlugin)
+        EndIf
+        If (slaMain.sexlabPlugin.IsInterfaceActive())
+            slaMain.UnregisterPlugin(slaMain.sexlabPlugin)
+            slaMain.sexlabPlugin.ClearOptions()
+            slaMain.RegisterPlugin(slaMain.sexlabPlugin)
+        EndIf
+	EndIf
+	
+	If (slaMain && (CurrentVersion < 30100007))
+		slax.Info("Updating MCM. Refreshing default plugin options. Previous version:" + CurrentVersion + ".New version:" + newVersion)
+		If (slaMain.defaultPlugin.IsInterfaceActive())
+			slaMain.UnregisterPlugin(slaMain.defaultPlugin)
+			slaMain.defaultPlugin.ClearOptions()
+			slaMain.RegisterPlugin(slaMain.defaultPlugin)
+		EndIf
+	EndIf
+
+	If (slaMain && (CurrentVersion < 30100009) && (CurrentVersion > 0))
+		slax.Info("Updating MCM. Scaling Devices Rate from per-day to per-hour. Previous version:" + CurrentVersion + ".New version:" + newVersion)
+		If (slaMain.defaultPlugin.ddPlugin.IsInterfaceActive())
+			float oldRate = slaMain.defaultPlugin.ddPlugin.GetOptionValue(0)
+			float newRate = oldRate / 24.0
+			If (newRate < 0.1)
+				newRate = 0.1
+			EndIf
+			slaMain.defaultPlugin.ddPlugin.OnUpdateOption(0, newRate)
+		EndIf
+	EndIf
+
+	If (slaMain && (CurrentVersion < 30200001) && (CurrentVersion > 0))
+		slax.Info("Updating MCM. Registering Exhibitionist effect on default plugin. Previous version:" + CurrentVersion + ".New version:" + newVersion)
+		If (slaMain.defaultPlugin.IsInterfaceActive())
+			slaMain.UnregisterPlugin(slaMain.defaultPlugin)
+			slaMain.defaultPlugin.ClearOptions()
+			slaMain.RegisterPlugin(slaMain.defaultPlugin)
+		EndIf
+	EndIf
 EndEvent
 
 
 Event OnGameReload()
-
-    slax.Info("SLAX - OnGameReload")
-    
+    slax.Info("slaConfigScr - OnGameReload")
     ResetConstants()
-
     RestoreKeywords(keyNakedArmor,   wordNakedArmor)
     RestoreKeywords(keyBikiniArmor,  wordBikiniArmor)
     RestoreKeywords(keySexyArmor,    wordSexyArmor)
@@ -199,12 +281,22 @@ Event OnGameReload()
     RestoreKeywords(keyPoshArmor,    wordPoshArmor)
     RestoreKeywords(keyRaggedArmor,  wordRaggedArmor)
     RestoreKeywords(keyKillerHeels,  wordKillerHeels)
-    
-	slaMain = Quest.GetQuest("sla_Main") As slaMainScr
-	slaMain.Maintenance()
-    
-    parent.OnGameReload() ; Don't forget to call the parent!
 
+    if !slaMain
+        slaMain = Quest.GetQuest("sla_Main") as slaMainScr
+    endif
+
+    Int ckwCount = StorageUtil.StringListCount(slaMain, "SLAroused.CustomKeywords")
+    While ckwCount > 0
+        ckwCount -= 1
+        String editorId = StorageUtil.StringListGet(slaMain, "SLAroused.CustomKeywords", ckwCount)
+        Keyword kw = Keyword.GetKeyword(editorId)
+        If kw
+            RestoreKeywords("SLAroused.CKW." + editorId, kw)
+        EndIf
+    EndWhile
+
+    parent.OnGameReload() ; Don't forget to call the parent!
 EndEvent
 
 
@@ -233,8 +325,10 @@ EndFunction
 
 
 Event OnConfigOpen()
+    if !slaMain
+        slaMain = Quest.GetQuest("sla_Main") as slaMainScr
+    endif
     
-    slaMain = Quest.GetQuest("sla_Main") As slaMainScr
     cellScanFreq = slaMain.updateFrequency
     If(cellScanFreq < 10)
         cellScanFreq = 30
@@ -298,7 +392,7 @@ EndEvent
 
 Event OnConfigClose()
 
-    slax.Info("SLAX - OnConfigClose - update spells and key registry")
+    slax.Info("slaConfigScr - OnConfigClose - update spells and key registry")
     
 	slaMain.UpdateDesireSpell()
 	slaMain.UpdateKeyRegistery()
@@ -306,21 +400,22 @@ Event OnConfigClose()
     slaMain.updateFrequency = cellScanFreq
 	slaMain.setUpdateFrequency(cellScanFreq)
     
-    StorageUtil.ClearObjIntValuePrefix(none, "SLAroused.MCM.OID.")
+    StorageUtil.ClearObjIntValuePrefix(self, "SLAroused.MCM.OID.")
 
 EndEvent
 
 
 Event OnPageReset(String page)
-    
-    StorageUtil.ClearObjIntValuePrefix(none, "SLAroused.MCM.OID.")
+    if !slaMain
+        slaMain = Quest.GetQuest("sla_Main") as slaMainScr
+    endif
+    StorageUtil.ClearObjIntValuePrefix(self, "SLAroused.MCM.OID.")
 
     pageName = page
 	; Load custom logo in DDS format
 	If page == "" && !statusNotSplash
-    
-		Int xOffset = 376 - (284 / 2)
-		LoadCustomContent("sexlabaroused.dds", xOffset, 0)
+       
+        LoadCustomContent("sexlabaroused.dds", 0, 0)
 		Return
         
 	Else
@@ -332,7 +427,7 @@ Event OnPageReset(String page)
         
 		SetCursorFillMode(TOP_TO_BOTTOM)
 
-		AddTextOption("$SLA_Version" , "" + GetVersion() + "(" + slaUtil.GetVersion() + ")", OPTION_FLAG_DISABLED)
+		AddTextOption("$SLA_Version" , "" + GetVersionString() + "(" + slaUtil.GetVersion() + ")", OPTION_FLAG_DISABLED)
         
 		AddHeaderOption("$SLA_General")
         
@@ -357,7 +452,12 @@ Event OnPageReset(String page)
 
 		AddHeaderOption("$SLA_Arousal")
         
-        MBonUsesSLGenderOID = AddToggleOption("$SLA_MBonUsesSLGender", MBonUsesSLGender)
+        if(!slaMain.sexlabplugin.IsInterfaceActive())
+           MBonUsesSLGender = false
+        endif
+        MBonUsesSLGenderOID = AddToggleOption("$SLA_MBonUsesSLGender", MBonUsesSLGender, _getFlag(slaMain.sexlabplugin.IsInterfaceActive()))
+        
+        
         cellScanFreqOID = AddSliderOption("$SLA_CellScanFreq", cellScanFreq, "{0}")
         smallUpdateOID = AddSliderOption("$SLA_SmallUpdateCount", smallUpdatesPerFull, "{0}")
         
@@ -366,11 +466,12 @@ Event OnPageReset(String page)
         
         AddHeaderOption("$SLA_PluginList")
         
-        int i = slaMain.pluginCount
+        int i = slax.CountNonNullElements(slaMain.plugins)
+        slax.Info("slaConfigScr - OnPageReset - pluginCount:" + i)
         while i > 0
             i -= 1
             sla_PluginBase plugin = slaMain.plugins[i]
-            int oid = AddToggleOption(plugin.name, plugin.isEnabled)
+            int oid = AddToggleOption(plugin.name, plugin.isEnabled, OPTION_FLAG_DISABLED)
             StorageUtil.SetIntValue(self, "SLAroused.MCM.OID." + oid, i)
         endWhile
         
@@ -430,7 +531,7 @@ function AddOptionHelper(sla_PluginBase plugin, int option)
     string optionType = StorageUtil.GetStringValue(slaMain, prefix + ".Type")
     string format = StorageUtil.GetStringValue(slaMain, prefix + ".Format", "{0}")
     int oid
-    ; Debug.Trace("SLAX - Option Type = " + optionType, 2)
+    ; slax.info("slaConfigScr - Option Type = " + optionType, 2)
     if optionType == "toggle"
         oid = AddToggleOption(title, plugin.GetOptionValue(option) != 0.0)
     else
@@ -474,21 +575,30 @@ Function DisplayStatus()
 
 EndFunction
 
+Int OID_TotalArousal
 
-Function DisplayActorStatus(Actor who)
+Function DisplayActorStatus(Actor who, bool editable = false)
 	AddHeaderOption(who.GetLeveledActorBase().GetName())
 	
-	AddTextOption("$SLA_ArousalLevel", slaUtil.GetActorArousal(who), OPTION_FLAG_DISABLED)
+	OID_TotalArousal = AddTextOption("$SLA_ArousalLevel", slaUtil.GetActorArousal(who), OPTION_FLAG_DISABLED)
 	
 	int i = slaMain.GetEffectCount()
 	while i > 0
         i -= 1
         string title = slaMain.GetEffectTitle(i)
+        ;slax.info("slaConfigScr: Static Effect = " + title)
         if slaMain.IsEffectVisible(i)
             if (title == "")
                 AddTextOption("$SLA_UnusedEffect", "-", OPTION_FLAG_DISABLED)
             else
-                int oid = AddTextOption(title, slaMain.GetEffectValue(who, i))
+                int oid
+                
+                if editable && title != "$SLA_Effect_Timed"
+                    oid = AddInputOption(title, slaMain.GetEffectValue(who, i))
+                else
+                    oid = AddTextOption(title, slaMain.GetEffectValue(who, i))
+                endIf
+
                 StorageUtil.SetIntValue(self, "SLAroused.MCM.OID." + oid, i)
             endIf
         endIf
@@ -499,13 +609,14 @@ Function DisplayActorStatus(Actor who)
         i -= 1
         string effect = slaMain.GetDynamicEffect(who, i)
         string name = StorageUtil.GetStringValue(slaMain, "SLAroused.DynamicEffect." + effect + ".Title", effect)
+        slax.info("slaConfigScr: Dynamic Effect = " + name)
         string description = StorageUtil.GetStringValue(slaMain, "SLAroused.DynamicEffect." + effect + ".Description")
         float value = slaMain.GetDynamicEffectValue(who, i)
         int oid = AddTextOption(name, value)
         StorageUtil.SetStringValue(self, "SLAroused.MCM.OID." + oid, description)
 	endWhile
-		
-	Int genderPreference = slaUtil.GetGenderPreference(who)
+	
+    Int genderPreference = slaUtil.GetGenderPreference(who)
 	AddTextOption("$SLA_GenderPreference", GenderPreferenceList[genderPreference], OPTION_FLAG_DISABLED)
     
 EndFunction
@@ -541,7 +652,7 @@ Function DisplayPuppetMaster()
 
     If puppetActor
     
-        DisplayActorStatus(puppetActor)
+        DisplayActorStatus(puppetActor, true)
         
     EndIf
     
@@ -555,9 +666,14 @@ Function DisplayArmorList()
 
         targetActorMenuOID = AddMenuOption("$SLA_SelectActor", targetActorNames[targetActorIndex])
         
+        registerKeywordOID = AddInputOption("Register Custom Keyword", "")
+        removeKeywordOID = AddInputOption("Remove Custom Keyword", "")
+        exportKidFileOID = AddTextOption("Export to KID file", "")
+        AddEmptyOption() ; pad to keep the LEFT_TO_RIGHT two-column layout aligned
+
         AddHeaderOption("$SLA_EquippedItems")
         AddHeaderOption("$SLA_Options")
-		
+
 		DisplayWornItems(targetActors[targetActorIndex])
 
 EndFunction
@@ -603,18 +719,34 @@ Function DisplayWornItems(Actor who)
         Int ii = 0
         Int count = bikiniArmors.Length
         While ii < count
-        
+
             Armor bikini = bikiniArmors[ii] As Armor
-            AddTextOption(_fw_utils.FormatHex(bikini.GetFormId()), bikini.GetName())
-            
+            AddTextOption(slaInternalModules.FormatHex(bikini.GetFormId()), bikini.GetName())
+
             Int value = bikiniSliderValues[ii]
             If sliderMode
                 bikiniSliderOIDs[ii] = AddSliderOption("$SLA_Bikini", value)
             Else
                 bikiniToggleOIDs[ii] = AddToggleOption("$SLA_Bikini", value > 0)
             EndIf
+
+            AddEmptyOption()
+            bikiniClothingToggleOIDs[ii] = AddToggleOption("Counts as Clothing", bikiniClothingValues[ii] > 0)
+
+            If customKeywordCount > 0
+                Int kwIdx = 0
+                While kwIdx < customKeywordCount
+                    Int flatIdx = ii * customKeywordCount + kwIdx
+                    If flatIdx < 128
+                        AddEmptyOption()
+                        bikiniCustomKeywordToggleOIDs[flatIdx] = AddToggleOption(customKeywordIds[kwIdx], bikiniCustomKeywordValues[flatIdx] > 0)
+                    EndIf
+                    kwIdx += 1
+                EndWhile
+            EndIf
+
             ii += 1
-            
+
         EndWhile
 
     EndIf
@@ -626,17 +758,61 @@ Function UpdateWornItemStates(Actor who)
 
     bodyItem = who.GetWornForm(slaSlotMaskValues[2]) As Armor ; 32 - 30
     If bodyItem
+        ; Each block: read StorageUtil, then if value isn't set but the keyword is baked into
+        ; the source ESP, light the toggle AND backfill the player FormList so KID export and
+        ; OnGameReload's RestoreKeywords see ESP-baked items the user never explicitly clicked.
         nakedArmorValue   = StorageUtil.GetIntValue(bodyItem, keyNakedArmor)
+        If nakedArmorValue <= 0 && bodyItem.HasKeyword(wordNakedArmor)
+            nakedArmorValue = 51
+            StorageUtil.FormListAdd(player, keyNakedArmor, bodyItem, False)
+        EndIf
+
         bikiniArmorValue  = StorageUtil.GetIntValue(bodyItem, keyBikiniArmor)
+        If bikiniArmorValue <= 0 && bodyItem.HasKeyword(wordBikiniArmor)
+            bikiniArmorValue = 51
+            StorageUtil.FormListAdd(player, keyBikiniArmor, bodyItem, False)
+        EndIf
+
         sexyArmorValue    = StorageUtil.GetIntValue(bodyItem, keySexyArmor)
+        If sexyArmorValue <= 0 && bodyItem.HasKeyword(wordSexyArmor)
+            sexyArmorValue = 51
+            StorageUtil.FormListAdd(player, keySexyArmor, bodyItem, False)
+        EndIf
+
         slootyArmorValue  = StorageUtil.GetIntValue(bodyItem, keySlootyArmor)
+        If slootyArmorValue <= 0 && bodyItem.HasKeyword(wordSlootyArmor)
+            slootyArmorValue = 51
+            StorageUtil.FormListAdd(player, keySlootyArmor, bodyItem, False)
+        EndIf
+
         illegalArmorValue = StorageUtil.GetIntValue(bodyItem, keyIllegalArmor)
+        If illegalArmorValue <= 0 && bodyItem.HasKeyword(wordIllegalArmor)
+            illegalArmorValue = 51
+            StorageUtil.FormListAdd(player, keyIllegalArmor, bodyItem, False)
+        EndIf
+
+        poshArmorValue  = StorageUtil.GetIntValue(bodyItem, keyPoshArmor)
+        If poshArmorValue <= 0 && bodyItem.HasKeyword(wordPoshArmor)
+            poshArmorValue = 51
+            StorageUtil.FormListAdd(player, keyPoshArmor, bodyItem, False)
+        EndIf
+
         raggedArmorValue  = StorageUtil.GetIntValue(bodyItem, keyRaggedArmor)
+        If raggedArmorValue <= 0 && bodyItem.HasKeyword(wordRaggedArmor)
+            raggedArmorValue = 51
+            StorageUtil.FormListAdd(player, keyRaggedArmor, bodyItem, False)
+        EndIf
+
+        clothingArmorValue = StorageUtil.GetIntValue(bodyItem, keyClothingArmor)
     EndIf
 
     footItem  = who.GetWornForm(slaSlotMaskValues[7]) As Armor ; 37 - 30
     If footItem
         killerHeelsValue = StorageUtil.GetIntValue(footItem, keyKillerHeels)
+        If killerHeelsValue <= 0 && footItem.HasKeyword(wordKillerHeels)
+            killerHeelsValue = 75
+            StorageUtil.FormListAdd(player, keyKillerHeels, footItem, False)
+        EndIf
     EndIf
     
     GetBikiniArmorsForTargetActor(who)
@@ -672,14 +848,58 @@ Function GetBikiniArmorsForTargetActor(Actor who)
     bikiniSliderOIDs = Utility.CreateIntArray(bikiniArmors.Length)
     bikiniToggleOIDs = Utility.CreateIntArray(bikiniArmors.Length)
     bikiniSliderValues = Utility.CreateIntArray(bikiniArmors.Length)
-    
+    bikiniClothingValues = Utility.CreateIntArray(bikiniArmors.Length)
+    bikiniClothingToggleOIDs = Utility.CreateIntArray(bikiniArmors.Length)
+
     ii = bikiniArmors.Length
-    _fw_utils.Spam("Got " + ii + " bikini items ")
+    slax.info("slaConfigScr: Got " + ii + " bikini items ")
     While ii
         ii -= 1
         bikiniSliderValues[ii] = StorageUtil.GetIntValue(bikiniArmors[ii], keyBikiniArmor)
+        If bikiniSliderValues[ii] <= 0 && bikiniArmors[ii].HasKeyword(wordBikiniArmor)
+            bikiniSliderValues[ii] = 51
+            ; Backfill: bikini-slot item already carries the keyword via ESP. Add to FormList
+            ; so KID export and RestoreKeywords see it without requiring an explicit user click.
+            StorageUtil.FormListAdd(player, keyBikiniArmor, bikiniArmors[ii], False)
+        EndIf
+        bikiniClothingValues[ii] = StorageUtil.GetIntValue(bikiniArmors[ii], keyClothingArmor)
     EndWhile
 
+    customKeywordCount = StorageUtil.StringListCount(slaMain, "SLAroused.CustomKeywords")
+    If customKeywordCount > 0
+        customKeywordIds = Utility.CreateStringArray(customKeywordCount)
+        customKeywordValues = Utility.CreateIntArray(customKeywordCount)
+        customKeywordToggleOIDs = Utility.CreateIntArray(customKeywordCount)
+        Int kwIdx = 0
+        While kwIdx < customKeywordCount
+            customKeywordIds[kwIdx] = StorageUtil.StringListGet(slaMain, "SLAroused.CustomKeywords", kwIdx)
+            If bodyItem
+                customKeywordValues[kwIdx] = StorageUtil.GetIntValue(bodyItem, "SLAroused.CKW." + customKeywordIds[kwIdx])
+            EndIf
+            kwIdx += 1
+        EndWhile
+
+        Int flatSize = bikiniArmors.Length * customKeywordCount
+        If flatSize > 128
+            flatSize = 128
+        ElseIf flatSize < 1
+            flatSize = 1
+        EndIf
+        bikiniCustomKeywordValues = Utility.CreateIntArray(flatSize)
+        bikiniCustomKeywordToggleOIDs = Utility.CreateIntArray(flatSize)
+        Int bii = 0
+        While bii < bikiniArmors.Length
+            kwIdx = 0
+            While kwIdx < customKeywordCount
+                Int flatIdx = bii * customKeywordCount + kwIdx
+                If flatIdx < 128
+                    bikiniCustomKeywordValues[flatIdx] = StorageUtil.GetIntValue(bikiniArmors[bii], "SLAroused.CKW." + customKeywordIds[kwIdx])
+                EndIf
+                kwIdx += 1
+            EndWhile
+            bii += 1
+        EndWhile
+    EndIf
 
 EndFunction
 
@@ -698,6 +918,14 @@ Function AddSlidersForBodyItem()
         poshSliderOID    = AddSliderOption("$SLA_Posh", poshArmorValue)
         AddEmptyOption()
         raggedSliderOID  = AddSliderOption("$SLA_Ragged", raggedArmorValue)
+        AddEmptyOption()
+        clothingToggleOID = AddToggleOption("Counts as Clothing", clothingArmorValue > 0)
+        Int kwIdx = 0
+        While kwIdx < customKeywordCount
+            AddEmptyOption()
+            customKeywordToggleOIDs[kwIdx] = AddToggleOption(customKeywordIds[kwIdx], customKeywordValues[kwIdx] > 0)
+            kwIdx += 1
+        EndWhile
 EndFunction
 
 
@@ -715,6 +943,14 @@ Function AddTogglesForBodyItem()
         poshToggleOID    = AddToggleOption("$SLA_Posh", poshArmorValue > 0)
         AddEmptyOption()
         raggedToggleOID  = AddToggleOption("$SLA_Ragged", raggedArmorValue > 0)
+        AddEmptyOption()
+        clothingToggleOID = AddToggleOption("Counts as Clothing", clothingArmorValue > 0)
+        Int kwIdx = 0
+        While kwIdx < customKeywordCount
+            AddEmptyOption()
+            customKeywordToggleOIDs[kwIdx] = AddToggleOption(customKeywordIds[kwIdx], customKeywordValues[kwIdx] > 0)
+            kwIdx += 1
+        EndWhile
 EndFunction
 
 
@@ -801,6 +1037,58 @@ Event OnOptionMenuAccept(int option, int index)
 
     EndIf
     
+EndEvent
+
+Event OnOptionInputOpen(int option)
+    If option == registerKeywordOID || option == removeKeywordOID
+        SetInputDialogStartText("")
+        Return
+    EndIf
+    int i = StorageUtil.GetIntValue(self, "SLAroused.MCM.OID." + option, -1)
+
+    if i >= 0
+        float initialValue = slaMain.GetEffectValue(puppetActor, i)
+        SetInputDialogStartText(initialValue)
+    endIf
+EndEvent
+
+Event OnOptionInputAccept(int option, string value)
+    If option == registerKeywordOID
+        Keyword kw = Keyword.GetKeyword(value)
+        If !kw
+            ShowMessage("Keyword '" + value + "' was not found. Make sure the ESP containing it is loaded.", false, "$Accept")
+            Return
+        EndIf
+        If StorageUtil.StringListFind(slaMain, "SLAroused.CustomKeywords", value) >= 0
+            ShowMessage("Keyword '" + value + "' is already registered.", false, "$Accept")
+            Return
+        EndIf
+        StorageUtil.StringListAdd(slaMain, "SLAroused.CustomKeywords", value, false)
+        ForcePageReset()
+        Return
+    ElseIf option == removeKeywordOID
+        Int idx = StorageUtil.StringListFind(slaMain, "SLAroused.CustomKeywords", value)
+        If idx < 0
+            ShowMessage("Keyword '" + value + "' is not in the registered list.", false, "$Accept")
+            Return
+        EndIf
+        StorageUtil.StringListRemoveAt(slaMain, "SLAroused.CustomKeywords", idx)
+        ForcePageReset()
+        Return
+    EndIf
+
+    int i = StorageUtil.GetIntValue(self, "SLAroused.MCM.OID." + option, -1)
+
+    if i >= 0
+        float numeric = value as float
+        slax.info("slaConfigScr: New static arousal value" + value + " numeric = " + numeric)
+        if numeric != 0.0 || value == "0" || value == "0.0"
+            slaInternalModules.SetStaticArousalValue(puppetActor, i, numeric)
+            slax.info("slaConfigScr: Setting static arousal value" + slaMain.GetEffectValue(puppetActor, i))
+            SetInputOptionValue(option, slaMain.GetEffectValue(puppetActor, i))
+            setTextOptionValue(OID_TotalArousal, slaUtil.GetActorArousal(puppetActor))
+        endIf
+    endIf
 EndEvent
 
 
@@ -916,7 +1204,10 @@ Event OnOptionSelect(int option)
         If option == sliderModeOID
             sliderMode = !sliderMode
             ForcePageReset()
-            
+
+        ElseIf option == exportKidFileOID
+            ExportToKID()
+
         ElseIf option == nakedToggleOID
             nakedArmorValue = ToggleBodyArmorValue(nakedArmorValue, keyNakedArmor)
             SetToggleOptionValue(option, nakedArmorValue > 0)
@@ -947,10 +1238,15 @@ Event OnOptionSelect(int option)
             SetToggleOptionValue(option, poshArmorValue > 0)
             UpdatePoshKeywords(bodyItem, poshArmorValue)
 
-        ElseIf option == raggedToggleOID    
+        ElseIf option == raggedToggleOID
             raggedArmorValue = ToggleBodyArmorValue(raggedArmorValue, keyRaggedArmor)
             SetToggleOptionValue(option, raggedArmorValue >0)
             UpdateRaggedKeywords(bodyItem, raggedArmorValue)
+
+        ElseIf option == clothingToggleOID
+            clothingArmorValue = ToggleBodyArmorValue(clothingArmorValue, keyClothingArmor)
+            SetToggleOptionValue(option, clothingArmorValue > 0)
+            UpdateWearableState(bodyItem, keyClothingArmor, clothingArmorValue)
 
         ElseIf option == heelsToggleOID
             If killerHeelsValue > 0
@@ -975,7 +1271,72 @@ Event OnOptionSelect(int option)
                 SetToggleOptionValue(option, value > 0)
                 UpdateBikiniKeywords(bikiniArmors[bikiniIndex], value)
             EndIf
-            
+
+            Int clothingBikiniIndex = bikiniClothingToggleOIDs.Find(option)
+            If clothingBikiniIndex >= 0
+                Int cval = bikiniClothingValues[clothingBikiniIndex]
+                If cval > 0
+                    cval = 0
+                Else
+                    cval = 51
+                EndIf
+                bikiniClothingValues[clothingBikiniIndex] = cval
+                SetToggleOptionValue(option, cval > 0)
+                UpdateWearableState(bikiniArmors[clothingBikiniIndex], keyClothingArmor, cval)
+            EndIf
+
+            If customKeywordCount > 0
+                Int kwIdx = customKeywordToggleOIDs.Find(option)
+                If kwIdx >= 0
+                    Int cval = customKeywordValues[kwIdx]
+                    If cval > 0
+                        cval = 0
+                    Else
+                        cval = 51
+                    EndIf
+                    customKeywordValues[kwIdx] = cval
+                    SetToggleOptionValue(option, cval > 0)
+                    If bodyItem
+                        String editorId = customKeywordIds[kwIdx]
+                        Keyword kw = Keyword.GetKeyword(editorId)
+                        If kw
+                            UpdateWearableState(bodyItem, "SLAroused.CKW." + editorId, cval)
+                            If cval > 0
+                                KeywordUtil.AddKeywordToForm(bodyItem, kw)
+                            Else
+                                KeywordUtil.RemoveKeywordFromForm(bodyItem, kw)
+                            EndIf
+                        EndIf
+                    EndIf
+                EndIf
+
+                Int flatIdx = bikiniCustomKeywordToggleOIDs.Find(option)
+                If flatIdx >= 0
+                    Int bii = flatIdx / customKeywordCount
+                    Int kwI = flatIdx - bii * customKeywordCount
+                    Int cval = bikiniCustomKeywordValues[flatIdx]
+                    If cval > 0
+                        cval = 0
+                    Else
+                        cval = 51
+                    EndIf
+                    bikiniCustomKeywordValues[flatIdx] = cval
+                    SetToggleOptionValue(option, cval > 0)
+                    If bii < bikiniArmors.Length
+                        String editorId = customKeywordIds[kwI]
+                        Keyword kw = Keyword.GetKeyword(editorId)
+                        If kw
+                            UpdateWearableState(bikiniArmors[bii], "SLAroused.CKW." + editorId, cval)
+                            If cval > 0
+                                KeywordUtil.AddKeywordToForm(bikiniArmors[bii], kw)
+                            Else
+                                KeywordUtil.RemoveKeywordFromForm(bikiniArmors[bii], kw)
+                            EndIf
+                        EndIf
+                    EndIf
+                EndIf
+            EndIf
+
         EndIf
         
     ElseIf 4 == pageId ; Plugins
@@ -1211,9 +1572,9 @@ Event OnOptionHighlight(int option)
 
         int effId = StorageUtil.GetIntValue(self, "SLAroused.MCM.OID." + option, -1)
         if effId != -1
-            infoText = slaUtil.slaMain.GetEffectDescription(effId)
+            infoText = slaMain.GetEffectDescription(effId)
         else
-            infoText = StorageUtil.SetStringValue(self, "SLAroused.MCM.OID." + option, "")
+            infoText = StorageUtil.GetStringValue(self, "SLAroused.MCM.OID." + option, "")
         endIf
 
     ElseIf 2 == pageId ; PuppetMaster
@@ -1270,6 +1631,9 @@ Event OnOptionHighlight(int option)
         ElseIf option == raggedToggleOID
             infoText = "$SLA_RaggedToggleInfo"
 
+        ElseIf option == clothingToggleOID
+            infoText = "Mark this armor as clothing. It will no longer trigger the naked state even if it has no ArmorCuirass or ClothingBody keyword. Saved permanently - no KID required."
+
         ElseIf option == footItemOID
             infoText = "$SLA_FootItemInfo"
         ElseIf option == noFootItemOID
@@ -1278,6 +1642,31 @@ Event OnOptionHighlight(int option)
             infoText = "$SLA_HeelsSliderInfo"
         ElseIf option == heelsToggleOID
             infoText = "$SLA_HeelsToggleInfo"
+
+        ElseIf bikiniClothingToggleOIDs.Find(option) >= 0
+            infoText = "Mark this bikini-slot armor as clothing. It will no longer trigger the naked state. Saved permanently - no KID required."
+
+        ElseIf option == registerKeywordOID
+            infoText = "Type the editor ID of an existing keyword (e.g. SLA_ArmorHalfNaked). It must exist in a loaded ESP. Once registered it appears as a toggle on all body-slot items."
+
+        ElseIf option == removeKeywordOID
+            infoText = "Type the editor ID of a registered custom keyword to remove it from the list."
+
+        ElseIf option == exportKidFileOID
+            infoText = "Write Data\\SLArousedNG_Custom_KID.ini containing every currently-toggled (keyword, armor) pair. Requires PapyrusExtenderSSE. Re-export after merging or reordering plugins."
+
+        ElseIf customKeywordCount > 0
+            Int kwIdx = customKeywordToggleOIDs.Find(option)
+            If kwIdx >= 0
+                infoText = "Apply keyword '" + customKeywordIds[kwIdx] + "' to this armor. State is saved in StorageUtil and restored on every game reload - no KID required."
+            Else
+                Int flatIdx = bikiniCustomKeywordToggleOIDs.Find(option)
+                If flatIdx >= 0
+                    Int kwI = flatIdx - (flatIdx / customKeywordCount) * customKeywordCount
+                    infoText = "Apply keyword '" + customKeywordIds[kwI] + "' to this bikini-slot item. Saved permanently - no KID required."
+                EndIf
+            EndIf
+
         EndIf
         
     ElseIf 4 == pageId ; Plugins
@@ -1398,36 +1787,36 @@ EndEvent
 
 
 Function UpdateNakedKeywords(Armor item, Int value)
-    _fw_utils.Spam("BEFORE AddNakedKeywords - value " + value + " : keyword present " + item.HasKeyword(wordNakedArmor))
+    slax.info("BEFORE AddNakedKeywords - value " + value + " : keyword present " + item.HasKeyword(wordNakedArmor))
     UpdateWearableState(item, keyNakedArmor, value)
     If value > 0
         KeywordUtil.AddKeywordToForm(item, wordNakedArmor)
     Else
         KeywordUtil.RemoveKeywordFromForm(item, wordNakedArmor)
     EndIf
-    _fw_utils.Spam("AFTER AddNakedKeywords - value " + value + " : keyword present " + item.HasKeyword(wordNakedArmor))
+    slax.info("AFTER AddNakedKeywords - value " + value + " : keyword present " + item.HasKeyword(wordNakedArmor))
 EndFunction
 
 Function UpdateBikiniKeywords(Form item, Int value)
-    _fw_utils.Spam("BEFORE AddBikiniKeywords - value " + value + " : keyword present " + item.HasKeyword(wordBikiniArmor))
+    slax.info("BEFORE AddBikiniKeywords - value " + value + " : keyword present " + item.HasKeyword(wordBikiniArmor))
     UpdateWearableState(item, keyBikiniArmor, value)
     If value > 0
         KeywordUtil.AddKeywordToForm(item, wordBikiniArmor)
     Else
         KeywordUtil.RemoveKeywordFromForm(item, wordBikiniArmor)
     EndIf
-    _fw_utils.Spam("AFTER AddBikiniKeywords - value " + value + " : keyword present " + item.HasKeyword(wordBikiniArmor))
+    slax.info("AFTER AddBikiniKeywords - value " + value + " : keyword present " + item.HasKeyword(wordBikiniArmor))
 EndFunction
 
 Function UpdateSexyKeywords(Armor item, Int value)
-    _fw_utils.Spam("BEFORE AddSexyKeywords - value " + value + " : keyword present " + item.HasKeyword(wordSexyArmor))
+    slax.info("BEFORE AddSexyKeywords - value " + value + " : keyword present " + item.HasKeyword(wordSexyArmor))
     UpdateWearableState(item, keySexyArmor, value)
     If value > 0
         KeywordUtil.AddKeywordToForm(item, wordSexyArmor)
     Else
         KeywordUtil.RemoveKeywordFromForm(item, wordSexyArmor)
     EndIf
-    _fw_utils.Spam("AFTER AddSexyKeywords - value " + value + " : keyword present " + item.HasKeyword(wordSexyArmor))
+    slax.info("AFTER AddSexyKeywords - value " + value + " : keyword present " + item.HasKeyword(wordSexyArmor))
 EndFunction
 
 Function UpdateSlootyKeywords(Armor item, Int value)
@@ -1594,6 +1983,7 @@ Function ResetKeys()
     keyPoshArmor = "SLAroused.IsPoshArmor"
     keyRaggedArmor = "SLAroused.IsRaggedArmor"
     keyKillerHeels = "SLAroused.IsKillerHeels"
+    keyClothingArmor = "SLAroused.IsClothingArmor"
     
     pageKeys = new String[8]
     pageKeys[0] = keyNakedArmor
@@ -1632,15 +2022,15 @@ Function ResetGenderPreferenceList()
 
 EndFunction
 
-
 Function ResetConstants()
-
-    player = Game.GetPlayer()
+    if !player
+        player = Game.GetPlayer()
+    endif
     ResetPageNames()
     ResetGenderPreferenceList()
     ResetKeys()
     ResetKeywords()
-    
+
 EndFunction
 
 function ClearActorData()
@@ -1672,14 +2062,44 @@ function ClearAllData()
     if !ShowMessage("Do you really want to delete all actor data from the current save?")
         return
     endIf
+
+    slax.info("slaConfigScr MCM CleanUpActors")
     slaInternalModules.CleanUpActors(Utility.GetCurrentGameTime())
+    Utility.WaitMenuMode(5.0)
+    slax.info("slaConfigScr MCM Refresh PLugins")
+
+    If (slaMain.defaultPlugin.ddPlugin.IsInterfaceActive())
+            slaMain.UnregisterPlugin(slaMain.defaultPlugin.ddPlugin)
+            slaMain.defaultPlugin.ddPlugin.ClearOptions()
+            slaMain.RegisterPlugin(slaMain.defaultPlugin.ddPlugin, true)
+        EndIf
+     If (slaMain.defaultPlugin.IsInterfaceActive())
+            slaMain.UnregisterPlugin(slaMain.defaultPlugin)
+            slaMain.defaultPlugin.ClearOptions()
+            slaMain.RegisterPlugin(slaMain.defaultPlugin, true)
+        EndIf
+    If (slaMain.ostimPlugin.IsInterfaceActive())
+             slaMain.UnregisterPlugin(slaMain.ostimPlugin)
+             slaMain.ostimPlugin.ClearOptions()
+             slaMain.RegisterPlugin(slaMain.ostimPlugin, true)
+        EndIf
+    If (slaMain.sexlabPlugin.IsInterfaceActive())
+            slaMain.UnregisterPlugin(slaMain.sexlabPlugin)
+            slaMain.sexlabPlugin.ClearOptions()
+            slaMain.RegisterPlugin(slaMain.sexlabPlugin, true)
+        EndIf
 endFunction
+
+String function getFileName()
+	return "..\\SLAX\\Settings"
+endfunction
 
 function ExportSettings()
     if !ShowMessage("Are you sure you want to overwrite the settings saved in the json file with your current settings?")
         return
     endIf
-    string fileName = "SLAX/Settings.json"
+    string fileName = getFileName()
+    ;SLAX/Settings.json"
     SetTextOptionValue(exportSettingsOID, "$SLA_Working")
     JsonUtil.SetIntValue(fileName, "enableDesireSpell", IsDesireSpell as int)
     JsonUtil.SetIntValue(fileName, "wantsPurging", wantsPurging as int)
@@ -1694,6 +2114,7 @@ function ExportSettings()
     JsonUtil.SetIntValue(fileName, "statusNotSplash", statusNotSplash as int)
     JsonUtil.SetFloatValue(fileName, "cellScanFreq", cellScanFreq)
     JsonUtil.SetIntValue(fileName, "smallUpdatesPerFull", smallUpdatesPerFull)
+    JsonUtil.SetIntValue(fileName, "notificationKey", notificationKey)
     
     JsonUtil.FormListClear(fileName, "PluginOption")
     JsonUtil.IntListClear(fileName, "PluginOptionId")
@@ -1711,44 +2132,192 @@ function ExportSettings()
             JsonUtil.FloatListAdd(fileName, "PluginOptionValue", plugin.GetOptionValue(optionId))
         endIf
     endWhile
-    JsonUtil.Save(fileName)
-    SetTextOptionValue(exportSettingsOID, "$SLA_Done")
+    if !jsonutil.Save(fileName, false)
+        SetTextOptionValue(exportSettingsOID, "Error")
+		slax.Error("slaConfigScr export failed: " + jsonutil.GetErrors(fileName))
+    Else
+        SetTextOptionValue(exportSettingsOID, "$SLA_Done")
+	endIf
+   
 endFunction
 
 function ImportSettings()
-    if !ShowMessage("Are you sure you want to overwrite your current settings with the settings save in the json file?")
-        return 
+    if !ShowMessage("Are you sure you want to overwrite your current settings with the settings saved in the json file?")
+        return
     endIf
-    string fileName = "SLAX/Settings.json"
+    string fileName = getFileName()
     SetTextOptionValue(exportSettingsOID, "SLA_Working")
-    IsDesireSpell = JsonUtil.GetIntValue(fileName, "enableDesireSpell") as bool
-    wantsPurging = JsonUtil.GetIntValue(fileName, "wantsPurging") as bool
-    maleAnimation = JsonUtil.GetIntValue(fileName, "maleAnimation") as bool
-    femaleAnimation = JsonUtil.GetIntValue(fileName, "femaleAnimation") as bool
-    useLOS = JsonUtil.GetIntValue(fileName, "useLOS") as bool
-    isNakedOnly = JsonUtil.GetIntValue(fileName, "isNakedOnly") as bool
-    enableNotifications = JsonUtil.GetIntValue(fileName, "enableNotifications") as bool
-    bDisabled = JsonUtil.GetIntValue(fileName, "bDisabled") as bool
-    isExtendedNPCNaked = JsonUtil.GetIntValue(fileName, "isExtendedNPCNaked") as bool
-    isUseSOS = JsonUtil.GetIntValue(fileName, "isUseSOS") as bool
-    statusNotSplash = JsonUtil.GetIntValue(fileName, "statusNotSplash") as bool
-    cellScanFreq = JsonUtil.GetFloatValue(fileName, "cellScanFreq")
-    smallUpdatesPerFull = JsonUtil.GetIntValue(fileName, "smallUpdatesPerFull")
 
+    ; Load main options (add slax.info for troubleshooting)
+    IsDesireSpell         = JsonUtil.GetIntValue(fileName, "enableDesireSpell") as bool
+    wantsPurging          = JsonUtil.GetIntValue(fileName, "wantsPurging") as bool
+    maleAnimation         = JsonUtil.GetIntValue(fileName, "maleAnimation") as bool
+    femaleAnimation       = JsonUtil.GetIntValue(fileName, "femaleAnimation") as bool
+    useLOS                = JsonUtil.GetIntValue(fileName, "useLOS") as bool
+    isNakedOnly           = JsonUtil.GetIntValue(fileName, "isNakedOnly") as bool
+    enableNotifications   = JsonUtil.GetIntValue(fileName, "enableNotifications") as bool
+    bDisabled             = JsonUtil.GetIntValue(fileName, "bDisabled") as bool
+    isExtendedNPCNaked    = JsonUtil.GetIntValue(fileName, "isExtendedNPCNaked") as bool
+    isUseSOS              = JsonUtil.GetIntValue(fileName, "isUseSOS") as bool
+    statusNotSplash       = JsonUtil.GetIntValue(fileName, "statusNotSplash") as bool
+    cellScanFreq          = JsonUtil.GetFloatValue(fileName, "cellScanFreq")
+    smallUpdatesPerFull   = JsonUtil.GetIntValue(fileName, "smallUpdatesPerFull")
+    notificationKey       = JsonUtil.GetIntValue(fileName, "notificationKey")
+
+    ; Debug output for checking import
+    slax.info("slaConfigScr Import: isDesireSpell=" + IsDesireSpell + ", wantsPurging=" + wantsPurging)
+
+    ; Load plugin options
     int i = JsonUtil.FormListCount(fileName, "PluginOption")
     while i > 0
         i -= 1
-        Form pluginForm = JsonUtil.FormListGet(slaMain, "PluginOption", i)
+        Form pluginForm = JsonUtil.FormListGet(fileName, "PluginOption", i) 
         sla_PluginBase plugin = (pluginForm as sla_PluginBase)
-        if (plugin != none)
-            int optionId = JsonUtil.IntListGet(fileName, "PluginOptionId", i) 
+        if plugin != none
+            int optionId = JsonUtil.IntListGet(fileName, "PluginOptionId", i)
             float value = JsonUtil.FloatListGet(fileName, "PluginOptionValue", i)
             plugin.OnUpdateOption(optionId, value)
+            slax.info("slaConfigScr Import: Plugin " + plugin + " OptionId=" + optionId + " Value=" + value)
+        else
+            slax.info("slaConfigScr Import: Plugin form was None at index " + i)
         endIf
     endWhile
 
     ForcePageReset()
 endFunction
 
+
+; ----- KID export ------------------------------------------------------------
+; Snapshot the current armor->keyword toggles as a Keyword Item Distributor
+; (KID) .ini file. The output lives at Data\SLArousedNG_Custom_KID.ini and is
+; applied automatically by po3_KeywordItemDistributor.dll at the next game
+; start, before any save data is touched. Re-export after changing the load
+; order or merging plugins, since formIDs in the file are load-order-current.
+
+String Function GetKidFilePath()
+    Return "Data\\SLArousedNG_Custom_KID.ini"
+EndFunction
+
+; Build "0x<localID>~<plugin>" for a Form, ESL/ESL-FE-safe.
+; Returns "" for dynamically-created forms (no source file) or when
+; PapyrusExtenderSSE is not loaded (GetFormModName returns "").
+String Function FormToKidFilter(Form item)
+    If !item
+        Return ""
+    EndIf
+    String pluginName = PO3_SKSEFunctions.GetFormModName(item, False)
+    If pluginName == ""
+        Return ""
+    EndIf
+    ; IntToString takes uint32 on the C++ side, so ESL FormIDs (>= 0x80000000)
+    ; pass through Papyrus's signed Int unmolested and print correctly.
+    String fullHex = PO3_SKSEFunctions.IntToString(item.GetFormID(), True)
+    Int len = StringUtil.GetLength(fullHex)
+    Int hexLen = len - 2
+    String localHex = ""
+    If hexLen == 8 && StringUtil.Substring(fullHex, 2, 2) == "FE"
+        ; ESL: lower 12 bits == last 3 hex chars.
+        localHex = StringUtil.Substring(fullHex, len - 3, 3)
+    ElseIf hexLen > 6
+        ; Regular ESM/ESP: strip the load-order byte (lower 24 bits).
+        localHex = StringUtil.Substring(fullHex, len - 6, 6)
+    Else
+        ; Already short (e.g. Skyrim.esm low FormID) - use as-is.
+        localHex = StringUtil.Substring(fullHex, 2, hexLen)
+    EndIf
+    Return "0x" + localHex + "~" + pluginName
+EndFunction
+
+; Emit one KID line per Form currently toggled ON for the given storage key.
+String Function BuildLinesFor(String edid, String storageKey)
+    Form[] items = StorageUtil.FormListToArray(player, storageKey)
+    String out = ""
+    If !items
+        Return out
+    EndIf
+    Int i = 0
+    Int n = items.Length
+    While i < n
+        String filter = FormToKidFilter(items[i])
+        If filter != ""
+            out = out + "Keyword = " + edid + "|Armor|" + filter + "|NONE|100" + kidNL
+            kidLineCount += 1
+        EndIf
+        i += 1
+    EndWhile
+    Return out
+EndFunction
+
+Function ExportToKID()
+    SetTextOptionValue(exportKidFileOID, "$SLA_Working")
+
+    ; Dependency probe: GetFormModName on the config quest (which is always
+    ; defined in SLA's own plugin) must return a non-empty filename. An empty
+    ; result means PapyrusExtenderSSE isn't loaded.
+    String probe = PO3_SKSEFunctions.GetFormModName(self As Form, False)
+    If probe == ""
+        SetTextOptionValue(exportKidFileOID, "Error")
+        ShowMessage("KID export requires PapyrusExtenderSSE (powerofthree's Papyrus Extender). Install it and try again.", false, "$Accept")
+        Return
+    EndIf
+
+    If !slaMain
+        slaMain = Quest.GetQuest("sla_Main") As slaMainScr
+    EndIf
+
+    kidLineCount = 0
+    kidNL = StringUtil.AsChar(10) ; real LF; Papyrus has no string escapes so "\n" would be two literal chars
+
+    String body = "; Generated by SLArousedNG MCM" + kidNL
+    body = body + "; One line per (keyword, armor) pair. Re-export after merging or reordering plugins." + kidNL + kidNL
+
+    body = body + BuildLinesFor("EroticArmor",               keyNakedArmor)
+    body = body + BuildLinesFor("SLA_ArmorHalfNakedBikini",  keyBikiniArmor)
+    body = body + BuildLinesFor("SLA_ArmorPretty",           keySexyArmor)
+    body = body + BuildLinesFor("SLA_ArmorHalfNaked",        keySlootyArmor)
+    body = body + BuildLinesFor("SLA_ArmorIllegal",          keyIllegalArmor)
+    body = body + BuildLinesFor("ClothingRich",              keyPoshArmor)
+    body = body + BuildLinesFor("ClothingPoor",              keyRaggedArmor)
+    body = body + BuildLinesFor("SLA_KillerHeels",           keyKillerHeels)
+
+    Int ckwCount = StorageUtil.StringListCount(slaMain, "SLAroused.CustomKeywords")
+    Int ci = 0
+    While ci < ckwCount
+        String edid = StorageUtil.StringListGet(slaMain, "SLAroused.CustomKeywords", ci)
+        body = body + BuildLinesFor(edid, "SLAroused.CKW." + edid)
+        ci += 1
+    EndWhile
+
+    String path = GetKidFilePath()
+    Bool ok = MiscUtil.WriteToFile(path, body, False, False)
+    If ok
+        SetTextOptionValue(exportKidFileOID, "$SLA_Done")
+        slax.Info("slaConfigScr: KID export wrote " + kidLineCount + " entries to " + path)
+        If kidLineCount > 0
+            ShowMessage("Exported " + kidLineCount + " keyword entries to " + path + ".", false, "$Accept")
+        Else
+            ShowMessage("Wrote " + path + " but no keyword toggles were set. The file contains only a header.", false, "$Accept")
+        EndIf
+    Else
+        SetTextOptionValue(exportKidFileOID, "Error")
+        ShowMessage("Failed to write " + path + ". Check write permissions and Skyrim Data folder access.", false, "$Accept")
+        slax.Error("slaConfigScr: KID export failed to write " + path)
+    EndIf
+EndFunction
+
+
 ; obsolete - keep for backward compatibility
 float Property defaultExposureRate = 2.0 Auto Hidden
+float Property TimeRateHalfLife = 2.0 Auto Hidden
+
+Keyword Function GetEroticKeyword() 
+    Return wordNakedArmor
+EndFunction
+
+int Function _getFlag(Bool cond = true)
+	If  !cond 	
+   		return OPTION_FLAG_DISABLED  
+	Else
+   		return OPTION_FLAG_NONE
+	EndIf  
+EndFunction

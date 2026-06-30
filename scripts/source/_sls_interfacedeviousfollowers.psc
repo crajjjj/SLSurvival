@@ -88,7 +88,7 @@ State Installed
 			Float Resist = (Game.GetFormFromFile(0x01A2A6, "Update.esm") as GlobalVariable).GetValue()
 			If Resist > 0.0
 				If Amount == 0.0
-					Amount == Menu.DflowResistLoss
+					Amount = Menu.DflowResistLoss
 				EndIf
 				SendModEvent("DF-ResistanceLoss", strArg = "", numArg = Amount)
 				If Init.DebugMode

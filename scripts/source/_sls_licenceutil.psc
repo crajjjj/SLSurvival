@@ -2609,9 +2609,9 @@ Int Function GetActivatorLocationFromCrimeFaction(Actor akActor)
 			ElseIf akCrimeFaction == CrimeFactionReach
 				Return 2
 			ElseIf akCrimeFaction == CrimeFactionEastmarch
-				Return 4
+				Return 3 ; Windhelm - must match the 0-4 scheme used by GetIsMandatoryGagged (Windhelm=3, Riften=4)
 			ElseIf akCrimeFaction == CrimeFactionRift
-				Return 5
+				Return 4 ; Riften
 			Else
 				Debug.Trace("_SLS_: GetActivatorLocationFromCrimeFaction: Unknown crime faction: " + akCrimeFaction)
 				Return -1

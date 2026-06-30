@@ -38,8 +38,7 @@ State Installed
 	ObjectReference Function GetEffInv(ObjectReference FollowerObjRef)
 		Actor FollowerActor = FollowerObjRef as Actor
 		If FollowerActor
-			_SLS_IntEff.GetEffInv(FollowerActor, EffQuest)
-			
+			Return _SLS_IntEff.GetEffInv(FollowerActor, EffQuest)
 		Else
 			Return None
 		EndIf

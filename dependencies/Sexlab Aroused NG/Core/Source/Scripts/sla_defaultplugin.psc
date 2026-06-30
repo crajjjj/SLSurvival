@@ -13,17 +13,25 @@ Actor currentObserver = none
 int currentNakedCount = 0
 bool currentSeesNaked = false
 bool currentSeesNakedPref = false
+bool currentObserverExhibiting = false
+int currentExhibitionistCount = 0
 
 int nakedEff = -1
+int exhibitionistEff = -1
 int satisfactionEff = -1
 int timedEff = -1
 int timedCycleEff = -1
 int legacyEff = -1
+int sleepEff = -1
 
 float nakedMax = 50.0
 float nakedMaxNonPref = 15.0
-float nakedIncrease = 600.0 ; 25.0 * 24.0 
+float nakedIncrease = 600.0 ; 25.0 * 24.0
 float nakedHalfTime = 0.04166666 ; 1.0 / 24.0
+
+float exhibMax = 50.0
+float exhibIncrease = 600.0 ; 25.0 * 24.0
+float exhibHalfTime = 0.04166666 ; 1.0 / 24.0
 
 bool useDenialCycle = true
 float timedBaseRate = 12.5
@@ -36,6 +44,13 @@ float femaleOrgasmFactor = 0.8
 
 float legacyMultiplier = 1.0
 float legacyDecay = 0.5
+
+float sleepMin = 5.0
+float sleepMax = 15.0
+float sleepHalfTime = 0.20833333 ; 5.0 / 24.0
+float sleepMinHours = 3.0
+
+float sleepStartTime = 0.0
 
 function UpdateDenialModifier(Actor who)
 	float denialInc = timedBaseRate * ddPlugin.GetBeltAndPlugModifier(who)
@@ -74,8 +89,22 @@ float function GetOptionValue(int optionId)
 		return orgasmRate
 	elseIf optionId == 12
 		return femaleOrgasmFactor
+	elseIf optionId == 13
+		return sleepMin
+	elseIf optionId == 14
+		return sleepMax
+	elseIf optionId == 15
+		return sleepHalfTime * 24.0
+	elseIf optionId == 16
+		return sleepMinHours
+	elseIf optionId == 17
+		return exhibMax
+	elseIf optionId == 18
+		return exhibIncrease / 24.0
+	elseIf optionId == 19
+		return exhibHalfTime * 24.0
 	endIf
-	return 0
+	return 0.0
 endFunction
 
 function OnUpdateOption(int optionId, float value)
@@ -105,18 +134,32 @@ function OnUpdateOption(int optionId, float value)
 		orgasmRate = value
 	elseIf optionId == 12
 		femaleOrgasmFactor = value
+	elseIf optionId == 13
+		sleepMin = value
+	elseIf optionId == 14
+		sleepMax = value
+	elseIf optionId == 15
+		sleepHalfTime = value / 24.0
+	elseIf optionId == 16
+		sleepMinHours = value
+	elseIf optionId == 17
+		exhibMax = value
+	elseIf optionId == 18
+		exhibIncrease = value * 24.0
+	elseIf optionId == 19
+		exhibHalfTime = value / 24.0
 	endIf
 endFunction
 
 function OnOrgasm(Actor who, float enjoyment)
-	slax.Info("SLAX - OnOrgasm(" + who + ", "+ enjoyment + ")")
+	slax.Info("sla_DefaultPlugin - OnOrgasm(" + who + ", "+ enjoyment + ")")
 	StorageUtil.SetFloatValue(who, "SLAroused.LastOrgasmDate", Utility.GetCurrentGameTime()) ;Added by Bane for Radiant Prostitution Orgasm Detection in V0.1.2 28/06/2023
 	SetArousalEffectValue(who, timedEff, 0.0)
 	float satisfaction = -orgasmBase - enjoyment * orgasmRate
 	if who.GetLeveledActorBase().GetSex() == 1
 		satisfaction *= femaleOrgasmFactor
 	endIf
-	ModArousalEffectValue(who, satisfactionEff, -orgasmBase - enjoyment * orgasmRate, -1000)
+	ModArousalEffectValue(who, satisfactionEff, satisfaction, -1000)
 	SetArousalDecayEffect(who, satisfactionEff, orgasmHalfTime, 0.0)
 	; remove dd teasing effect
 	int handle = ModEvent.Create("slaModArousalEffect")
@@ -162,14 +205,23 @@ state Installed
 		RegisterForPerodicUpdates()
 		RegisterForLOSUpdates()
 		nakedEff = RegisterEffect("Naked", "$SLA_Effect_Naked", "$SLA_Effect_NakedDesc")
+		exhibitionistEff = RegisterEffect("Exhibitionist", "$SLA_Effect_Exhibitionist", "$SLA_Effect_ExhibitionistDesc")
 		satisfactionEff = RegisterEffect("Orgasm", "$SLA_Effect_Satisfaction", "$SLA_Effect_SatisfactionDesc")
 		timedEff = RegisterEffect("Timed", "$SLA_Effect_Timed", "$SLA_Effect_TimedDesc")
 		timedCycleEff = RegisterEffect("TimedCycle", "Timed Cycle", "[Hidden in UI] Helper for denial effect.")
 		HideEffectInUI(timedCycleEff)
 		legacyEff = RegisterEffect("Legacy", "$SLA_Effect_Legacy", "$SLA_Effect_LegacyDesc")
+		sleepEff = RegisterEffect("Sleep", "$SLA_Effect_Sleep", "$SLA_Effect_SleepDesc")
+		RegisterForSleep()
+	endFunction
+
+	function ReassertSubscriptions()
+		RegisterForPerodicUpdates()
+		RegisterForLOSUpdates()
 	endFunction
 
 	function AddOptions()
+		slax.info("sla_DefaultPlugin - Default.AddOptions()")
 		AddOption("$SLA_Effect_NakedCat", "$SLA_Effect_NakedMax", "$SLA_Effect_NakedMaxDesc", 50.0)
 		AddOption("$SLA_Effect_NakedCat", "$SLA_Effect_NakedMaxNonPref", "$SLA_Effect_NakedMaxNonPrefDesc", 15.0)
 		AddOption("$SLA_Effect_NakedCat", "$SLA_Effect_NakedRate", "$SLA_Effect_NakedRateDesc", 25.0)
@@ -183,15 +235,28 @@ state Installed
 		AddOption("$SLA_Effect_SatisfactionCat", "$SLA_Effect_SatisfactionBase", "$SLA_Effect_SatisfactionBaseDesc", 50.0)
 		AddOptionEx("$SLA_Effect_SatisfactionCat", "$SLA_Effect_SatisfactionRate", "$SLA_Effect_SatisfactionRateDesc", 1.0, 0.0, 10.0, 0.1, "{1} arousal/enjoyment")
 		AddOptionEx("$SLA_Effect_SatisfactionCat", "$SLA_Effect_SatisfactionFemaleRate", "$SLA_Effect_SatisfactionFemaleRateDesc", 0.8, 0.0, 3.0, 0.01, "x{2} Rate")
+		AddOptionEx("$SLA_Effect_SleepCat", "$SLA_Effect_SleepMin", "$SLA_Effect_SleepMinDesc", 5.0, 0.0, 100.0, 1.0, "{1}")
+		AddOptionEx("$SLA_Effect_SleepCat", "$SLA_Effect_SleepMax", "$SLA_Effect_SleepMaxDesc", 15.0, 0.0, 100.0, 1.0, "{1}")
+		AddOptionEx("$SLA_Effect_SleepCat", "$SLA_Effect_SleepHalfTime", "$SLA_Effect_SleepHalfTimeDesc", 5.0, 0.1, 24.0, 0.1, "{1} hours")
+		AddOptionEx("$SLA_Effect_SleepCat", "$SLA_Effect_SleepMinTime", "$SLA_Effect_SleepMinTimeDesc", 3.0, 0.0, 24.0, 0.5, "{1} hours")
+		; Appended last so these keep option IDs 17/18/19, matching GetOptionValue/OnUpdateOption.
+		; AddOption assigns IDs by call order (sla_PluginBase numberOfOptions), so they must not
+		; be inserted mid-list -- doing so would renumber every later option and scramble the MCM.
+		AddOption("$SLA_Effect_ExhibitionistCat", "$SLA_Effect_ExhibitionistMax", "$SLA_Effect_ExhibitionistMaxDesc", 50.0)
+		AddOption("$SLA_Effect_ExhibitionistCat", "$SLA_Effect_ExhibitionistRate", "$SLA_Effect_ExhibitionistRateDesc", 25.0)
+		AddOptionEx("$SLA_Effect_ExhibitionistCat", "$SLA_Effect_ExhibitionistHalfTime", "$SLA_Effect_ExhibitionistHalfTimeDesc", 1.0, 0.1, 24.0, 0.1, "{1} hours")
 	endFunction
 
 	function DisablePlugin()
 		parent.DisablePlugin()
 		UnregisterEffect("Naked")
+		UnregisterEffect("Exhibitionist")
 		UnregisterEffect("Orgasm")
 		UnregisterEffect("Timed")
 		UnregisterEffect("TimedCycle")
 		UnregisterEffect("Legacy")
+		UnregisterEffect("Sleep")
+		UnregisterForSleep()
 	endFunction
 
 	function UpdateActor(Actor who, bool fullUpdate)
@@ -230,19 +295,47 @@ state Installed
 					endIf
 				endIf
 			endIf
+
+			int exhibState = 0 ; Not being seen while exhibiting
+			if currentExhibitionistCount > 0
+				exhibState = 1 ; Naked exhibitionist with an attracted audience
+			endIf
+
+			int oldExhibState = GetArousalEffectFncAux(currentObserver, exhibitionistEff)
+			if (oldExhibState != exhibState)
+				if exhibState == 0
+					SetArousalEffectFunction(currentObserver, exhibitionistEff, 1, exhibHalfTime, 0.0, 0)
+				else
+					SetArousalEffectFunction(currentObserver, exhibitionistEff, 2, currentExhibitionistCount * exhibIncrease, exhibMax, 1)
+				endIf
+			endIf
 		endIf
-		
+
 		currentObserver = who
 		if who == none
 			return
 		endIf
-		
+
 		currentNakedCount = 0
 		currentSeesNaked = false
 		currentSeesNakedPref = false
+		currentExhibitionistCount = 0
+		currentObserverExhibiting = who.GetFactionRank(slaNaked) > -2 && slaUtil.IsActorExhibitionist(who)
 	endFunction
 	
 	function UpdateObserver(Actor observer, Actor observed)
+		; Exhibitionism: a naked exhibitionist (the observer) gains arousal from each
+		; nearby onlooker (the observed) who is attracted to them. Counted before the
+		; nudity checks below so it does not depend on the onlooker being naked.
+		if currentObserverExhibiting && !observed.HasKeyword(kActorTypeCreature)
+			int audiencePreference = slaUtil.GetGenderPreference(observed)
+			if audiencePreference == 2 || audiencePreference == observer.GetLeveledActorBase().GetSex()
+				currentExhibitionistCount += 2
+			else
+				currentExhibitionistCount += 1
+			endIf
+		endIf
+
 		if observed.HasKeyword(kActorTypeCreature)
 			if observer.HasKeyword(kActorTypeCreature) || observer.GetFactionRank(slaCreatureSexLoverFaction) > -1
 				currentSeesNaked = true
@@ -266,3 +359,56 @@ state Installed
 		endIf
 	endFunction
 endState
+
+event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
+	if afSleepStartTime > 0.0
+		sleepStartTime = afSleepStartTime
+	else
+		sleepStartTime = Utility.GetCurrentGameTime()
+	endIf
+endEvent
+
+event OnSleepStop(bool abInterrupted)
+	if !isEnabled || sleepEff < 0
+		return
+	endIf
+
+	Actor who = main.playerRef
+	if who == none
+		sleepStartTime = 0.0
+		return
+	endIf
+
+	if sleepStartTime <= 0.0
+		sleepStartTime = 0.0
+		return
+	endIf
+
+	if sleepMinHours > 0.0
+		float sleptHours = (Utility.GetCurrentGameTime() - sleepStartTime) * 24.0
+		if sleptHours < sleepMinHours
+			sleepStartTime = 0.0
+			return
+		endIf
+	endIf
+	sleepStartTime = 0.0
+
+	float minValue = sleepMin
+	float maxValue = sleepMax
+	if maxValue < minValue
+		float tmp = minValue
+		minValue = maxValue
+		maxValue = tmp
+	endIf
+
+	float amount = Utility.RandomFloat(minValue, maxValue)
+	if amount <= 0.0
+		return
+	endIf
+
+	ModArousalEffectValue(who, sleepEff, amount, 100.0)
+	if sleepHalfTime > 0.0
+		SetArousalDecayEffect(who, sleepEff, sleepHalfTime, 0.0)
+	endIf
+	ForceUpdateArousal(who)
+endEvent

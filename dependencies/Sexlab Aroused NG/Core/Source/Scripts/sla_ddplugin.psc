@@ -92,11 +92,17 @@ event OnDeviceEquipped(Form inventoryDevice, Form deviceKeyword, Form akActor)
 		if libs.GetWornDevice(who, libs.zad_DeviousBlindfold)
 			numberOfDevices += 1
 		endIf
+		if libs.GetWornDevice(who, libs.zad_DeviousPiercingsNipple)
+			numberOfDevices += 1
+		endIf
+		if libs.GetWornDevice(who, libs.zad_DeviousPiercingsVaginal)
+			numberOfDevices += 1
+		endIf
 		if numberOfDevices > 0
 			minimum = minimum * numberOfDevices
 		endIf
 	endIf
-	SetLinearArousalEffect(who, deviceEff, -deviceHalfTime, minimum)
+	SetLinearArousalEffect(who, deviceEff, -deviceHalfTime * 24.0, minimum)
 endEvent
 
 event OnDeviceRemoved(Form inventoryDevice, Form deviceKeyword, Form akActor)
@@ -108,7 +114,7 @@ event OnDeviceRemoved(Form inventoryDevice, Form deviceKeyword, Form akActor)
 		defaultPlugin.UpdateDenialModifier(who)
 	endIf
 	if !who.WornHasKeyword(libs.zad_Lockable)
-		SetLinearArousalEffect(who, deviceEff, -deviceHalfTime * 2.0, 0.0)
+		SetLinearArousalEffect(who, deviceEff, -deviceHalfTime * 24.0 * 2.0, 0.0)
 	endIf
 endEvent
 
@@ -116,14 +122,14 @@ function SetTeasingEffectIfNeeded(Actor who)
 	if who && libs.IsVibrating(who) && teasingActors.Find(who) == -1
 		int handle = ModEvent.Create("slaModArousalEffect")
 		ModEvent.PushForm(handle, who)
-		ModEvent.PushString(handle, "DDTeasing")
+		ModEvent.PushString(handle, getDDTeasingEffectName())
 		ModEvent.PushFloat(handle, 5.0) ; +5 arousal
 		ModEvent.PushFloat(handle, 100.0) ; max
 		ModEvent.Send(handle)
 
 		handle = ModEvent.Create("slaSetArousalEffect")
 		ModEvent.PushForm(handle, who)
-		ModEvent.PushString(handle, "DDTeasing")
+		ModEvent.PushString(handle, getDDTeasingEffectName())
 		ModEvent.PushFloat(handle, 0.0)
 		ModEvent.PushInt(handle, 2) ; linear increase
 		ModEvent.PushFloat(handle, 400.0 * 24.0) ; 400 arousal per hour
@@ -157,7 +163,7 @@ event OnVibrationStop(string eventName, string actorName, float argNum, Form sen
 			ForceUpdateArousal(who)
 			int handle = ModEvent.Create("slaSetArousalEffect")
 			ModEvent.PushForm(handle, who)
-			ModEvent.PushString(handle, "DDTeasing")
+			ModEvent.PushString(handle, getDDTeasingEffectName())
 			ModEvent.PushFloat(handle, 0.0)
 			ModEvent.PushInt(handle, 1) ; decay
 			ModEvent.PushFloat(handle, 2.0 / 24.0) ; 50 % every other hour
@@ -181,7 +187,7 @@ event OnUpdate()
 	endIf
 endEvent
 
-float deviceHalfTime = 24.0
+float deviceHalfTime = 1.0
 float deviceArousal = 5.0
 float deviceMin = 0.0
 bool devicePerDevice = true
@@ -196,6 +202,7 @@ float function GetOptionValue(int optionId)
 	elseIf optionId == 3
 		return devicePerDevice as float
 	endIf
+	return 0.0
 endFunction
 
 function OnUpdateOption(int optionId, float value)
@@ -227,14 +234,24 @@ state Installed
 		RegisterForModEvent("DeviceVibrateEffectStop", "OnVibrationStop")
 		deviceEff = RegisterEffect("Devices", "$SLA_Effect_Devices", "$SLA_Effect_DevicesDesc")
 		int handle = ModEvent.Create("slaRegisterDynamicEffect")
-		ModEvent.PushString(handle, "DDTeasing")
+		ModEvent.PushString(handle, getDDTeasingEffectName())
 		ModEvent.PushString(handle, "$SLA_Effect_DDTeasing")
 		ModEvent.PushString(handle, "$SLA_Effect_DDTeasingDesc")
 		ModEvent.Send(handle)
 	endFunction
-	
+
+	function ReassertSubscriptions()
+		; DD is event-driven, so only its mod-event hooks need re-asserting on load.
+		; NOT teasingActors -- that is live save state EnablePlugin would discard.
+		RegisterForModEvent("DDI_DeviceEquipped", "OnDeviceEquipped")
+		RegisterForModEvent("DDI_DeviceRemoved", "OnDeviceRemoved")
+		RegisterForModEvent("DeviceVibrateEffectStart", "OnVibrationStart")
+		RegisterForModEvent("DeviceVibrateEffectStop", "OnVibrationStop")
+	endFunction
+
 	function AddOptions()
-		AddOptionEx("$SLA_Effect_DeviceCat", "$SLA_Effect_DevicesHalfTime", "$SLA_Effect_DevicesHalfTimeDesc", 1.0, 0.0, 24.0, 0.1, "{1}/hour")
+		slax.info("sla_DDPlugin - Devices.AddOptions()")
+		AddOptionEx("$SLA_Effect_DeviceCat", "$SLA_Effect_DevicesHalfTime", "$SLA_Effect_DevicesHalfTimeDesc", 1.0, 0.1, 24.0, 0.1, "{1}/hour")
 		AddOptionEx("$SLA_Effect_DeviceCat", "$SLA_Effect_DevicesArousalOnEquip", "$SLA_Effect_DevicesArousalOnEquipDesc", 5.0, 0.0, 25.0, 0.1, "{1}")
 		AddOption("$SLA_Effect_DeviceCat", "$SLA_Effect_DevicesMin", "$SLA_Effect_DevicesMinDesc", 0.0)
 		AddToggleOption("$SLA_Effect_DeviceCat", "$SLA_Effect_DevicesPerDevice", "$SLA_Effect_DevicesPerDevice", true)
@@ -304,3 +321,7 @@ state Installed
 		endIf
 	endFunction
 endState
+
+String function getDDTeasingEffectName() global
+	return "DDTeasing"
+endfunction

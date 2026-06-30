@@ -1260,7 +1260,7 @@ EndFunction
 
 Function ToggleAutoFuck()
 	If CompulsiveSex.IsFucking
-		If PlayerRef.GetFactionRank(Game.GetFormFromFile(0x03FC36, "SexLabAroused.esm") as Faction) < 100
+		If _SLS_IntSlax.GetArousal(PlayerRef) < 100
 			CompulsiveSex.ManualStopFucking()
 		Else
 			Debug.Notification("No way am I stopping now")
@@ -2360,7 +2360,7 @@ Int Function ShowStatusMenu()
 	
 	; Arousal
 	Float CumCapacity = Fhu.GetCumCapacityMax()
-	ListMenu.AddEntryItem("Arousal: " + PlayerRef.GetFactionRank(Game.GetFormFromFile(0x03FC36, "SexLabAroused.esm") as Faction) + "% Weight: " + (PlayerRef.GetLeveledActorBase().GetWeight() as Int + "%") + DirtString)
+	ListMenu.AddEntryItem("Arousal: " + _SLS_IntSlax.GetArousal(PlayerRef) + "% Weight: " + (PlayerRef.GetLeveledActorBase().GetWeight() as Int + "%") + DirtString)
 	
 	; Orgasm Fatigue
 	String OrgFat = Orgasmfatigue.GetOrgasmFatigueString()
@@ -2494,7 +2494,7 @@ Int Function ShowStatusMenu()
 	If CrosshairRef
 		ListMenu.AddEntryItem("==== " + CrosshairRef.GetActorBase().GetName() + " ====")
 		;ListMenu.AddEntryItem(CrosshairRef.GetActorBase().GetName())
-		ListMenu.AddEntryItem("Arousal: " + (CrosshairRef).GetFactionRank(Game.GetFormFromFile(0x03FC36, "SexLabAroused.esm") as Faction) + "%. Weight: " + (CrosshairRef.GetLeveledActorBase().GetWeight() as Int + "%"))
+		ListMenu.AddEntryItem("Arousal: " + _SLS_IntSlax.GetArousal(CrosshairRef) + "%. Weight: " + (CrosshairRef.GetLeveledActorBase().GetWeight() as Int + "%"))
 		If (CrosshairRef).GetLeveledActorBase().GetSex() == 0 ; Male
 			ListMenu.AddEntryItem("Cum Fullness: " + SnipToDecimalPlaces(StrInput = (Util.GetLoadFullnessMod(CrosshairRef) * 100.0), Places = 1) + "%")
 		ElseIf Fhu.GetState() == "Installed"

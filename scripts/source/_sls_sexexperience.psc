@@ -239,9 +239,9 @@ Function DoMinimumArousal(Actor[] SexActors)
 		i -= 1
 		akActor = SexActors[i]
 		If akActor != PlayerRef
-			Arousal = akActor.GetFactionRank(Game.GetFormFromFile(0x03FC36, "SexLabAroused.esm") as Faction)
+			Arousal = _SLS_IntSlax.GetArousal(akActor)
 			If Arousal < Menu.RapeMinArousal
-				Util.ModArousal(akActor, (((Menu.RapeMinArousal + Utility.RandomFloat(0.0, 10.0)) - Arousal) / StorageUtil.GetFloatValue(akActor, "SLAroused.ExposureRate", Missing = 2.0)))
+				_SLS_IntSlax.TeaseArousal(akActor, (Menu.RapeMinArousal + Utility.RandomFloat(0.0, 10.0)) - Arousal) ; raise arousal straight to ~RapeMinArousal (TeaseArousal adds arousal directly, no exposure-rate conversion)
 			EndIf
 		EndIf
 	EndWhile

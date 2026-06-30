@@ -2,6 +2,7 @@ Scriptname slaInternalModules Hidden
 
 int function GetStaticEffectCount() global native
 int function RegisterStaticEffect(string id) global native
+int function GetStaticEffectId(string effectId) global native
 bool function UnregisterStaticEffect(string id) global native
 bool function IsStaticEffectActive(Actor who, int effectIdx) global native
 int function GetDynamicEffectCount(Actor who) global native
@@ -31,3 +32,5 @@ bool function RemoveEffectGroup(Actor who, int effIdx1) global native
 bool function TryLock(int lockID) global native
 function Unlock(int lockID) global native
 Actor[] function DuplicateActorArray(Actor[] actors, int count) global native
+
+String function FormatHex(int formId) global native

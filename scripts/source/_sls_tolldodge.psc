@@ -138,9 +138,9 @@ Function CheckGrace(String TargetLoc)
 			DodgeTrackSolitude.PlayerReturnedInTime()
 			IsInGraceSolitude = false
 		EndIf
-	ElseIf TargetLoc == "Riften" 
+	ElseIf TargetLoc == "Riften"
 		If IsInGraceRiften
-			DodgeTrackMarkarth.PlayerReturnedInTime()
+			DodgeTrackRiften.PlayerReturnedInTime()
 			IsInGraceRiften = false
 		EndIf
 	ElseIf TargetLoc == "Windhelm" 
@@ -148,9 +148,9 @@ Function CheckGrace(String TargetLoc)
 			DodgeTrackWindhelm.PlayerReturnedInTime()
 			IsInGraceWindhelm = false
 		EndIf
-	ElseIf TargetLoc == "Markarth" 
+	ElseIf TargetLoc == "Markarth"
 		If IsInGraceMarkarth
-			DodgeTrackRiften.PlayerReturnedInTime()
+			DodgeTrackMarkarth.PlayerReturnedInTime()
 			IsInGraceMarkarth = false
 		EndIf
 	EndIf

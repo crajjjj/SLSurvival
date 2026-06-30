@@ -674,7 +674,7 @@ event OnPageReset(string page)
 			DrugInflateFlag = OPTION_FLAG_NONE
 		EndIf
 		Int DrugFmFertilityFlag = OPTION_FLAG_DISABLED
-		If Game.GetModByName("Fertility Mode.esm") != 255 && !IsHardcoreLocked
+		If (Game.GetModByName("BeeingFemale.esm") != 255 || Game.GetModByName("Fertility Mode.esm") != 255) && !IsHardcoreLocked
 			DrugFmFertilityFlag = OPTION_FLAG_NONE
 		EndIf
 		Int DrugSlenFlag = OPTION_FLAG_DISABLED
@@ -803,6 +803,17 @@ event OnPageReset(string page)
 		StorageUtil.SetIntValue(Self, "FashionRapeEyeshadowChanceOID_S", AddSliderOption("$SLS_FashionRapeEyeshadowChance", FashionRape.SmudgeEyeshadowChance, "{1}%", FashionFlag))
 		AddEmptyOption()
 		
+		AddHeaderOption("SexLab Aroused")
+		Int SlaNgFlag = OPTION_FLAG_DISABLED
+		If Sla.SlaFrameworkVersion >= 30200000 ; SloangNative dynamic effects need SLA NG 3.2.0+
+			SlaNgFlag = OPTION_FLAG_NONE
+		EndIf
+		SlaTeaseCapOID_S = AddSliderOption("Fondle Arousal Cap", Sla.FondleCap, "{0}%", SlaNgFlag)
+		SlaFondleFadeOID_S = AddSliderOption("Fondle Arousal Fade", Sla.FondleHalfLifeDays * 24.0, "{1} Hr Half-Life", SlaNgFlag)
+		SlaTeaseFadeOID_S = AddSliderOption("Tease Arousal Fade", Sla.TeaseHalfLifeDays * 24.0, "{1} Hr Half-Life", SlaNgFlag)
+		SlaSeedFadeOID_S = AddSliderOption("Sense Arousal Seed Fade", Sla.ArousalHalfLifeDays * 24.0, "{1} Hr Half-Life", SlaNgFlag)
+		AddEmptyOption()
+
 	ElseIf(page == "$SLS_pMisogynyInequality")
 		Int StaInstalledFlag = OPTION_FLAG_DISABLED
 		Int ProxSpankOptionsFlag = OPTION_FLAG_DISABLED
@@ -1321,7 +1332,7 @@ event OnPageReset(string page)
 			DrugInflateFlag = OPTION_FLAG_NONE
 		EndIf
 		Int DrugFmFertilityFlag = OPTION_FLAG_DISABLED
-		If Game.GetModByName("Fertility Mode.esm") != 255 && !IsHardcoreLocked
+		If (Game.GetModByName("BeeingFemale.esm") != 255 || Game.GetModByName("Fertility Mode.esm") != 255) && !IsHardcoreLocked
 			DrugFmFertilityFlag = OPTION_FLAG_NONE
 		EndIf
 		Int DrugSlenFlag = OPTION_FLAG_DISABLED
@@ -2412,6 +2423,14 @@ event OnOptionHighlight(int option)
 			SetInfoText("$SLS_AfCooloffPregnancy_Info")
 		ElseIf(option == AfCooloffCumSwallowOID_S)
 			SetInfoText("$SLS_AfCooloffCumSwallow_Info")
+		ElseIf(option == SlaTeaseCapOID_S)
+			SetInfoText("Ceiling that creature fondling alone can build an actor's arousal to (SexLab Aroused NG 3.2+). Fondling adds to SLS's own SLS_FONDLE effect, capped here, which then fades on its own.")
+		ElseIf(option == SlaFondleFadeOID_S)
+			SetInfoText("How fast the creature-fondling arousal contribution fades - the half-life in in-game hours (SexLab Aroused NG 3.2+).")
+		ElseIf(option == SlaTeaseFadeOID_S)
+			SetInfoText("How fast the tease arousal contribution (playing with yourself, sex-scene minimum) fades - the half-life in in-game hours (SexLab Aroused NG 3.2+).")
+		ElseIf(option == SlaSeedFadeOID_S)
+			SetInfoText("How fast the Sense Arousal seed contribution fades - the half-life in in-game hours (SexLab Aroused NG 3.2+).")
 		EndIf
 		
 	ElseIf StorageUtil.GetStringValue(Self, "CurrentPage") == "$SLS_pMisogynyInequality" ; <----------------->
@@ -5033,6 +5052,14 @@ Event OnOptionSliderOpen(int option)
 			SetSliderOptions(Value = AnimalFriend.BreedingCooloffPregnancy, Default = 12.0, Min = 0.0, Max = 168.0, Interval = 0.5)
 		ElseIf (option == AfCooloffCumSwallowOID_S)
 			SetSliderOptions(Value = AnimalFriend.SwallowBonus, Default = 12.0, Min = 0.0, Max = 168.0, Interval = 0.5)
+		ElseIf (option == SlaTeaseCapOID_S)
+			SetSliderOptions(Value = Sla.FondleCap, Default = 80.0, Min = 0.0, Max = 100.0, Interval = 1.0)
+		ElseIf (option == SlaFondleFadeOID_S)
+			SetSliderOptions(Value = Sla.FondleHalfLifeDays * 24.0, Default = 2.0, Min = 0.1, Max = 24.0, Interval = 0.1)
+		ElseIf (option == SlaTeaseFadeOID_S)
+			SetSliderOptions(Value = Sla.TeaseHalfLifeDays * 24.0, Default = 1.0, Min = 0.1, Max = 24.0, Interval = 0.1)
+		ElseIf (option == SlaSeedFadeOID_S)
+			SetSliderOptions(Value = Sla.ArousalHalfLifeDays * 24.0, Default = 2.0, Min = 0.1, Max = 24.0, Interval = 0.1)
 		ElseIf Option == StorageUtil.GetIntValue(Self, "FashionRapeHairCutChanceOID_S")
 			SetSliderOptions(Value = FashionRape.HaircutChance, Default = 5.0, Min = 0.0, Max = 100.0, Interval = 0.1)
 		ElseIf Option == StorageUtil.GetIntValue(Self, "FashionRapeHairCutMinOID_S")
@@ -5763,6 +5790,18 @@ Event OnOptionSliderAccept(int option, float value)
 		ElseIf (option == AfCooloffCumSwallowOID_S)
 			AnimalFriend.SwallowBonus = value
 			SetSliderOptionValue(AfCooloffCumSwallowOID_S, AnimalFriend.SwallowBonus)
+		ElseIf (option == SlaTeaseCapOID_S)
+			Sla.FondleCap = value
+			SetSliderOptionValue(SlaTeaseCapOID_S, Sla.FondleCap)
+		ElseIf (option == SlaFondleFadeOID_S)
+			Sla.FondleHalfLifeDays = value / 24.0
+			SetSliderOptionValue(SlaFondleFadeOID_S, value)
+		ElseIf (option == SlaTeaseFadeOID_S)
+			Sla.TeaseHalfLifeDays = value / 24.0
+			SetSliderOptionValue(SlaTeaseFadeOID_S, value)
+		ElseIf (option == SlaSeedFadeOID_S)
+			Sla.ArousalHalfLifeDays = value / 24.0
+			SetSliderOptionValue(SlaSeedFadeOID_S, value)
 		ElseIf Option == StorageUtil.GetIntValue(Self, "FashionRapeHairCutChanceOID_S")
 			FashionRape.HaircutChance = value
 			SetSliderOptionValue(StorageUtil.GetIntValue(Self, "FashionRapeHairCutChanceOID_S"), value)
@@ -10274,6 +10313,10 @@ Int AfCooloffBodyCumOID_S
 Int AfCooloffCumInflationOID_S
 Int AfCooloffPregnancyOID_S
 Int AfCooloffCumSwallowOID_S
+Int SlaTeaseCapOID_S
+Int SlaFondleFadeOID_S
+Int SlaTeaseFadeOID_S
+Int SlaSeedFadeOID_S
 Int DflowResistLossOID_S
 Int CumSwallowInflateMultOID_S
 Int CumEffectsMagMultOID_S

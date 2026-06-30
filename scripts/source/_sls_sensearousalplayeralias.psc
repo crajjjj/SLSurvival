@@ -4,10 +4,13 @@ Event OnInit()
 	ObjectReference ObjRef = Self.GetReference() ; Init runs without start game enabled enabled
 	If ObjRef
 		RegForControls()
-		Int Arousal = (ObjRef as Actor).GetFactionRank(SenseArousal.SlAroused.sla_Arousal)
-		If Arousal < 0 ; seed actor
-			Arousal= SenseArousal.SlAroused.SetActorExposure(ObjRef as Actor, Utility.RandomInt(0, 100))
-			;SenseArousal.SlStats.SeedActor(ObjRef as Actor) ; Seeding SL Stats doesn't do what I want - init arousal
+		Actor ActorRef = ObjRef as Actor
+		Int Arousal
+		If ActorRef.GetFactionRank(SenseArousal.SlAroused.sla_Arousal) < 0 ; never seeded by SLA: give it a starting value
+			Arousal = SenseArousal.SlAroused.SeedArousal(ActorRef, Utility.RandomInt(0, 100))
+			;SenseArousal.SlStats.SeedActor(ActorRef) ; Seeding SL Stats doesn't do what I want - init arousal
+		Else
+			Arousal = SenseArousal.SlAroused.GetActorArousal(ActorRef) ; actual live arousal, not the faction rank
 		EndIf
 		;ShaderUsed = SenseArousal.Shaders[GetIndexForPercentile(Arousal)]
 		ShaderUsed = StorageUtil.FormListGet(None, "_SLS_EffectShaderPercentiles", GetIndexForPercentile(Arousal)) as EffectShader

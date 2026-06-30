@@ -79,8 +79,10 @@ Bool Function CanDoForcedDrugs(Actor akTarget, Bool DoLactacid = true, Bool DoSk
 		Return true
 	EndIf
 	
-	; Fertility Mode fertility potion
-	If DoFmFertility && Game.GetModByName("Fertility Mode.esm") != 255 && !(akTarget.HasMagicEffect(Game.GetFormFromFile(0x0058D4, "Fertility Mode.esm") as MagicEffect))
+	; Fertility potion (prefer Beeing Female, fall back to Fertility Mode)
+	If DoFmFertility && Game.GetModByName("BeeingFemale.esm") != 255 && !(akTarget.HasMagicEffect(Game.GetFormFromFile(0x06D54E, "BeeingFemale.esm") as MagicEffect))
+		Return true
+	ElseIf DoFmFertility && Game.GetModByName("Fertility Mode.esm") != 255 && !(akTarget.HasMagicEffect(Game.GetFormFromFile(0x0058D4, "Fertility Mode.esm") as MagicEffect))
 		Return true
 	EndIf
 
@@ -133,8 +135,10 @@ Function DoForceDrug(Actor akTarget, Int Quantity = 1, Bool Silent = true, Bool 
 		StorageUtil.StringListAdd(Self, "_SLS_PotentialDrugsList", "InflatePotion")
 	EndIf
 	
-	; Fertility Mode fertility potion
-	If DoFmFertility && Game.GetModByName("Fertility Mode.esm") != 255 && !(akTarget.HasMagicEffect(Game.GetFormFromFile(0x0058D4, "Fertility Mode.esm") as MagicEffect))
+	; Fertility potion (prefer Beeing Female, fall back to Fertility Mode)
+	If DoFmFertility && Game.GetModByName("BeeingFemale.esm") != 255 && !(akTarget.HasMagicEffect(Game.GetFormFromFile(0x06D54E, "BeeingFemale.esm") as MagicEffect))
+		StorageUtil.StringListAdd(Self, "_SLS_PotentialDrugsList", "BfFertilityPotion")
+	ElseIf DoFmFertility && Game.GetModByName("Fertility Mode.esm") != 255 && !(akTarget.HasMagicEffect(Game.GetFormFromFile(0x0058D4, "Fertility Mode.esm") as MagicEffect))
 		StorageUtil.StringListAdd(Self, "_SLS_PotentialDrugsList", "FmFertilityPotion")
 	EndIf
 
@@ -202,6 +206,12 @@ EndState
 State FmFertilityPotion
 	Form Function GetDrug(Actor akTarget)
 		Return Game.GetFormFromFile(0x0058D2, "Fertility Mode.esm")
+	EndFunction
+EndState
+
+State BfFertilityPotion
+	Form Function GetDrug(Actor akTarget)
+		Return Game.GetFormFromFile(0x06D551, "BeeingFemale.esm") ; _BF_FertilityTonicPotent
 	EndFunction
 EndState
 

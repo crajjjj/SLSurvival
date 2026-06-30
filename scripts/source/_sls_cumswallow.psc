@@ -137,6 +137,7 @@ Function OrgasmEvent(Actor ActorRef = None, Int tid, Bool HasPlayer)
 				EndWhile
 
 			Else ; SLSO installed - process one orgasm at a time.
+				PlayerPos = actorList.Find(PlayerRef) ; the non-SLSO loop sets PlayerPos as it scans; SLSO skips that loop, so resolve it here for UseOpenMouth below
 				If ActorRef.HasKeyword(ActorTypeCreature)
 					Male = ActorRef
 					MaleCount += 1
@@ -279,8 +280,9 @@ Function OrgasmEvent(Actor ActorRef = None, Int tid, Bool HasPlayer)
 	EndIf
 	
 	; Set last orgasm time for cum fullness
-	If ActorRef == None ; SLSO not installed
+	If ActorRef == None && actorList ; SLSO not installed; actorList is only populated when the player shares the scene
 		Actor NextActor
+		i = 0 ; reset: i was already advanced to actorList.Length by the male-count loop above, so this loop would otherwise never run
 		While i < actorList.Length
 			NextActor = actorList[i]
 			If NextActor.HasKeyword(ActorTypeCreature)

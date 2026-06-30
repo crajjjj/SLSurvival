@@ -43,7 +43,7 @@ Function BeginAutoFucking(int tid, bool HasPlayer, Bool ManualStart)
 			Bool DoIt = false
 			;Debug.Messagebox("Level: " + Util.GetSkoomaJunkieLevel(PlayerRef, IsWithdrawing = true))
 			If !ManualStart
-				If PlayerRef.GetFactionRank(Game.GetFormFromFile(0x03FC36, "SexLabAroused.esm") as Faction) >= 100
+				If _SLS_IntSlax.GetArousal(PlayerRef) >= 100
 					NotifyStr = "Addled by lust I begin fucking"
 					DoIt = true
 				ElseIf Util.IsDrugged(PlayerRef, CheckSkooma = true, CheckSW = true, CheckLactacid = true)

@@ -121,7 +121,7 @@ Function CheckCurfewState()
 		EndIf
 	
 	Else ; Curfew ends the day after
-		If CurHour >= CurfewStart.GetValue() || CurHour < CurfewEnd.GetValue() - 0.1 && LicUtil.LicCurfewEnable
+		If (CurHour >= CurfewStart.GetValue() || CurHour < CurfewEnd.GetValue() - 0.1) && LicUtil.LicCurfewEnable ; LicCurfewEnable must gate the whole overnight window, not just the morning half
 			If DoCurfewNotification && _SLS_CurfewIsInEffect.GetValueInt() == 0
 				Debug.Notification("Curfew has begun")
 			EndIf

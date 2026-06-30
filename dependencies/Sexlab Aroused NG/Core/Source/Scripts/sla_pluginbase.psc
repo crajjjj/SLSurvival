@@ -16,23 +16,45 @@ bool function IsInterfaceActive()
 endFunction
 
 event OnInit()
-	RegisterForModEvent("sla_Int_PlayerLoadsGame", "On_sla_Int_PlayerLoadsGame")
+	slax.info("sla_PluginBase - onInit: " + name )
+	registerForInternalEvents()
 endEvent
+
+function registerForInternalEvents()
+	slax.info("sla_PluginBase - sla_PluginBase registerLoadGameEvent: " + name )
+	RegisterForModEvent("sla_Int_PlayerLoadsGame", "On_sla_Int_PlayerLoadsGame")
+endfunction
 
 event On_sla_Int_PlayerLoadsGame(string eventName, string strArg, float numArg, Form sender)
-	PlayerLoadsGame()
+	slax.info("sla_PluginBase - On_sla_Int_PlayerLoadsGame: " + name )
+	UpdatePluginState(false)
 endEvent
 
-function PlayerLoadsGame()
+function UpdatePluginState(bool forced)
+	String toState = "No change"
 	if CheckDependencies()
 		if GetState() != "Installed"
+			toState = "Installed"
 			GoToState("Installed")
+		else
+			; Already Installed (e.g. on game load). The update/LOS subscription
+			; arrays in slaMainScr are persisted in the save and are NOT rebuilt
+			; on load, so a desync (typically from a past version upgrade) leaves
+			; the plugin installed but unsubscribed -- UpdateActor/UpdateObserver
+			; never fire and pipeline-driven effects (Naked, Timed) stick at 0.
+			; ReassertSubscriptions re-registers only the periodic/LOS events (both
+			; Find-guarded, hence idempotent), self-healing the desync every load
+			; without the heavier side effects of a full EnablePlugin re-run.
+			toState = "Re-subscribed"
+			ReassertSubscriptions()
 		endIf
 	else
 		if GetState() != ""
+			toState = "Not Installed"
 			GoToState("")
 		endIf
 	endIf
+	slax.info("sla_PluginBase - UpdatePluginState: " + name +" .Target state: " + toState)
 endFunction
 
 bool function CheckDependencies()
@@ -44,6 +66,17 @@ function EnablePlugin()
 	{To be implemented by plugin}
 endFunction
 
+function ReassertSubscriptions()
+	{Re-register this plugin's load-fragile registrations: the periodic/LOS update
+	subscriptions (slaMainScr's persisted, non-rebuilt arrays) and any external
+	RegisterForModEvent hooks (which live in the SKSE co-save and are lost if the
+	player deletes it). Called on every game load from UpdatePluginState, since
+	EnablePlugin only runs on the install transition. Re-register only -- do NOT
+	re-register effects or reset live state here. Overridden by any plugin that
+	subscribes to updates/LOS or registers mod events; a plugin with neither
+	leaves this as a no-op.}
+endFunction
+
 function AddOptions()
 	{To be implemented by plugin}
 endFunction
@@ -51,7 +84,7 @@ endFunction
 function DisablePlugin()
 	{To be implemented by plugin}
 	UnregisterForLOSUpdates()
-	main.SetPluginUpdateEvents(self, true)
+	main.SetPluginUpdateEvents(self, false)
 endFunction
 
 function Update(Actor[] actors, Actor[] nakedActors)
@@ -73,8 +106,19 @@ endFunction
 int numberOfOptions = 0
 
 function ClearOptions()
-	StorageUtil.ClearAllPrefix("SLAroused.MCM." + self.name)
-	numberOfOptions = 0
+        String prefix = "SLAroused.MCM." + self.name + "."
+        int i = StorageUtil.StringListCount(main, "SLAroused.MCM.Options") - 1
+		slax.info("sla_PluginBase -ClearOptions: " + prefix + ".Count:" + i )
+        while i >= 0
+                string val = StorageUtil.StringListGet(main, "SLAroused.MCM.Options", i)
+                if val != "" && StringUtil.Find(val, prefix) == 0
+						;slax.info("sla_PluginBase - ClearOptions index:"+ i +".StringListRemove: " + val)
+                        StorageUtil.StringListRemoveAt(main, "SLAroused.MCM.Options", i)
+                        StorageUtil.ClearAllPrefix(val)
+                endIf
+                i -= 1
+        endWhile
+        numberOfOptions = 0
 endFunction
 
 int function GetNumberOfOptions()
@@ -111,7 +155,7 @@ int function AddOption(string category, string title, string description, float 
 endFunction
 
 function SetOptionDefault(int option, float defaultValue)
-	string id = "SLAroused.MCM." + self.name + "." + numberOfOptions + ".Default"
+	string id = "SLAroused.MCM." + self.name + "." + option + ".Default"
 	StorageUtil.SetFloatValue(main, id, defaultValue)
 endFunction
 
@@ -146,7 +190,7 @@ function HideEffectInUI(int effectId)
 endFunction
 
 function ShowEffectInUI(int effectId)
-	main.SetEffectVisible(effectId, false)
+	main.SetEffectVisible(effectId, true)
 endFunction
 
 int function RegisterEffect(string id, string title, string description)
@@ -231,9 +275,11 @@ bool function RemoveEffectGroup(Actor who, int effIdx)
 endFunction
 
 event OnInstalled()
+	slax.info("sla_PluginBase - OnInstalled: " + name )
 	main.RegisterPlugin(self)
 endEvent
 
 event OnUninstalled()
+	slax.info("sla_PluginBase - OnUninstalled: " + name )
 	main.UnregisterPlugin(self)
 endEvent

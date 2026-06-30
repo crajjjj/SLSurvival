@@ -13,13 +13,26 @@ EndEvent
 Function PlayerLoadsGame()
 	If Game.GetModByName("Devious Devices - Expansion.esm") != 255
 		If GetState() != "Installed"
-			GoToState("Installed")
+			GoToState("Installed") ; OnEndState resolves the DD forms and the DF town collar
+		Else
+			ResolveDeviousFollowers() ; already Installed: pick up DeviousFollowers if it was added after DD (no state transition fires)
 		EndIf
-	
+
 	Else
 		If GetState() != ""
 			GoToState("")
 		EndIf
+	EndIf
+EndFunction
+
+; DeviousFollowers is a secondary, optional provider; resolve its town-collar keyword here so it is
+; (re)picked up both on the DD install transition (via OnEndState) and on a later load where DD is
+; already Installed and merely adding DF would cause no state change.
+Function ResolveDeviousFollowers()
+	If Game.GetModByName("DeviousFollowers.esp") != 255
+		_DList_TownCollar = Game.GetFormFromFile(0x009A12, "DeviousFollowers.esp") as Keyword
+	Else
+		_DList_TownCollar = _SLS_UnusedDummyKw
 	EndIf
 EndFunction
 
@@ -70,12 +83,8 @@ Event OnEndState()
 	zad_armBinderHisec_Inventory = Game.GetFormFromFile(0x068BDE, "Devious Devices - Integration.esm") as Armor
 	
 	
-	If Game.GetModByName("DeviousFollowers.esp") != 255
-		_DList_TownCollar = Game.GetFormFromFile(0x009A12, "DeviousFollowers.esp") as Keyword
-	Else
-		_DList_TownCollar = _SLS_UnusedDummyKw
-	EndIf
-	
+	ResolveDeviousFollowers()
+
 	_SLS_IncPickPocketLootKeys.AddForm(Game.GetFormFromFile(0x01775F, "Devious Devices - Integration.esm"))
 	_SLS_IncPickPocketLootKeys.AddForm(Game.GetFormFromFile(0x008A4F, "Devious Devices - Integration.esm"))
 	

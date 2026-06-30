@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.685
+	Version = 0.700
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	AddInventoryEventFilter(_SLS_EvictionNotice)
@@ -173,7 +173,7 @@ Function DoGameSessionLoadMaintenance()
 EndFunction
 
 Function VersionCheck()
-	If Version < 0.685
+	If Version < 0.700
 		If Version < 0.560
 			Menu.BuildSplashArray()
 			Version = 0.560
@@ -690,6 +690,13 @@ Function VersionCheck()
 			SetupPercentileEffectShaders()
 			(Game.GetFormFromFile(0x07DF73, "SL Survival.esp") as _SLS_InterfaceSlax).RestartInterface()
 			UpdateVersion(0.685)
+		EndIf
+
+		If Version < 0.700
+			; 0.700: SLA arousal now flows through SLS's own SLS_AROUSAL/SLS_TEASE/SLS_FONDLE dynamic
+			; effects (SloangNative); restart the interface so it re-resolves and picks up the new gating.
+			(Game.GetFormFromFile(0x07DF73, "SL Survival.esp") as _SLS_InterfaceSlax).RestartInterface()
+			UpdateVersion(0.700)
 		EndIf
 	EndIf
 EndFunction
@@ -1990,7 +1997,7 @@ Function StartDogSex4p(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFame = tr
 	SexActors[0] = PlayerRef
 	SexActors[1] = BeggingDog01.GetReference() as Actor
 	SexActors[2] = BeggingDog02.GetReference() as Actor
-	SexActors[3] = BeggingDog02.GetReference() as Actor
+	SexActors[3] = BeggingDog03.GetReference() as Actor
 	If TeleportType > 0
 		SexTeleport(TeleportType, SexActors)
 	EndIf
@@ -2187,7 +2194,7 @@ Function StartWolfSex4p(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFame = t
 	SexActors[0] = PlayerRef
 	SexActors[1] = BeggingWolf01.GetReference() as Actor
 	SexActors[2] = BeggingWolf02.GetReference() as Actor
-	SexActors[3] = BeggingWolf02.GetReference() as Actor
+	SexActors[3] = BeggingWolf03.GetReference() as Actor
 	If TeleportType > 0
 		SexTeleport(TeleportType, SexActors)
 	EndIf
@@ -2383,7 +2390,7 @@ Function StartHorseSex4p(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFame = 
 	SexActors[0] = PlayerRef
 	SexActors[1] = BeggingHorse01.GetReference() as Actor
 	SexActors[2] = BeggingHorse02.GetReference() as Actor
-	SexActors[3] = BeggingHorse02.GetReference() as Actor
+	SexActors[3] = BeggingHorse03.GetReference() as Actor
 	If TeleportType > 0
 		SexTeleport(TeleportType, SexActors)
 	EndIf
