@@ -11,10 +11,9 @@ EndEvent
 Function PlayerLoadsGame()
 	If Game.GetModByName("Milk Addict.esp") != 255
 		If GetState() != "Installed"
-			;GoToState("Installed")
-			GoToState("")
+			GoToState("Installed")
 		EndIf
-	
+
 	Else
 		If GetState() != ""
 			GoToState("")
@@ -26,7 +25,6 @@ Event OnEndState()
 	Utility.Wait(5.0) ; Wait before entering active state to help avoid making function calls to scripts that may not have initialized yet.
 	MaMcmQuest = Game.GetFormFromFile(0x000D62,"Milk Addict.esp") as Quest
 	AddictionPool = Game.GetFormFromFile(0x008424, "Milk Addict.esp") as GlobalVariable
-	MaMainAlias = (Game.GetFormFromFile(0x000D62, "Milk Addict.esp") as Quest).GetNthAlias(0) as ReferenceAlias
 EndEvent
 
 Bool Function GetIsInterfaceActive()
@@ -57,8 +55,9 @@ State Installed
 		Else
 			Debug.Trace("_SLS_: GetMilkDuration: No match")
 		EndIf
+		Return 0
 	EndFunction
-	
+
 	String Function GetAddictionLevel()
 		Int Pool = AddictionPool.GetValueInt()
 		If Pool > 399
@@ -73,19 +72,20 @@ State Installed
 		Return ""
 	EndFunction
 	
+	; Derived from the same addiction pool MilkAddict itself uses (identical 99/199/299/399 stage
+	; thresholds in _MA_Main.GetAddictionStage) - its own AddictionStage variable isn't externally readable.
 	String Function GetWithdrawalLevel()
-		Int Withdrawal = _SLS_IntMa.GetCurrentEffectsStage(MaMainAlias)
-		If Withdrawal == 4 ; Junkie
+		Int Pool = AddictionPool.GetValueInt()
+		If Pool > 399 ; Junkie
 			Return "Junkie "
-		ElseIf Withdrawal == 3 ; Addict
+		ElseIf Pool > 299 ; Addict
 			Return "Addict "
-		ElseIf Withdrawal == 2 ; Moderate
+		ElseIf Pool > 199 ; Moderate
 			Return "Moderate "
-		ElseIf Withdrawal == 1 ; Mild
+		ElseIf Pool > 99 ; Mild
 			Return "Mild "
-		Else
-			Return "None"
 		EndIf
+		Return "None"
 	EndFunction
 EndState
 
@@ -102,7 +102,6 @@ String Function GetWithdrawalLevel()
 EndFunction
 
 Quest MaMcmQuest
-ReferenceAlias MaMainAlias
 
 GlobalVariable AddictionPool
 
