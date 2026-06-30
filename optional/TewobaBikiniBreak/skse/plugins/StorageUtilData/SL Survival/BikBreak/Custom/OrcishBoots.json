@@ -1,0 +1,42 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "80214|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 200,
+		"weight" : 9
+	},
+	"float" :
+	{
+		"skillreq" : 60.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Orcish Boots To Bikini Parts",
+		"modelpath" : "armor/orcish/bootsf_0.nif",
+		"modname" : "The Amazing World of Bikini Armors REMASTERED.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"boots",
+			"thigh"
+		]
+	},
+	"formList" : 
+	{
+		"boots" : 
+		[
+			"55414|The Amazing World of Bikini Armors REMASTERED.esp",
+			"55416|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"thigh" : 
+		[
+			"56841|The Amazing World of Bikini Armors REMASTERED.esp",
+			"56843|The Amazing World of Bikini Armors REMASTERED.esp"
+		]
+	}
+}

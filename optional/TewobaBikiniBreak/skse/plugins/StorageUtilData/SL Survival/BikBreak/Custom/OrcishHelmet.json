@@ -1,0 +1,44 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "80217|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 500,
+		"weight" : 9
+	},
+	"float" :
+	{
+		"skillreq" : 60.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Orcish Helmet To Bikini Parts",
+		"modelpath" : "armor/shitty/orc/helm_B_gnd.nif",
+		"modname" : "The Amazing World of Bikini Armors REMASTERED.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"helmet",
+			"gorget"
+		]
+	},
+	"formList" : 
+	{
+		"helmet" : 
+		[
+			"56835|The Amazing World of Bikini Armors REMASTERED.esp",
+			"56837|The Amazing World of Bikini Armors REMASTERED.esp",
+			"56839|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"gorget" : 
+		[
+			"56827|The Amazing World of Bikini Armors REMASTERED.esp",
+			"56829|The Amazing World of Bikini Armors REMASTERED.esp",
+			"56831|The Amazing World of Bikini Armors REMASTERED.esp"
+		]
+	}
+}

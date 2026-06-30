@@ -1,0 +1,43 @@
+{
+    "form": {
+        "sourcearmor": "0x3A0|Skyrim.esm"
+    },
+    "int": {
+        "value": 70
+    },
+    "float": {
+        "skillreq": 50.0,
+        "weight": 2.0
+    },
+    "string": {
+        "cobjname": "Break Scaled Bracers to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/ScaledBracers.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "gloves",
+            "pauldronl",
+            "pauldronr",
+            "pauldron"
+        ]
+    },
+    "formList": {
+        "gloves": [
+            "0x966|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "bracers": [],
+        "pauldron": [
+            "0x978|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x979|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x97A|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "pauldronl": [
+            "0x976|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "pauldronr": [
+            "0x977|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "elbow": []
+    }
+}

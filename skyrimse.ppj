@@ -91,7 +91,8 @@
     </Folders>
     <!-- The following section is for .bsa archives. You can enable it by setting Package="true" in the PapyrusProject -->
     <Packages Output=".">
-        <Package Name="@ModName" RootDir=".">
+        <!-- BSA name MUST match the plugin "SL Survival.esp" (with the space) or SE won't auto-mount it and no scripts load. Do NOT use @ModName (SLSurvival) here. -->
+        <Package Name="SL Survival" RootDir=".">
             <Match In="interface">*</Match>
             <Match In="scripts\source">*.psc</Match>
             <Match In="scripts">*.pex</Match>
@@ -109,7 +110,9 @@
             <Match In="meshes\actors\character">*</Match>
             <Match In="SKSE\Plugins">*.*</Match>
             <Match In="textures">*</Match>
-            <Include NoRecurse="true">*.bsa</Include>
+            <Match In="fomod">*</Match><!-- FOMOD installer (info.xml + ModuleConfig.xml) -->
+            <Match In="optional">*</Match><!-- optional patch payloads referenced by ModuleConfig.xml -->
+            <Include NoRecurse="true">SL Survival.bsa</Include><!-- pack only the correctly-named archive, not any stale SLSurvival.bsa -->
             <Include>meta.ini</Include>
             <Include>SL Survival.esp</Include>
             <Include>readme.md</Include>

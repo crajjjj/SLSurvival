@@ -1,0 +1,48 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "1072913|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 45
+	},
+	"float" :
+	{
+		"skillreq" : 40.0,
+		"weight" : 4.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Elven Boots To Bikini Parts",
+		"modelpath" : "armor/elven/f/boots_0.nif",
+		"modname" : "The Amazing World of Bikini Armors REMASTERED.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"boots",
+			"thigh",
+			"leggings"
+		]
+	},
+	"formList" : 
+	{
+		"boots" : 
+		[
+			"61134|The Amazing World of Bikini Armors REMASTERED.esp",
+			"61136|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"thigh" : 
+		[
+			"58286|The Amazing World of Bikini Armors REMASTERED.esp",
+			"59669|The Amazing World of Bikini Armors REMASTERED.esp",
+			"59671|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"leggings" : 
+		[
+			"61123|The Amazing World of Bikini Armors REMASTERED.esp"
+		]
+	}
+}

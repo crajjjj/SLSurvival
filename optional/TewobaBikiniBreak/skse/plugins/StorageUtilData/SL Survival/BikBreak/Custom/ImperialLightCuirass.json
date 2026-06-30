@@ -1,0 +1,57 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "81625|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 75
+	},
+	"float" :
+	{
+		"skillreq" : 35.0,
+		"weight" : 6.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Imperial Light Armor To Bikini Parts",
+		"modelpath" : "armor/imperial/f/cuirasslight_0.nif",
+		"modname" : "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"bra",
+			"thong",
+			"abs",
+			"skirt",
+			"misc"
+		]
+	},
+	"formList" : 
+	{
+		"bra" : 
+		[
+			"2323|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"thong" : 
+		[
+			"2332|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"abs" : 
+		[
+			"2334|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"skirt" : 
+		[
+			"2331|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2362|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"misc" : 
+		[
+			"2329|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2356|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		]
+	}
+}

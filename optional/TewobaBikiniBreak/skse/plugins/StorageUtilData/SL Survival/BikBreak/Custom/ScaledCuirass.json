@@ -1,0 +1,50 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "111523|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 350
+	},
+	"float" :
+	{
+		"skillreq" : 20.0,
+		"weight" : 6.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Scaled Armor To Bikini Parts",
+		"modelpath" : "armor/hide/f/cuirassheavy_0.nif",
+		"modname" : "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"bra",
+			"thong",
+			"abs",
+			"tasset"
+		]
+	},
+	"formList" : 
+	{
+		"bra" : 
+		[
+			"2404|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"thong" : 
+		[
+			"2415|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"abs" : 
+		[
+			"2419|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"tasset" : 
+		[
+			"2412|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		]
+	}
+}

@@ -1,0 +1,64 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "99208|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 125,
+		"weight" : 28
+	},
+	"float" :
+	{
+		"skillreq" : 35.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Ancient Nord Cuirass To Bikini Parts",
+		"modelpath" : "armor/draugr/draugrarmorfemale_0.nif",
+		"modname" : "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"bra",
+			"thong",
+			"abs",
+			"tasset",
+			"misc"
+		]
+	},
+	"formList" : 
+	{
+		"bra" : 
+		[
+			"2102|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2122|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2145|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"thong" : 
+		[
+			"2106|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2123|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"abs" : 
+		[
+			"2109|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2127|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"tasset" : 
+		[
+			"2120|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2125|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2136|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2139|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2151|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"misc" : 
+		[
+			"2111|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2158|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		]
+	}
+}

@@ -1,0 +1,32 @@
+{
+    "form": {
+        "sourcearmor": "0x938|Skyrim.esm"
+    },
+    "int": {
+        "value": 190
+    },
+    "float": {
+        "skillreq": 70.0,
+        "weight": 2.0
+    },
+    "string": {
+        "cobjname": "Break Glass Boots to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/GlassBoots.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "boots",
+            "thigh"
+        ]
+    },
+    "formList": {
+        "boots": [
+            "0x873|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "thigh": [
+            "0x87A|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "poleyn": []
+    }
+}

@@ -1,0 +1,34 @@
+{
+    "form": {
+        "sourcearmor": "0xA9D|Skyrim.esm"
+    },
+    "int": {
+        "value": 25
+    },
+    "float": {
+        "skillreq": 35.0,
+        "weight": 5.0
+    },
+    "string": {
+        "cobjname": "Break Ancient Nordic Boots to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/AncientNordBoots.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "boots",
+            "thigh"
+        ]
+    },
+    "formList": {
+        "boots": [
+            "0x838|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x84C|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "thigh": [
+            "0x844|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x84E|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "poleyn": []
+    }
+}

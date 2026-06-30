@@ -1,0 +1,44 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "111520|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 70
+	},
+	"float" :
+	{
+		"skillreq" : 20.0,
+		"weight" : 2.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Scaled Bracers To Bikini Parts",
+		"modelpath" : "armor/hide/f/gauntletsheavy_0.nif",
+		"modname" : "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"gloves",
+			"pauldron"
+		]
+	},
+	"formList" : 
+	{
+		"gloves" : 
+		[
+			"2406|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"pauldron" : 
+		[
+			"2422|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2423|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2424|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2425|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2426|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		]
+	}
+}

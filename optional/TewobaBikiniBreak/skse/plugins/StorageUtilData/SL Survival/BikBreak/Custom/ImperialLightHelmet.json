@@ -1,0 +1,36 @@
+{
+    "form": {
+        "sourcearmor": "0xEDB|Skyrim.esm"
+    },
+    "int": {
+        "value": 35
+    },
+    "float": {
+        "skillreq": 20.0,
+        "weight": 2.0
+    },
+    "string": {
+        "cobjname": "Break Imperial Light Helmet to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/ImperialLightHelmet.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "circlet",
+            "faceguard",
+            "gorget"
+        ]
+    },
+    "formList": {
+        "circlet": [
+            "0x916|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "faceguard": [
+            "0x917|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "gorget": [
+            "0x918|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x933|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ]
+    }
+}

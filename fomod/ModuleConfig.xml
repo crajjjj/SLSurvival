@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    SexLab Survival FOMOD installer.
+
+    Layout in the packaged archive:
+      SL Survival.esp, SL Survival.bsa   (base - always installed)
+      meshes\, SKSE\, textures\          (base loose assets - always installed)
+      optional\<PatchName>\...           (one folder per optional patch; loose files that override the BSA)
+      fomod\info.xml, fomod\ModuleConfig.xml
+
+    TO ADD A NEW OPTIONAL PATCH:
+      1. Put its loose files under  optional\<PatchName>\  (mirroring the in-game Data layout, e.g. optional\<PatchName>\scripts\foo.pex).
+      2. Add a <plugin> entry to the "Optional Patches" group below, pointing <file>/<folder> source at optional\<PatchName>\... and destination at the Data-relative path.
+      3. Make sure the ppj <ZipFile> still packs optional\ (it uses <Match In="optional">*</Match>).
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://qconsulting.ca/fo3/ModConfig5.0.xsd">
+    <moduleName>SexLab Survival</moduleName>
+
+    <!-- Base mod - always installed -->
+    <requiredInstallFiles>
+        <file source="SL Survival.esp" destination="SL Survival.esp" priority="0" />
+        <file source="SL Survival.bsa" destination="SL Survival.bsa" priority="0" />
+        <folder source="meshes" destination="meshes" priority="0" />
+        <folder source="SKSE" destination="SKSE" priority="0" />
+        <folder source="textures" destination="textures" priority="0" />
+    </requiredInstallFiles>
+
+    <installSteps order="Explicit">
+        <installStep name="Patches">
+            <optionalFileGroups order="Explicit">
+                <group name="Optional Patches" type="SelectAny">
+                    <plugins order="Explicit">
+                        <plugin name="Animal Friend Teammates">
+                            <description>Tamed animal friends are flagged as player teammates when befriended (so they follow and fight alongside you), and the flag is cleared when they are dismissed. Installs a loose _sls_animalfriend.pex that overrides the BSA. Note: the base mod leaves this off because the engine's "wait then re-follow" can be unreliable for teammates. Default: off.</description>
+                            <files>
+                                <file source="optional\AnimalFriendTeammate\scripts\_sls_animalfriend.pex" destination="scripts\_sls_animalfriend.pex" priority="1" />
+                            </files>
+                            <typeDescriptor>
+                                <type name="Optional" />
+                            </typeDescriptor>
+                        </plugin>
+
+                        <plugin name="SunHelm Survival Patch">
+                            <description>Integrates SL Survival's needs/fatigue/sleep with SunHelm Survival (adds the _SLS_IntShs/_SLS_InterfaceShs adapter and a SunHelm-aware _SLS_Needs/_SLS_SleepDeprivation, plus the SL Survival Sunhelm Patch.esp). REQUIRES SunHelm Survival (SunHelmSurvival.esp). Leave unchecked if you use iNeed/Frostfall/etc. instead.</description>
+                            <files>
+                                <folder source="optional\SunHelm\scripts" destination="scripts" priority="1" />
+                                <file source="optional\SunHelm\SL Survival Sunhelm Patch.esp" destination="SL Survival Sunhelm Patch.esp" priority="1" />
+                            </files>
+                            <typeDescriptor>
+                                <type name="Optional" />
+                            </typeDescriptor>
+                        </plugin>
+
+                        <plugin name="Bikini Armor Break (TAWoBA)">
+                            <description>Armor-break (bikini breakdown) configs and meshes for The Amazing World of Bikini Armors REMASTERED. Lets vanilla/listed armors break down into TAWoBA bikini pieces via SL Survival's bikini-break feature. REQUIRES The Amazing World of Bikini Armors REMASTERED.</description>
+                            <files>
+                                <folder source="optional\TewobaBikiniBreak\skse" destination="skse" priority="1" />
+                                <folder source="optional\TewobaBikiniBreak\meshes" destination="meshes" priority="1" />
+                            </files>
+                            <typeDescriptor>
+                                <type name="Optional" />
+                            </typeDescriptor>
+                        </plugin>
+
+                        <plugin name="Battle Wound / Bruise Textures">
+                            <description>Extra battle-wound (bruise) body overlay textures used by SL Survival's wound system.</description>
+                            <files>
+                                <folder source="optional\BattleWounds\textures" destination="textures" priority="1" />
+                            </files>
+                            <typeDescriptor>
+                                <type name="Optional" />
+                            </typeDescriptor>
+                        </plugin>
+                    </plugins>
+                </group>
+            </optionalFileGroups>
+        </installStep>
+    </installSteps>
+</config>

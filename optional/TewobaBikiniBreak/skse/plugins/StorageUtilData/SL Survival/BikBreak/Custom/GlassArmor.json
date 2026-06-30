@@ -1,0 +1,46 @@
+{
+    "form": {
+        "sourcearmor": "0x939|Skyrim.esm"
+    },
+    "int": {
+        "value": 900
+    },
+    "float": {
+        "skillreq": 70.0,
+        "weight": 7.0
+    },
+    "string": {
+        "cobjname": "Break Glass Armor to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/GlassArmor.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "bra",
+            "thong",
+            "abs",
+            "tasset",
+            "misc"
+        ]
+    },
+    "formList": {
+        "bra": [
+            "0x86F|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x870|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x871|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x88B|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "thong": [
+            "0x879|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "abs": [
+            "0x87B|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "tasset": [
+            "0x878|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "misc": [
+            "0x877|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ]
+    }
+}

@@ -1,0 +1,46 @@
+{
+    "form": {
+        "sourcearmor": "0xB17|Skyrim.esm"
+    },
+    "int": {
+        "value": 25
+    },
+    "float": {
+        "skillreq": 35.0,
+        "weight": 4.0
+    },
+    "string": {
+        "cobjname": "Break Ancient Nordic Gauntlets to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/AncientNordGauntlets.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "gloves",
+            "pauldron",
+            "pauldronr",
+            "pauldronl"
+        ]
+    },
+    "formList": {
+        "gloves": [
+            "0x837|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x863|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x866|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "bracers": [],
+        "pauldron": [
+            "0x846|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x850|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x85A|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x85C|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "pauldronl": [
+            "0x86B|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "pauldronr": [
+            "0x868|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "elbow": []
+    }
+}

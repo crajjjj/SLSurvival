@@ -1,0 +1,48 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "80234|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 625,
+		"weight" : 6
+	},
+	"float" :
+	{
+		"skillreq" : 100.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Daedric Gloves To Bikini Parts",
+		"modelpath" : "armor/daedric/daedricgloves_0.nif",
+		"modname" : "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"gloves",
+			"pauldron"
+		]
+	},
+	"formList" : 
+	{
+		"gloves" : 
+		[
+			"2220|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2231|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"pauldron" : 
+		[
+			"2229|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2230|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2235|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2236|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2237|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2238|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2239|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2240|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		]
+	}
+}

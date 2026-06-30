@@ -1,0 +1,35 @@
+{
+    "form": {
+        "sourcearmor": "0x10D|Skyrim.esm"
+    },
+    "int": {
+        "value": 30
+    },
+    "float": {
+        "skillreq": 35.0,
+        "weight": 5.0
+    },
+    "string": {
+        "cobjname": "Break Imperial Full Face Helmet to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/ImperialHelmet.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "circlet",
+            "faceguard",
+            "gorget"
+        ]
+    },
+    "formList": {
+        "circlet": [
+            "0x8F6|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "faceguard": [
+            "0x8F7|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "gorget": [
+            "0x8F8|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ]
+    }
+}

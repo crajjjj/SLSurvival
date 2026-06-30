@@ -1,0 +1,121 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "80221|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 125,
+		"weight" : 6
+	},
+	"float" :
+	{
+		"skillreq" : 60.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Steel Plate Gloves To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/NordPlateGloves.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+{ "parts" : [
+"bra"
+,
+"thong"
+,
+"pauldronl"
+,
+"pauldronr"
+,
+"abs"
+,
+"tasset"
+,
+"thigh"
+,
+"misc"
+] }, "formList" : {
+"bra" : [
+"0x000012c9|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x000012cb|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x000012cd|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x000012cf|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x000012d1|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x000012d3|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x000012d5|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x000012d9|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001dcf|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00008bf3|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00008bf4|The Amazing World of Bikini Armors REMASTERED.esp"
+]
+,
+"thong" : [
+"0x000012db|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x000012dd|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x000012df|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x000012e1|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x000012e3|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x000012e5|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x0000184b|The Amazing World of Bikini Armors REMASTERED.esp"
+]
+,
+"pauldronl" : [
+"0x00001dd7|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001ddb|The Amazing World of Bikini Armors REMASTERED.esp"
+]
+,
+"pauldronr" : [
+"0x00001dd1|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001dd3|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001dd5|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001dd9|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001ddd|The Amazing World of Bikini Armors REMASTERED.esp"
+]
+,
+"abs" : [
+"0x00001dc7|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001dc9|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001dcb|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001dcd|The Amazing World of Bikini Armors REMASTERED.esp"
+]
+,
+"tasset" : [
+"0x00001ddf|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001de1|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001de3|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00002347|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00002349|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x0000234c|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x0000234e|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00002350|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00014ede|The Amazing World of Bikini Armors REMASTERED.esp"
+]
+,
+"thigh" : [
+"0x00002352|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00002354|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00002356|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00002358|The Amazing World of Bikini Armors REMASTERED.esp"
+]
+,
+"misc" : [
+"0x00001db7|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001db9|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001dbb|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001dbd|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001dbf|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001dc1|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001dc3|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001dc5|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x0000235a|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x0000235c|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x0000235e|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00002360|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00002362|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00002364|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00002366|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00002368|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x0000236a|The Amazing World of Bikini Armors REMASTERED.esp"
+]
+} }

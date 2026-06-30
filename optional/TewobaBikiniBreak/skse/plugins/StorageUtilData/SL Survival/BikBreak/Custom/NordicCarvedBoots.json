@@ -1,0 +1,46 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "118166|Dragonborn.esm"
+	},
+	"int" :
+	{
+		"value" : 220
+	},
+	"float" :
+	{
+		"skillreq" : 55.0,
+		"weight" : 8
+	},
+	"string" :
+	{
+		"cobjname" : "Break Nordic Carved Boots To Bikini Parts",
+		"modelpath" : "SL Survival/BikiniBreakdown/Custom/NordicBikiniBoots.nif",
+		"modname" : "The Amazing World of Bikini Armors REMASTERED.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"boots",
+			"thigh",
+			"leggings"
+		]
+	},
+	"formList" : 
+	{
+		"boots" : 
+		[
+			"14061|The Amazing World of Bikini Armors REMASTERED.esp",
+			"14062|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"thigh" : 
+		[
+			"14079|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"leggings" : 
+		[
+			"14070|The Amazing World of Bikini Armors REMASTERED.esp"
+		]
+	}
+}

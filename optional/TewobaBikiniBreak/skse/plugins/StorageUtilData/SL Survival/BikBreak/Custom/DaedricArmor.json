@@ -1,0 +1,45 @@
+{
+    "form": {
+        "sourcearmor": "0x96B|Skyrim.esm"
+    },
+    "int": {
+        "value": 3200
+    },
+    "float": {
+        "skillreq": 90.0,
+        "weight": 50.0
+    },
+    "string": {
+        "cobjname": "Break Daedric Armor to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/DaedricArmor.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "bra",
+            "thong",
+            "abs",
+            "tasset",
+            "misc"
+        ]
+    },
+    "formList": {
+        "bra": [
+            "0x8AB|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "thong": [
+            "0x8B2|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "abs": [
+            "0x8B4|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x8BA|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "tasset": [
+            "0x8B1|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x8B8|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "misc": [
+            "0x8B0|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ]
+    }
+}

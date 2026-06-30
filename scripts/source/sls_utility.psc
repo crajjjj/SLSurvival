@@ -135,7 +135,7 @@ Function CumSwallowInflate(Float CumAmount)
 		Int FhuInflate = ModEvent.Create("_SLS_FhuInflate")
 		If (FhuInflate)
 			ModEvent.PushForm(FhuInflate, PlayerRef) ; Target
-			ModEvent.PushInt(FhuInflate, 2) ; Hole
+			ModEvent.PushInt(FhuInflate, 3) ; Hole - oral/stomach (this path is swallowed cum; FHU h=3 = ORAL)
 			ModEvent.PushFloat(FhuInflate, 5.0) ; Time
 			ModEvent.PushFloat(FhuInflate, (CumAmount / 2.5)) ; TargetLevel. FHU cum values are ROUGHLY (SLS CumAmounts / 2.5)
 			ModEvent.Send(FhuInflate)

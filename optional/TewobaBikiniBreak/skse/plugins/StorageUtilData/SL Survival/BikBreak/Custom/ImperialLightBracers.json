@@ -1,0 +1,38 @@
+{
+    "form": {
+        "sourcearmor": "0xEDA|Skyrim.esm"
+    },
+    "int": {
+        "value": 15
+    },
+    "float": {
+        "skillreq": 20.0,
+        "weight": 1.0
+    },
+    "string": {
+        "cobjname": "Break Imperial Light Bracers to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/ImperialLightBracers.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "gloves",
+            "pauldronl",
+            "pauldronr"
+        ]
+    },
+    "formList": {
+        "gloves": [
+            "0x914|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "bracers": [],
+        "pauldron": [],
+        "pauldronl": [
+            "0x91F|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "pauldronr": [
+            "0x920|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "elbow": []
+    }
+}

@@ -1,0 +1,60 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "80190|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 1500
+	},
+	"float" :
+	{
+		"skillreq" : 95.0,
+		"weight" : 12.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Dragonscale Cuirass To Bikini Parts",
+		"modelpath" : "armor/dragonscale/dragonscalearmorf_0",
+		"modname" : "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"bra",
+			"thong",
+			"abs",
+			"tasset",
+			"misc"
+		]
+	},
+	"formList" : 
+	{
+		"bra" : 
+		[
+			"2246|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2247|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"thong" : 
+		[
+			"2254|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"abs" : 
+		[
+			"2256|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2282|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2285|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"tasset" : 
+		[
+			"2253|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2280|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2283|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"misc" : 
+		[
+			"2252|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		]
+	}
+}

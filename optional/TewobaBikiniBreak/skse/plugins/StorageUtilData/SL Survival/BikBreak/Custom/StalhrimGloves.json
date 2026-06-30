@@ -1,0 +1,46 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "118176|Dragonborn.esm"
+	},
+	"int" :
+	{
+		"value" : 305,
+		"weight" : 6
+	},
+	"float" :
+	{
+		"skillreq" : 80.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Stalhrim Gloves To Bikini Parts",
+		"modelpath" : "dlc02/armor/stahlrimheavy/f/gauntlets_0.nif",
+		"modname" : "StalhrimBikini.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"gloves",
+			"pauldron"
+		]
+	},
+	"formList" : 
+	{
+		"gloves" : 
+		[
+			"26064|StalhrimBikini.esp",
+			"26065|StalhrimBikini.esp"
+		],
+		"pauldron" : 
+		[
+			"26085|StalhrimBikini.esp",
+			"26086|StalhrimBikini.esp",
+			"26087|StalhrimBikini.esp",
+			"26088|StalhrimBikini.esp",
+			"26089|StalhrimBikini.esp",
+			"26090|StalhrimBikini.esp"
+		]
+	}
+}

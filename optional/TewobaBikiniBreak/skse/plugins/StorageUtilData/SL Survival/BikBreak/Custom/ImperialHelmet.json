@@ -1,0 +1,45 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "81628|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 125
+	},
+	"float" :
+	{
+		"skillreq" : 35.0,
+		"weight" : 5.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Imperial Helmet To Bikini Parts",
+		"modelpath" : "armor/_pumpkin_TEWOBA/imperialheavy42-01_gnd.nif",
+		"modname" : "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"helmet",
+			"gorget",
+			"aventail"
+		]
+	},
+	"formList" : 
+	{
+		"helmet" : 
+		[
+			"2294|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"gorget" : 
+		[
+			"2296|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"aventail" : 
+		[
+			"2295|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		]
+	}
+}

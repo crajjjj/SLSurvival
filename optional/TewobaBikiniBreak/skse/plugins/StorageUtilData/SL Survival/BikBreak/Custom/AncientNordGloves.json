@@ -1,0 +1,47 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "355095|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 30,
+		"weight" : 4
+	},
+	"float" :
+	{
+		"skillreq" : 35.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Ancient Nord Gloves To Bikini Parts",
+		"modelpath" : "armor/draugr/draugrgauntletsfemale_0.nif",
+		"modname" : "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"gloves",
+			"pauldron"
+		]
+	},
+	"formList" : 
+	{
+		"gloves" : 
+		[
+			"2103|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2147|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2150|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"pauldron" : 
+		[
+			"2118|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2128|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2138|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2140|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2155|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2152|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		]
+	}
+}

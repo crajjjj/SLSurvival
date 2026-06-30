@@ -1,0 +1,81 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "0x3619e|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 125
+	},
+	"float" :
+	{
+		"skillreq" : 35.0,
+		"weight" : 6.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Leather Cuirass To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/LeatherCuirass.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+{ "parts" : [
+"bra"
+,
+"thong"
+,
+"pauldronl"
+,
+"pauldronr"
+,
+"abs"
+,
+"tasset"
+,
+"thigh"
+,
+"misc"
+] }, "formList" : {
+"bra" : [
+"0x000012c5|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x000012c7|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001dab|The Amazing World of Bikini Armors REMASTERED.esp"
+]
+,
+"thong" : [
+"0x00001da5|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001da7|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001da9|The Amazing World of Bikini Armors REMASTERED.esp"
+]
+,
+"pauldronl" : [
+"0x00001d97|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001d99|The Amazing World of Bikini Armors REMASTERED.esp"
+]
+,
+"pauldronr" : [
+"0x00001d9b|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001d9d|The Amazing World of Bikini Armors REMASTERED.esp"
+]
+,
+"abs" : [
+"0x00001da1|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001da3|The Amazing World of Bikini Armors REMASTERED.esp"
+]
+,
+"tasset" : [
+"0x00001833|The Amazing World of Bikini Armors REMASTERED.esp"
+]
+,
+"thigh" : [
+"0x00001d9f|The Amazing World of Bikini Armors REMASTERED.esp"
+]
+,
+"misc" : [
+"0x0000182b|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x0000182d|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x0000182f|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00001831|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x0003f0c0|The Amazing World of Bikini Armors REMASTERED.esp"
+]
+} }

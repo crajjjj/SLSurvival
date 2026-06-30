@@ -1,0 +1,35 @@
+{
+    "form": {
+        "sourcearmor": "0x96D|Skyrim.esm"
+    },
+    "int": {
+        "value": 1600
+    },
+    "float": {
+        "skillreq": 90.0,
+        "weight": 15.0
+    },
+    "string": {
+        "cobjname": "Break Daedric Helmet to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/DaedricHelmet.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "circlet",
+            "faceguard",
+            "gorget"
+        ]
+    },
+    "formList": {
+        "circlet": [
+            "0x8AA|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "faceguard": [
+            "0x8AE|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "gorget": [
+            "0x8AF|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ]
+    }
+}

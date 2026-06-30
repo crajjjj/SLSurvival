@@ -1,0 +1,52 @@
+{
+    "form": {
+        "sourcearmor": "0x388|Skyrim.esm"
+    },
+    "int": {
+        "value": 125
+    },
+    "float": {
+        "skillreq": 35.0,
+        "weight": 28.0
+    },
+    "string": {
+        "cobjname": "Break Ancient Nordic Armor to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/AncientNordArmor.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "bra",
+            "thong",
+            "abs",
+            "tasset",
+            "misc"
+        ]
+    },
+    "formList": {
+        "bra": [
+            "0x836|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x84A|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x861|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "thong": [
+            "0x83A|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x84B|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "abs": [
+            "0x83D|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x84F|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "tasset": [
+            "0x848|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x84D|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x858|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x85B|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x867|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "misc": [
+            "0x83F|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x86E|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ]
+    }
+}

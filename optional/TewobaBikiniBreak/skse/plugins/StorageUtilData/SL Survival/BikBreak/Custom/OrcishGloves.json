@@ -1,0 +1,45 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "80216|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 200,
+		"weight" : 7
+	},
+	"float" :
+	{
+		"skillreq" : 60.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Orcish Gauntlets To Bikini Parts",
+		"modelpath" : "armor/orcish/gauntletsf_0.nif",
+		"modname" : "The Amazing World of Bikini Armors REMASTERED.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"gloves",
+			"pauldron"
+		]
+	},
+	"formList" : 
+	{
+		"gloves" : 
+		[
+			"56813|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"pauldron" : 
+		[
+			"55404|The Amazing World of Bikini Armors REMASTERED.esp",
+			"55402|The Amazing World of Bikini Armors REMASTERED.esp",
+			"55408|The Amazing World of Bikini Armors REMASTERED.esp",
+			"55406|The Amazing World of Bikini Armors REMASTERED.esp",
+			"55410|The Amazing World of Bikini Armors REMASTERED.esp",
+			"55412|The Amazing World of Bikini Armors REMASTERED.esp"
+		]
+	}
+}

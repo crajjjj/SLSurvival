@@ -1,0 +1,41 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "80186|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 190
+	},
+	"float" :
+	{
+		"skillreq" : 75.0,
+		"weight" : 4.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Glass Gloves To Bikini Parts",
+		"modelpath" : "armor/glass/f/gauntlets_0.nif",
+		"modname" : "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"gloves",
+			"pauldron"
+		]
+	},
+	"formList" : 
+	{
+		"gloves" : 
+		[
+			"2162|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"pauldron" : 
+		[
+			"2190|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2172|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		]
+	}
+}

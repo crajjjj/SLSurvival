@@ -1,0 +1,73 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "1072914|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 225
+	},
+	"float" :
+	{
+		"skillreq" : 40.0,
+		"weight" : 7.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Elven Armor To Bikini Parts",
+		"modelpath" : "armor/elven/f/cuirass_0.nif",
+		"modname" : "The Amazing World of Bikini Armors REMASTERED.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"bra",
+			"chestr",
+			"thong",
+			"abs",
+			"tasset",
+			"misc"
+		]
+	},
+	"formList" : 
+	{
+		"bra" : 
+		[
+			"58280|The Amazing World of Bikini Armors REMASTERED.esp",
+			"58282|The Amazing World of Bikini Armors REMASTERED.esp",
+			"58284|The Amazing World of Bikini Armors REMASTERED.esp",
+			"400382|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"chestr" : 
+		[
+			"62628|The Amazing World of Bikini Armors REMASTERED.esp",
+			"62630|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"thong" : 
+		[
+			"61125|The Amazing World of Bikini Armors REMASTERED.esp",
+			"61130|The Amazing World of Bikini Armors REMASTERED.esp",
+			"61132|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"abs" : 
+		[
+			"59673|The Amazing World of Bikini Armors REMASTERED.esp",
+			"59675|The Amazing World of Bikini Armors REMASTERED.esp",
+			"59677|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"tasset" : 
+		[
+			"61114|The Amazing World of Bikini Armors REMASTERED.esp",
+			"59679|The Amazing World of Bikini Armors REMASTERED.esp",
+			"61117|The Amazing World of Bikini Armors REMASTERED.esp",
+			"59681|The Amazing World of Bikini Armors REMASTERED.esp",
+			"61106|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"misc" : 
+		[
+			"80452|The Amazing World of Bikini Armors REMASTERED.esp",
+			"65550|The Amazing World of Bikini Armors REMASTERED.esp"
+		]
+	}
+}

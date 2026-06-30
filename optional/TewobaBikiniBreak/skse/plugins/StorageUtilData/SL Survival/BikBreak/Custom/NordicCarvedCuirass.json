@@ -1,0 +1,64 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "118167|Dragonborn.esm"
+	},
+	"int" :
+	{
+		"value" : 1150
+	},
+	"float" :
+	{
+		"skillreq" : 55.0,
+		"weight" : 38
+	},
+	"string" :
+	{
+		"cobjname" : "Break Nordic Carved Cuirass To Bikini Parts",
+		"modelpath" : "SL Survival/BikiniBreakdown/Custom/NordicBikiniCuirass.nif",
+		"modname" : "The Amazing World of Bikini Armors REMASTERED.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"bra",
+			"thong",
+			"abs",
+			"tasset",
+			"misc"
+		]
+	},
+	"formList" : 
+	{
+		"bra" : 
+		[
+			"14058|The Amazing World of Bikini Armors REMASTERED.esp",
+			"14059|The Amazing World of Bikini Armors REMASTERED.esp",
+			"14060|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"thong" : 
+		[
+			"14080|The Amazing World of Bikini Armors REMASTERED.esp",
+			"14081|The Amazing World of Bikini Armors REMASTERED.esp",
+			"14082|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"abs" : 
+		[
+			"14054|The Amazing World of Bikini Armors REMASTERED.esp",
+			"14055|The Amazing World of Bikini Armors REMASTERED.esp",
+			"14056|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"tasset" : 
+		[
+			"14076|The Amazing World of Bikini Armors REMASTERED.esp",
+			"14077|The Amazing World of Bikini Armors REMASTERED.esp",
+			"14078|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"misc" : 
+		[
+			"14069|The Amazing World of Bikini Armors REMASTERED.esp",
+			"14057|The Amazing World of Bikini Armors REMASTERED.esp"
+		]
+	}
+}

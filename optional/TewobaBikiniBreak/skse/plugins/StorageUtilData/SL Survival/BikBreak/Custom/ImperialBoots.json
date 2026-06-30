@@ -1,0 +1,32 @@
+{
+    "form": {
+        "sourcearmor": "0x6D6|Skyrim.esm"
+    },
+    "int": {
+        "value": 20
+    },
+    "float": {
+        "skillreq": 35.0,
+        "weight": 8.0
+    },
+    "string": {
+        "cobjname": "Break Imperial Boots to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/ImperialBoots.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "boots",
+            "thigh"
+        ]
+    },
+    "formList": {
+        "boots": [
+            "0x8F5|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "thigh": [
+            "0x8FC|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "poleyn": []
+    }
+}

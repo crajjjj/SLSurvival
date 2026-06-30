@@ -11,18 +11,32 @@ Event OnMenuOpen(String MenuName)
 	If akActor && akActor.IsInDialogueWithPlayer() && (akActor.GetRace().IsRaceFlagSet(0x00000001) || _SLS_HumanTypeVoiceList.HasForm(akActor.GetVoiceType()))
 		StorageUtil.FormListAdd(None, "_SLS_DaydreamActors", akActor)
 		Bool Completed = false
-		If (akActor.GetLeveledActorBase().GetSex() == 0) ; Male
-			If akActor.GetWornForm(0x00000004)
+		Int Gender = Sexlab.GetGender(akActor) ; GetGender honors SexLab gender overrides (futa = 2); base GetSex does not
+		If Gender == 0 || Gender == 2 ; Male
+			; Strip everything strippable (skip feet/index 7 and SexlabNoStrip-flagged items) so the
+			; daydream works even when only partially clothed - the old code only checked the body slot.
+			Bool Removed = false
+			Int s = 0
+			Form WornForm
+			While s < Menu.SlotMasks.Length
+				WornForm = akActor.GetWornForm(Menu.SlotMasks[s])
+				If s != 7 && WornForm && !WornForm.HasKeyword(Menu.SexlabNoStrip)
+					Removed = true
+					akActor.UnequipItem(WornForm, abPreventEquip = false, abSilent = true)
+				EndIf
+				s += 1
+			EndWhile
+			If Removed ; only flag for re-dress on close if something was actually taken off
 				akActor.AddToFaction(_SLS_DaydreamHadClothesFact)
 				Utility.WaitMenuMode(1.0)
-				akActor.UnequipItem(akActor.GetWornForm(0x00000004))
-				Sos.MakeErect(akActor)
-				_SLS_LookAtMarkerRef.MoveTo(akActor, 0.0, 0.0, akActor.GetHeight() - 65.0)
-				AllInOneKey.BeginLookAt(akTarget = _SLS_LookAtMarkerRef, MoveMarker = false)
-				;Debug.SendAnimationEvent(PlayerRef, "DDBeltedSolo")
-				Voices.Begin()
-				Completed = UI.IsMenuOpen("Dialogue Menu")
 			EndIf
+			Sos.MakeErect(akActor)
+			Debug.SendAnimationEvent(akActor, "SOSFastErect")
+			_SLS_LookAtMarkerRef.MoveTo(akActor, 0.0, 0.0, akActor.GetHeight() - 65.0)
+			AllInOneKey.BeginLookAt(akTarget = _SLS_LookAtMarkerRef, MoveMarker = false)
+			;Debug.SendAnimationEvent(PlayerRef, "DDBeltedSolo")
+			Voices.Begin()
+			Completed = UI.IsMenuOpen("Dialogue Menu")
 		Else ; Female
 			Completed = DoFemaleConvoEffect(akActor)
 		EndIf
@@ -78,7 +92,8 @@ Event OnMenuClose(String MenuName)
 		akActor = StorageUtil.FormListGet(None, "_SLS_DaydreamActors", i) as Actor
 		If akActor
 			akActor.RemoveFromFaction(_SLS_DaydreamHadClothesFact)
-			If (akActor.GetLeveledActorBase().GetSex() == 0) ; Male
+			Int Gender = Sexlab.GetGender(akActor) ; GetGender honors SexLab gender overrides (futa = 2); base GetSex does not
+			If Gender == 0 || Gender == 2 ; Male
 				akActor.AddItem(_SLS_HalfNakedCoverArmor, 1) ; Adding seems to refresh the outfit more reliably than removing
 				akActor.RemoveItem(_SLS_HalfNakedCoverArmor, 999)
 

@@ -1,0 +1,34 @@
+{
+    "form": {
+        "sourcearmor": "0x93D|Skyrim.esm"
+    },
+    "int": {
+        "value": 300
+    },
+    "float": {
+        "skillreq": 100.0,
+        "weight": 3.0
+    },
+    "string": {
+        "cobjname": "Break Dragonscale Boots to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/DragonscaleBoots.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "boots",
+            "thigh"
+        ]
+    },
+    "formList": {
+        "boots": [
+            "0x8C9|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "thigh": [
+            "0x8CF|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x8E9|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x8EC|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "poleyn": []
+    }
+}

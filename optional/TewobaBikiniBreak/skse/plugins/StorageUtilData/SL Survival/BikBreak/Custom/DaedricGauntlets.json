@@ -1,0 +1,45 @@
+{
+    "form": {
+        "sourcearmor": "0x96C|Skyrim.esm"
+    },
+    "int": {
+        "value": 625
+    },
+    "float": {
+        "skillreq": 90.0,
+        "weight": 6.0
+    },
+    "string": {
+        "cobjname": "Break Daedric Gauntlets to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/DaedricGauntlets.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "gloves",
+            "pauldronl",
+            "pauldronr"
+        ]
+    },
+    "formList": {
+        "gloves": [
+            "0x8AC|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x8B7|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "bracers": [],
+        "pauldron": [],
+        "pauldronl": [
+            "0x8B5|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x8BB|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x8BD|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x8BF|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "pauldronr": [
+            "0x8B6|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x8BC|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x8BE|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x8C0|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "elbow": []
+    }
+}

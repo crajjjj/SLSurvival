@@ -1,0 +1,52 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "1072915|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 45
+	},
+	"float" :
+	{
+		"skillreq" : 40.0,
+		"weight" : 3.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Elven Bracers To Bikini Parts",
+		"modelpath" : "armor/elven/f/gauntlets_0.nif",
+		"modname" : "The Amazing World of Bikini Armors REMASTERED.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"gloves",
+			"pauldron"
+		]
+	},
+	"formList" : 
+	{
+		"gloves" : 
+		[
+			"61138|The Amazing World of Bikini Armors REMASTERED.esp",
+			"61140|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"pauldron" : 
+		[
+			"61142|The Amazing World of Bikini Armors REMASTERED.esp",
+			"61144|The Amazing World of Bikini Armors REMASTERED.esp",
+			"61161|The Amazing World of Bikini Armors REMASTERED.esp",
+			"61146|The Amazing World of Bikini Armors REMASTERED.esp",
+			"61166|The Amazing World of Bikini Armors REMASTERED.esp",
+			"61148|The Amazing World of Bikini Armors REMASTERED.esp",
+			"61168|The Amazing World of Bikini Armors REMASTERED.esp",
+			"61150|The Amazing World of Bikini Armors REMASTERED.esp",
+			"61170|The Amazing World of Bikini Armors REMASTERED.esp",
+			"61152|The Amazing World of Bikini Armors REMASTERED.esp",
+			"61172|The Amazing World of Bikini Armors REMASTERED.esp",
+			"61154|The Amazing World of Bikini Armors REMASTERED.esp"
+		]
+	}
+}

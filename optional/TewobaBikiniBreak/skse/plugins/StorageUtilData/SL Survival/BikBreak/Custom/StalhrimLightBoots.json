@@ -1,0 +1,48 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "118142|Dragonborn.esm"
+	},
+	"int" :
+	{
+		"value" : 305,
+		"weight" : 8
+	},
+	"float" :
+	{
+		"skillreq" : 80.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Stalhrim Boots To Bikini Parts",
+		"modelpath" : "dlc02/armor/stahlrimlight/f/boots_0.nif",
+		"modname" : "StalhrimBikini.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"boots",
+			"thigh",
+			"leggings"
+		]
+	},
+	"formList" : 
+	{
+		"boots" : 
+		[
+			"26057|StalhrimBikini.esp",
+			"26058|StalhrimBikini.esp",
+			"26061|StalhrimBikini.esp"
+		],
+		"thigh" : 
+		[
+			"26071|StalhrimBikini.esp",
+			"26072|StalhrimBikini.esp"
+		],
+		"leggings" : 
+		[
+			"26069|StalhrimBikini.esp"
+		]
+	}
+}

@@ -1,0 +1,38 @@
+{
+    "form": {
+        "sourcearmor": "0x93F|Skyrim.esm"
+    },
+    "int": {
+        "value": 300
+    },
+    "float": {
+        "skillreq": 100.0,
+        "weight": 3.0
+    },
+    "string": {
+        "cobjname": "Break Dragonscale Gauntlets to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/DragonscaleGauntlets.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "gloves",
+            "pauldronl",
+            "pauldronr"
+        ]
+    },
+    "formList": {
+        "gloves": [
+            "0x8C8|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "bracers": [],
+        "pauldron": [],
+        "pauldronl": [
+            "0x8D1|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "pauldronr": [
+            "0x8D2|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "elbow": []
+    }
+}

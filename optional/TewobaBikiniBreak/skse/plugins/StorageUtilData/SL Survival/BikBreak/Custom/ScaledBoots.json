@@ -1,0 +1,35 @@
+{
+    "form": {
+        "sourcearmor": "0x39F|Skyrim.esm"
+    },
+    "int": {
+        "value": 70
+    },
+    "float": {
+        "skillreq": 50.0,
+        "weight": 2.0
+    },
+    "string": {
+        "cobjname": "Break Scaled Boots to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/ScaledBoots.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "boots",
+            "thigh"
+        ]
+    },
+    "formList": {
+        "boots": [
+            "0x967|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x97B|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "thigh": [
+            "0x970|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x971|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x972|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "poleyn": []
+    }
+}

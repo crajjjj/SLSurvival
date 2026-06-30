@@ -1,0 +1,56 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "79573|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 275
+	},
+	"float" :
+	{
+		"skillreq" : 35.0,
+		"weight" : 35.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Imperial Armor To Bikini Parts",
+		"modelpath" : "armor/imperial/f/cuirassheavy_0.nif",
+		"modname" : "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"bra",
+			"thong",
+			"abs",
+			"tasset",
+			"misc"
+		]
+	},
+	"formList" : 
+	{
+		"bra" : 
+		[
+			"2291|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"thong" : 
+		[
+			"2299|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"abs" : 
+		[
+			"2301|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2318|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"tasset" : 
+		[
+			"2298|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"misc" : 
+		[
+			"2297|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		]
+	}
+}

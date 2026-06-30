@@ -1,0 +1,57 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "1072916|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 110
+	},
+	"float" :
+	{
+		"skillreq" : 40.0,
+		"weight" : 3.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Elven Helmet To Bikini Parts",
+		"modelpath" : "armor/shitty/elven/head_gearlg_gnd.nif",
+		"modname" : "The Amazing World of Bikini Armors REMASTERED.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"helmet",
+			"gorget",
+			"faceguard",
+			"misc"
+		]
+	},
+	"formList" : 
+	{
+		"helmet" : 
+		[
+			"400374|The Amazing World of Bikini Armors REMASTERED.esp",
+			"400381|The Amazing World of Bikini Armors REMASTERED.esp",
+			"62626|The Amazing World of Bikini Armors REMASTERED.esp",
+			"400378|The Amazing World of Bikini Armors REMASTERED.esp",
+			"400376|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"gorget" : 
+		[
+			"61174|The Amazing World of Bikini Armors REMASTERED.esp",
+			"61176|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"faceguard" : 
+		[
+			"400362|The Amazing World of Bikini Armors REMASTERED.esp",
+			"400364|The Amazing World of Bikini Armors REMASTERED.esp",
+			"400372|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"misc" : 
+		[
+			"400360|The Amazing World of Bikini Armors REMASTERED.esp"
+		]
+	}
+}

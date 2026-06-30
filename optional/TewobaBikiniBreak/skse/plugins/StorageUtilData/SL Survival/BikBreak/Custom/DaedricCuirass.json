@@ -1,0 +1,57 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "80235|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 3200,
+		"weight" : 45
+	},
+	"float" :
+	{
+		"skillreq" : 100.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Daedric Cuirass To Bikini Parts",
+		"modelpath" : "armor/daedric/daedriccuirass_0.nif",
+		"modname" : "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"bra",
+			"thong",
+			"abs",
+			"tasset",
+			"misc"
+		]
+	},
+	"formList" : 
+	{
+		"bra" : 
+		[
+			"2219|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"thong" : 
+		[
+			"2226|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"abs" : 
+		[
+			"2228|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2234|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"tasset" : 
+		[
+			"2225|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2223|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"misc" : 
+		[
+			"2224|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		]
+	}
+}

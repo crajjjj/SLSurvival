@@ -1,0 +1,35 @@
+{
+    "form": {
+        "sourcearmor": "0x93B|Skyrim.esm"
+    },
+    "int": {
+        "value": 450
+    },
+    "float": {
+        "skillreq": 70.0,
+        "weight": 2.0
+    },
+    "string": {
+        "cobjname": "Break Glass Helmet to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/GlassHelmet.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "circlet",
+            "faceguard",
+            "gorget"
+        ]
+    },
+    "formList": {
+        "circlet": [
+            "0x874|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "faceguard": [
+            "0x875|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "gorget": [
+            "0x876|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ]
+    }
+}

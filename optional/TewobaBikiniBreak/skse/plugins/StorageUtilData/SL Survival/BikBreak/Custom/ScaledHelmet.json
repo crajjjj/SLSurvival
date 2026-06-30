@@ -1,0 +1,36 @@
+{
+    "form": {
+        "sourcearmor": "0x3A1|Skyrim.esm"
+    },
+    "int": {
+        "value": 175
+    },
+    "float": {
+        "skillreq": 50.0,
+        "weight": 2.0
+    },
+    "string": {
+        "cobjname": "Break Scaled Helmet to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/ScaledHelmet.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "circlet",
+            "faceguard",
+            "gorget"
+        ]
+    },
+    "formList": {
+        "circlet": [
+            "0x963|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "faceguard": [
+            "0x969|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "gorget": [
+            "0x96A|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x97C|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ]
+    }
+}

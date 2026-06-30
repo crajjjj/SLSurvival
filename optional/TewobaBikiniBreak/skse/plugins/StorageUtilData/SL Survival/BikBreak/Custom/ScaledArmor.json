@@ -1,0 +1,40 @@
+{
+    "form": {
+        "sourcearmor": "0x3A3|Skyrim.esm"
+    },
+    "int": {
+        "value": 350
+    },
+    "float": {
+        "skillreq": 50.0,
+        "weight": 6.0
+    },
+    "string": {
+        "cobjname": "Break Scaled Armor to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/ScaledArmor.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "bra",
+            "thong",
+            "abs",
+            "tasset"
+        ]
+    },
+    "formList": {
+        "bra": [
+            "0x964|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "thong": [
+            "0x96F|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "abs": [
+            "0x973|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "tasset": [
+            "0x96C|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "misc": []
+    }
+}

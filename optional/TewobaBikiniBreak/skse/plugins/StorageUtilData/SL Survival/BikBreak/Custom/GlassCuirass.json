@@ -1,0 +1,57 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "80185|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 900
+	},
+	"float" :
+	{
+		"skillreq" : 75.0,
+		"weight" : 10.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Glass Armor To Bikini Parts",
+		"modelpath" : "armor/glass/f/cuirass_0.nif",
+		"modname" : "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"bra",
+			"thong",
+			"abs",
+			"tasset"
+		]
+	},
+	"formList" : 
+	{
+		"bra" : 
+		[
+			"2159|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2160|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2161|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2187|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"thong" : 
+		[
+			"2169|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"abs" : 
+		[
+			"2171|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"tasset" : 
+		[
+			"2168|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"misc" : 
+		[
+			"2167|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		]
+	}
+}

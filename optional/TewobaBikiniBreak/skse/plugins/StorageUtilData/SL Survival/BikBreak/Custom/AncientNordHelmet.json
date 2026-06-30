@@ -1,0 +1,35 @@
+{
+    "form": {
+        "sourcearmor": "0xA9E|Skyrim.esm"
+    },
+    "int": {
+        "value": 60
+    },
+    "float": {
+        "skillreq": 35.0,
+        "weight": 4.0
+    },
+    "string": {
+        "cobjname": "Break Ancient Nordic Helmet to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/AncientNordHelmet.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "circlet",
+            "faceguard",
+            "gorget"
+        ]
+    },
+    "formList": {
+        "circlet": [
+            "0x839|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "faceguard": [
+            "0x83C|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "gorget": [
+            "0x83E|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ]
+    }
+}

@@ -1,0 +1,76 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "0x13913|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 25
+	},
+	"float" :
+	{
+		"skillreq" : 10.0,
+		"weight" : 2.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Hide Helmet To Bikini",
+		"modelpath" : "SL Survival/BikiniBreakdown/TAWoBA/HideHelmet.nif",
+		"modname" : "TheAmazingWorldOfBikiniArmor.esp"
+	},
+	"stringList" :
+{ "parts" : [
+"bra"
+,
+"thong"
+,
+"pauldronl"
+,
+"pauldronr"
+,
+"abs"
+,
+"tasset"
+,
+"thigh"
+,
+"misc"
+] }, "formList" : {
+"bra" : [
+"0x00016528|The Amazing World of Bikini Armors REMASTERED.esp"
+]
+,
+"thong" : [
+"0x00016532|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00016534|The Amazing World of Bikini Armors REMASTERED.esp"
+]
+,
+"pauldronl" : [
+"0x0001652c|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x0001652e|The Amazing World of Bikini Armors REMASTERED.esp"
+]
+,
+"pauldronr" : [
+"0x00016530|The Amazing World of Bikini Armors REMASTERED.esp"
+]
+,
+"abs" : [
+"0x00016522|The Amazing World of Bikini Armors REMASTERED.esp"
+]
+,
+"tasset" : [
+"0x0001652a|The Amazing World of Bikini Armors REMASTERED.esp"
+]
+,
+"thigh" : [
+"0x0001653a|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x0001653c|The Amazing World of Bikini Armors REMASTERED.esp"
+]
+,
+"misc" : [
+"0x00016524|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00016526|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00016536|The Amazing World of Bikini Armors REMASTERED.esp"
+,"0x00016538|The Amazing World of Bikini Armors REMASTERED.esp"
+]
+} }

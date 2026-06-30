@@ -1,0 +1,41 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "80191|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 300
+	},
+	"float" :
+	{
+		"skillreq" : 95.0,
+		"weight" : 5.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Dragonscale Gloves To Bikini Parts",
+		"modelpath" : "armor/dragonscale/dragonscaleglovesf_0",
+		"modname" : "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"gloves",
+			"pauldron"
+		]
+	},
+	"formList" : 
+	{
+		"gloves" : 
+		[
+			"2248|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"pauldron" : 
+		[
+			"2257|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2258|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		]
+	}
+}

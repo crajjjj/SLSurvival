@@ -1,0 +1,46 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "118179|Dragonborn.esm"
+	},
+	"int" :
+	{
+		"value" : 835,
+		"weight" : 9
+	},
+	"float" :
+	{
+		"skillreq" : 80.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Stalhrim Helmet To Bikini Parts",
+		"modelpath" : "armor/bootleg/Stalhrim/SBA_L_headband.nif",
+		"modname" : "StalhrimBikini.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"eyepatch",
+			"gorget",
+			"headband"
+		]
+	},
+	"formList" : 
+	{
+		"eyepatch" : 
+		[
+			"62092|StalhrimBikini.esp"
+		],
+		"gorget" : 
+		[
+			"26096|StalhrimBikini.esp",
+			"26097|StalhrimBikini.esp"
+		],
+		"headband" : 
+		[
+			"38079|StalhrimBikini.esp"
+		]
+	}
+}

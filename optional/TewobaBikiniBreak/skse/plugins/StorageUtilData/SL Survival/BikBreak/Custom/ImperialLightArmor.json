@@ -1,0 +1,43 @@
+{
+    "form": {
+        "sourcearmor": "0xED9|Skyrim.esm"
+    },
+    "int": {
+        "value": 75
+    },
+    "float": {
+        "skillreq": 20.0,
+        "weight": 6.0
+    },
+    "string": {
+        "cobjname": "Break Imperial Light Armor to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/ImperialLightArmor.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "bra",
+            "thong",
+            "abs",
+            "tasset",
+            "misc"
+        ]
+    },
+    "formList": {
+        "bra": [
+            "0x913|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "thong": [
+            "0x91C|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "abs": [
+            "0x91E|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "tasset": [
+            "0x91B|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "misc": [
+            "0x919|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ]
+    }
+}

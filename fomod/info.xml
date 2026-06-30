@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fomod>
+    <Name>SexLab Survival</Name>
+    <Version>0.700</Version>
+    <Website>https://github.com/crajjjj/SLSurvival</Website>
+    <Description>SexLab Survival - survival/gameplay overhaul. The installer always installs the base mod (SL Survival.esp + BSA) and offers optional patches on the Patches page.</Description>
+    <Groups>
+        <element>SexLab</element>
+        <element>Gameplay Effects and Changes</element>
+    </Groups>
+</fomod>

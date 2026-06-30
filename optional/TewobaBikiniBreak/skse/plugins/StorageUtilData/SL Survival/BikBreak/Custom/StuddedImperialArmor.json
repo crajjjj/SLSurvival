@@ -1,0 +1,43 @@
+{
+    "form": {
+        "sourcearmor": "0xED8|Skyrim.esm"
+    },
+    "int": {
+        "value": 125
+    },
+    "float": {
+        "skillreq": 20.0,
+        "weight": 6.0
+    },
+    "string": {
+        "cobjname": "Break Studded Imperial Armor to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/StuddedImperialArmor.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "bra",
+            "thong",
+            "abs",
+            "tasset",
+            "misc"
+        ]
+    },
+    "formList": {
+        "bra": [
+            "0x913|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "thong": [
+            "0x91C|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "abs": [
+            "0x91E|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "tasset": [
+            "0x93A|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "misc": [
+            "0x934|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ]
+    }
+}

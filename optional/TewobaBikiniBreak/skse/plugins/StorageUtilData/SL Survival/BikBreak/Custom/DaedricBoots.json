@@ -1,0 +1,33 @@
+{
+    "form": {
+        "sourcearmor": "0x96A|Skyrim.esm"
+    },
+    "int": {
+        "value": 625
+    },
+    "float": {
+        "skillreq": 90.0,
+        "weight": 10.0
+    },
+    "string": {
+        "cobjname": "Break Daedric Boots to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/DaedricBoots.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "boots",
+            "thigh"
+        ]
+    },
+    "formList": {
+        "boots": [
+            "0x8AD|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "thigh": [
+            "0x8B3|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x8B9|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "poleyn": []
+    }
+}

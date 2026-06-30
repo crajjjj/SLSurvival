@@ -1,0 +1,38 @@
+{
+    "form": {
+        "sourcearmor": "0x93A|Skyrim.esm"
+    },
+    "int": {
+        "value": 190
+    },
+    "float": {
+        "skillreq": 70.0,
+        "weight": 2.0
+    },
+    "string": {
+        "cobjname": "Break Glass Gauntlets to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/GlassGaunlets.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "gloves",
+            "pauldronr",
+            "pauldronl"
+        ]
+    },
+    "formList": {
+        "gloves": [
+            "0x872|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "bracers": [],
+        "pauldron": [],
+        "pauldronl": [
+            "0x88E|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "pauldronr": [
+            "0x87C|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "elbow": []
+    }
+}

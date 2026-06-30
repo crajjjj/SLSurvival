@@ -1,0 +1,57 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "118178|Dragonborn.esm"
+	},
+	"int" :
+	{
+		"value" : 1650,
+		"weight" : 38
+	},
+	"float" :
+	{
+		"skillreq" : 80.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Stalhrim Cuirass To Bikini Parts",
+		"modelpath" : "dlc02/armor/stahlrimlight/f/cuirass_0.nif",
+		"modname" : "StalhrimBikini.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"bra",
+			"thong",
+			"abs",
+			"tasset"
+		]
+	},
+	"formList" : 
+	{
+		"bra" : 
+		[
+			"26050|StalhrimBikini.esp",
+			"26051|StalhrimBikini.esp",
+			"26052|StalhrimBikini.esp",
+			"26053|StalhrimBikini.esp"
+		],
+		"thong" : 
+		[
+			"26091|StalhrimBikini.esp",
+			"26092|StalhrimBikini.esp",
+			"26095|StalhrimBikini.esp"
+		],
+		"abs" : 
+		[
+			"26075|StalhrimBikini.esp",
+			"26076|StalhrimBikini.esp"
+
+		],
+		"tasset" : 
+		[
+			"26067|StalhrimBikini.esp"
+		]
+	}
+}

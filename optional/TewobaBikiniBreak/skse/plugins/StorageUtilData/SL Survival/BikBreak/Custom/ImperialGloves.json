@@ -1,0 +1,41 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "79572|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 55
+	},
+	"float" :
+	{
+		"skillreq" : 35.0,
+		"weight" : 6.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Imperial Gloves To Bikini Parts",
+		"modelpath" : "armor/imperial/f/gauntletsheavy_0.nif",
+		"modname" : "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"gloves",
+			"pauldron"
+		]
+	},
+	"formList" : 
+	{
+		"gloves" : 
+		[
+			"2292|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"pauldron" : 
+		[
+			"2303|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2302|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		]
+	}
+}

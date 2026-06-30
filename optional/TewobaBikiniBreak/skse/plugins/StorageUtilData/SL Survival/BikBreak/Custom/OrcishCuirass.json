@@ -1,0 +1,63 @@
+{	
+	"form" :
+	{
+		"sourcearmor" : "80215|Skyrim.esm"
+	},
+	"int" :
+	{
+		"value" : 1000,
+		"weight" : 39
+	},
+	"float" :
+	{
+		"skillreq" : 60.0
+	},
+	"string" :
+	{
+		"cobjname" : "Break Orcish Cuirass To Bikini Parts",
+		"modelpath" : "armor/orcish/cuirassf_0.nif",
+		"modname" : "The Amazing World of Bikini Armors REMASTERED.esp"
+	},
+	"stringList" :
+	{
+		"parts" :
+		[
+			"bra",
+			"chestr",
+			"thong",
+			"abs",
+			"tasset"
+		]
+	},
+	"formList" : 
+	{
+		"bra" : 
+		[
+			"400384|The Amazing World of Bikini Armors REMASTERED.esp",
+			"55392|The Amazing World of Bikini Armors REMASTERED.esp",
+			"56823|The Amazing World of Bikini Armors REMASTERED.esp",
+			"56825|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"chestr" : 
+		[
+			"56833|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"thong" : 
+		[
+			"55394|The Amazing World of Bikini Armors REMASTERED.esp",
+			"55396|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"abs" : 
+		[
+			"55398|The Amazing World of Bikini Armors REMASTERED.esp",
+			"55400|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"tasset" : 
+		[
+			"56815|The Amazing World of Bikini Armors REMASTERED.esp",
+			"56817|The Amazing World of Bikini Armors REMASTERED.esp",
+			"56821|The Amazing World of Bikini Armors REMASTERED.esp",
+			"56819|The Amazing World of Bikini Armors REMASTERED.esp"
+		]
+	}
+}

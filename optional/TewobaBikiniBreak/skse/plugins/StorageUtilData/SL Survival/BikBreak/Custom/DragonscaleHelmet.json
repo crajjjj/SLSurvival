@@ -1,0 +1,36 @@
+{
+    "form": {
+        "sourcearmor": "0x940|Skyrim.esm"
+    },
+    "int": {
+        "value": 750
+    },
+    "float": {
+        "skillreq": 100.0,
+        "weight": 4.0
+    },
+    "string": {
+        "cobjname": "Break Dragonscale Helmet to Bikini",
+        "modelpath": "SL Survival/BikiniBreakdown/Custom/DragonscaleHelmet.nif",
+        "modname": "(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+    },
+    "stringList": {
+        "parts": [
+            "circlet",
+            "faceguard",
+            "gorget"
+        ]
+    },
+    "formList": {
+        "circlet": [
+            "0x8C5|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "faceguard": [
+            "0x8CA|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+            "0x8F2|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ],
+        "gorget": [
+            "0x8CB|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+        ]
+    }
+}
