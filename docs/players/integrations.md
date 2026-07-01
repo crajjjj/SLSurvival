@@ -39,8 +39,8 @@ You don't need any of these. Install the ones you want and SLS adapts.
 | Apropos 2 | Wear-and-tear scene descriptions |
 | SexLab Dialogues | Extra dialogue/rest effect |
 | Creature Framework | Creature mod framework support |
-| SlaveTats | Renders SLS-driven marks (cum, tattoos) on the body |
-| Rape Tattoos | Tattoo application option |
+| SlaveTats | Tattoo/overlay integration for SLS-applied body marks |
+| Rape Tattoos | Tattoo integration |
 
 ## Body, cum & scaling
 
