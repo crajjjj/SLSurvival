@@ -1,56 +1,53 @@
 {
-	"string" : 
-	{
-		"bikinimodname" : "The Amazing World of Bikini Armors REMASTERED.esp"
+	"string": {
+		"bikinimodname": "The Amazing World of Bikini Armors REMASTERED.esp"
 	},
-	"formList" : 
-	{
-		"hide" : 
-		[
-                        "91426|The Amazing World of Bikini Armors REMASTERED.esp",
-                        "91446|The Amazing World of Bikini Armors REMASTERED.esp",
-                        "91430|The Amazing World of Bikini Armors REMASTERED.esp",
-                        "91428|The Amazing World of Bikini Armors REMASTERED.esp",
-                        "91448|The Amazing World of Bikini Armors REMASTERED.esp",
-                        "91436|The Amazing World of Bikini Armors REMASTERED.esp",
-                        "91438|The Amazing World of Bikini Armors REMASTERED.esp",
-                        "91440|The Amazing World of Bikini Armors REMASTERED.esp",
-                        "91442|The Amazing World of Bikini Armors REMASTERED.esp",
-                        "91444|The Amazing World of Bikini Armors REMASTERED.esp",
-                        "91434|The Amazing World of Bikini Armors REMASTERED.esp",
-                        "91450|The Amazing World of Bikini Armors REMASTERED.esp",
-                        "91452|The Amazing World of Bikini Armors REMASTERED.esp",
-                        "91432|The Amazing World of Bikini Armors REMASTERED.esp",
-                        "2419|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
-                        "2407|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
-                        "2427|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
-                        "2409|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
-                        "2416|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
-                        "2417|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
-                        "2418|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
-                        "2406|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
-                        "2410|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
-                        "2428|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
-                        "2403|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
-                        "2422|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
-                        "2423|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
-                        "2424|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
-                        "2425|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
-                        "2426|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
-                        "2412|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
-                        "2415|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
-                        "2404|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
-                        "211854|LADX_SSE.esp",
-                        "211855|LADX_SSE.esp",
-                        "224277|LADX_SSE.esp",
-                        "1181850|LADX_SSE.esp",
-                        "211856|LADX_SSE.esp",
-                        "211857|LADX_SSE.esp",
-                        "211858|LADX_SSE.esp"
-
+	"formList": {
+		"hide": [
+			"91426|The Amazing World of Bikini Armors REMASTERED.esp",
+			"91446|The Amazing World of Bikini Armors REMASTERED.esp",
+			"91430|The Amazing World of Bikini Armors REMASTERED.esp",
+			"91428|The Amazing World of Bikini Armors REMASTERED.esp",
+			"91448|The Amazing World of Bikini Armors REMASTERED.esp",
+			"91436|The Amazing World of Bikini Armors REMASTERED.esp",
+			"91438|The Amazing World of Bikini Armors REMASTERED.esp",
+			"91440|The Amazing World of Bikini Armors REMASTERED.esp",
+			"91442|The Amazing World of Bikini Armors REMASTERED.esp",
+			"91444|The Amazing World of Bikini Armors REMASTERED.esp",
+			"91434|The Amazing World of Bikini Armors REMASTERED.esp",
+			"91450|The Amazing World of Bikini Armors REMASTERED.esp",
+			"91452|The Amazing World of Bikini Armors REMASTERED.esp",
+			"91432|The Amazing World of Bikini Armors REMASTERED.esp",
+			"2419|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2407|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2427|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2409|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2416|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2417|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2418|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2406|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2410|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2428|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2403|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2422|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2423|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2424|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2425|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2426|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2412|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2415|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2404|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
 		],
-		"leather" : 
-		[
+		"hide__LADX_disabled": [
+			"211854|LADX_SSE.esp",
+			"211855|LADX_SSE.esp",
+			"224277|LADX_SSE.esp",
+			"1181850|LADX_SSE.esp",
+			"211856|LADX_SSE.esp",
+			"211857|LADX_SSE.esp",
+			"211858|LADX_SSE.esp"
+		],
+		"leather": [
 			"7585|The Amazing World of Bikini Armors REMASTERED.esp",
 			"7587|The Amazing World of Bikini Armors REMASTERED.esp",
 			"4805|The Amazing World of Bikini Armors REMASTERED.esp",
@@ -81,7 +78,9 @@
 			"2336|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
 			"2331|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
 			"2332|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
-			"2323|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2323|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"leather__LADX_disabled": [
 			"68310|LADX_SSE.esp",
 			"68311|LADX_SSE.esp",
 			"68314|LADX_SSE.esp",
@@ -173,10 +172,8 @@
 			"4809|LADX_SSE.esp",
 			"14463|LADX_SSE.esp",
 			"4807|LADX_SSE.esp"
-
 		],
-		"iron" : 
-		[
+		"iron": [
 			"13236|The Amazing World of Bikini Armors REMASTERED.esp",
 			"13238|The Amazing World of Bikini Armors REMASTERED.esp",
 			"13240|The Amazing World of Bikini Armors REMASTERED.esp",
@@ -258,7 +255,9 @@
 			"2355|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
 			"2362|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
 			"2056|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
-			"2057|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2057|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"iron__LADX_disabled": [
 			"3426|LADX_SSE.esp",
 			"3430|LADX_SSE.esp",
 			"3432|LADX_SSE.esp",
@@ -271,10 +270,8 @@
 			"13111|LADX_SSE.esp",
 			"8964|LADX_SSE.esp",
 			"7583|LADX_SSE.esp"
-
 		],
-		"steel" : 
-		[
+		"steel": [
 			"16150|The Amazing World of Bikini Armors REMASTERED.esp",
 			"16152|The Amazing World of Bikini Armors REMASTERED.esp",
 			"16154|The Amazing World of Bikini Armors REMASTERED.esp",
@@ -361,7 +358,9 @@
 			"2077|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
 			"2073|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
 			"2068|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
-			"2064|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
+			"2064|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
+		],
+		"steel__LADX_disabled": [
 			"662661|LADX_SSE.esp",
 			"662678|LADX_SSE.esp",
 			"662666|LADX_SSE.esp",
@@ -383,10 +382,8 @@
 			"169077|LADX_SSE.esp",
 			"662664|LADX_SSE.esp",
 			"158032|LADX_SSE.esp"
-
 		],
-		"steelplate" : 
-		[
+		"steelplate": [
 			"14054|The Amazing World of Bikini Armors REMASTERED.esp",
 			"14055|The Amazing World of Bikini Armors REMASTERED.esp",
 			"14056|The Amazing World of Bikini Armors REMASTERED.esp",
@@ -512,10 +509,8 @@
 			"9044|The Amazing World of Bikini Armors REMASTERED.esp",
 			"9046|The Amazing World of Bikini Armors REMASTERED.esp",
 			"9048|The Amazing World of Bikini Armors REMASTERED.esp"
-
 		],
-		"dwarven" : 
-		[
+		"dwarven": [
 			"55398|The Amazing World of Bikini Armors REMASTERED.esp",
 			"55400|The Amazing World of Bikini Armors REMASTERED.esp",
 			"400384|The Amazing World of Bikini Armors REMASTERED.esp",
@@ -612,11 +607,8 @@
 			"78769|The Amazing World of Bikini Armors REMASTERED.esp",
 			"2052|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
 			"2081|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
-
-
 		],
-		"falmer" : 
-		[
+		"falmer": [
 			"59673|The Amazing World of Bikini Armors REMASTERED.esp",
 			"59675|The Amazing World of Bikini Armors REMASTERED.esp",
 			"59677|The Amazing World of Bikini Armors REMASTERED.esp",
@@ -667,42 +659,6 @@
 			"58286|The Amazing World of Bikini Armors REMASTERED.esp",
 			"59669|The Amazing World of Bikini Armors REMASTERED.esp",
 			"59671|The Amazing World of Bikini Armors REMASTERED.esp",
-			"355432|LADX_SSE.esp",
-			"366464|LADX_SSE.esp",
-			"662910|LADX_SSE.esp",
-			"662920|LADX_SSE.esp",
-			"323666|LADX_SSE.esp",
-			"349912|LADX_SSE.esp",
-			"349910|LADX_SSE.esp",
-			"323668|LADX_SSE.esp",
-			"354052|LADX_SSE.esp",
-			"662914|LADX_SSE.esp",
-			"662922|LADX_SSE.esp",
-			"349914|LADX_SSE.esp",
-			"285014|LADX_SSE.esp",
-			"746206|LADX_SSE.esp",
-			"662513|LADX_SSE.esp",
-			"746207|LADX_SSE.esp",
-			"320918|LADX_SSE.esp",
-			"746208|LADX_SSE.esp",
-			"662521|LADX_SSE.esp",
-			"746216|LADX_SSE.esp",
-			"662526|LADX_SSE.esp",
-			"746209|LADX_SSE.esp",
-			"312630|LADX_SSE.esp",
-			"746210|LADX_SSE.esp",
-			"662511|LADX_SSE.esp",
-			"746211|LADX_SSE.esp",
-			"662527|LADX_SSE.esp",
-			"746212|LADX_SSE.esp",
-			"280876|LADX_SSE.esp",
-			"746214|LADX_SSE.esp",
-			"254650|LADX_SSE.esp",
-			"746215|LADX_SSE.esp",
-			"307112|LADX_SSE.esp",
-			"746217|LADX_SSE.esp",
-			"304353|LADX_SSE.esp",
-			"746213|LADX_SSE.esp",
 			"27397|The Amazing World of Bikini Armors REMASTERED.esp",
 			"28790|The Amazing World of Bikini Armors REMASTERED.esp",
 			"32952|The Amazing World of Bikini Armors REMASTERED.esp",
@@ -754,10 +710,46 @@
 			"32977|The Amazing World of Bikini Armors REMASTERED.esp",
 			"32971|The Amazing World of Bikini Armors REMASTERED.esp",
 			"30186|The Amazing World of Bikini Armors REMASTERED.esp"
-
 		],
-		"wolf" : 
-		[
+		"falmer__LADX_disabled": [
+			"355432|LADX_SSE.esp",
+			"366464|LADX_SSE.esp",
+			"662910|LADX_SSE.esp",
+			"662920|LADX_SSE.esp",
+			"323666|LADX_SSE.esp",
+			"349912|LADX_SSE.esp",
+			"349910|LADX_SSE.esp",
+			"323668|LADX_SSE.esp",
+			"354052|LADX_SSE.esp",
+			"662914|LADX_SSE.esp",
+			"662922|LADX_SSE.esp",
+			"349914|LADX_SSE.esp",
+			"285014|LADX_SSE.esp",
+			"746206|LADX_SSE.esp",
+			"662513|LADX_SSE.esp",
+			"746207|LADX_SSE.esp",
+			"320918|LADX_SSE.esp",
+			"746208|LADX_SSE.esp",
+			"662521|LADX_SSE.esp",
+			"746216|LADX_SSE.esp",
+			"662526|LADX_SSE.esp",
+			"746209|LADX_SSE.esp",
+			"312630|LADX_SSE.esp",
+			"746210|LADX_SSE.esp",
+			"662511|LADX_SSE.esp",
+			"746211|LADX_SSE.esp",
+			"662527|LADX_SSE.esp",
+			"746212|LADX_SSE.esp",
+			"280876|LADX_SSE.esp",
+			"746214|LADX_SSE.esp",
+			"254650|LADX_SSE.esp",
+			"746215|LADX_SSE.esp",
+			"307112|LADX_SSE.esp",
+			"746217|LADX_SSE.esp",
+			"304353|LADX_SSE.esp",
+			"746213|LADX_SSE.esp"
+		],
+		"wolf": [
 			"65560|The Amazing World of Bikini Armors REMASTERED.esp",
 			"65554|The Amazing World of Bikini Armors REMASTERED.esp",
 			"65556|The Amazing World of Bikini Armors REMASTERED.esp",
@@ -815,10 +807,8 @@
 			"35812|The Amazing World of Bikini Armors REMASTERED.esp",
 			"35814|The Amazing World of Bikini Armors REMASTERED.esp",
 			"35808|The Amazing World of Bikini Armors REMASTERED.esp"
-
 		],
-		"blades" : 
-		[
+		"blades": [
 			"2171|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
 			"2167|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
 			"2165|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
@@ -835,38 +825,6 @@
 			"2159|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
 			"2160|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
 			"2161|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
-			"662475|LADX_SSE.esp",
-			"746220|LADX_SSE.esp",
-			"326432|LADX_SSE.esp",
-			"326438|LADX_SSE.esp",
-			"326444|LADX_SSE.esp",
-			"326450|LADX_SSE.esp",
-			"662481|LADX_SSE.esp",
-			"746221|LADX_SSE.esp",
-			"746222|LADX_SSE.esp",
-			"746223|LADX_SSE.esp",
-			"746224|LADX_SSE.esp",
-			"746225|LADX_SSE.esp",
-			"1181848|LADX_SSE.esp",
-			"662480|LADX_SSE.esp",
-			"746226|LADX_SSE.esp",
-			"232576|LADX_SSE.esp",
-			"746227|LADX_SSE.esp",
-			"366560|LADX_SSE.esp",
-			"746231|LADX_SSE.esp",
-			"366550|LADX_SSE.esp",
-			"746229|LADX_SSE.esp",
-			"366555|LADX_SSE.esp",
-			"746230|LADX_SSE.esp",
-			"366545|LADX_SSE.esp",
-			"746228|LADX_SSE.esp",
-			"366565|LADX_SSE.esp",
-			"746232|LADX_SSE.esp",
-			"225664|LADX_SSE.esp",
-			"326426|LADX_SSE.esp",
-			"662478|LADX_SSE.esp",
-			"746233|LADX_SSE.esp",
-			"746234|LADX_SSE.esp",
 			"74476|The Amazing World of Bikini Armors REMASTERED.esp",
 			"74478|The Amazing World of Bikini Armors REMASTERED.esp",
 			"75893|The Amazing World of Bikini Armors REMASTERED.esp",
@@ -910,7 +868,41 @@
 			"74498|The Amazing World of Bikini Armors REMASTERED.esp",
 			"74504|The Amazing World of Bikini Armors REMASTERED.esp",
 			"74506|The Amazing World of Bikini Armors REMASTERED.esp",
-			"75895|The Amazing World of Bikini Armors REMASTERED.esp",
+			"75895|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"blades__LADX_disabled": [
+			"662475|LADX_SSE.esp",
+			"746220|LADX_SSE.esp",
+			"326432|LADX_SSE.esp",
+			"326438|LADX_SSE.esp",
+			"326444|LADX_SSE.esp",
+			"326450|LADX_SSE.esp",
+			"662481|LADX_SSE.esp",
+			"746221|LADX_SSE.esp",
+			"746222|LADX_SSE.esp",
+			"746223|LADX_SSE.esp",
+			"746224|LADX_SSE.esp",
+			"746225|LADX_SSE.esp",
+			"1181848|LADX_SSE.esp",
+			"662480|LADX_SSE.esp",
+			"746226|LADX_SSE.esp",
+			"232576|LADX_SSE.esp",
+			"746227|LADX_SSE.esp",
+			"366560|LADX_SSE.esp",
+			"746231|LADX_SSE.esp",
+			"366550|LADX_SSE.esp",
+			"746229|LADX_SSE.esp",
+			"366555|LADX_SSE.esp",
+			"746230|LADX_SSE.esp",
+			"366545|LADX_SSE.esp",
+			"746228|LADX_SSE.esp",
+			"366565|LADX_SSE.esp",
+			"746232|LADX_SSE.esp",
+			"225664|LADX_SSE.esp",
+			"326426|LADX_SSE.esp",
+			"662478|LADX_SSE.esp",
+			"746233|LADX_SSE.esp",
+			"746234|LADX_SSE.esp",
 			"662615|LADX_SSE.esp",
 			"662571|LADX_SSE.esp",
 			"280864|LADX_SSE.esp",
@@ -933,11 +925,8 @@
 			"276712|LADX_SSE.esp",
 			"276715|LADX_SSE.esp",
 			"276718|LADX_SSE.esp"
-
-
 		],
-		"ebony" : 
-		[
+		"ebony": [
 			"2228|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
 			"2234|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
 			"2222|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
@@ -961,32 +950,6 @@
 			"2232|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
 			"2226|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
 			"2219|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
-			"662495|LADX_SSE.esp",
-			"662486|LADX_SSE.esp",
-			"662500|LADX_SSE.esp",
-			"662499|LADX_SSE.esp",
-			"579383|LADX_SSE.esp",
-			"389945|LADX_SSE.esp",
-			"662491|LADX_SSE.esp",
-			"389947|LADX_SSE.esp",
-			"389941|LADX_SSE.esp",
-			"389943|LADX_SSE.esp",
-			"620862|LADX_SSE.esp",
-			"662497|LADX_SSE.esp",
-			"662488|LADX_SSE.esp",
-			"662696|LADX_SSE.esp",
-			"662705|LADX_SSE.esp",
-			"662716|LADX_SSE.esp",
-			"229810|LADX_SSE.esp",
-			"662715|LADX_SSE.esp",
-			"1181871|LADX_SSE.esp",
-			"662694|LADX_SSE.esp",
-			"228422|LADX_SSE.esp",
-			"229812|LADX_SSE.esp",
-			"229808|LADX_SSE.esp",
-			"247753|LADX_SSE.esp",
-			"662708|LADX_SSE.esp",
-			"662717|LADX_SSE.esp",
 			"81551|The Amazing World of Bikini Armors REMASTERED.esp",
 			"81553|The Amazing World of Bikini Armors REMASTERED.esp",
 			"81555|The Amazing World of Bikini Armors REMASTERED.esp",
@@ -1018,7 +981,35 @@
 			"84357|The Amazing World of Bikini Armors REMASTERED.esp",
 			"84359|The Amazing World of Bikini Armors REMASTERED.esp",
 			"84361|The Amazing World of Bikini Armors REMASTERED.esp",
-			"84363|The Amazing World of Bikini Armors REMASTERED.esp",
+			"84363|The Amazing World of Bikini Armors REMASTERED.esp"
+		],
+		"ebony__LADX_disabled": [
+			"662495|LADX_SSE.esp",
+			"662486|LADX_SSE.esp",
+			"662500|LADX_SSE.esp",
+			"662499|LADX_SSE.esp",
+			"579383|LADX_SSE.esp",
+			"389945|LADX_SSE.esp",
+			"662491|LADX_SSE.esp",
+			"389947|LADX_SSE.esp",
+			"389941|LADX_SSE.esp",
+			"389943|LADX_SSE.esp",
+			"620862|LADX_SSE.esp",
+			"662497|LADX_SSE.esp",
+			"662488|LADX_SSE.esp",
+			"662696|LADX_SSE.esp",
+			"662705|LADX_SSE.esp",
+			"662716|LADX_SSE.esp",
+			"229810|LADX_SSE.esp",
+			"662715|LADX_SSE.esp",
+			"1181871|LADX_SSE.esp",
+			"662694|LADX_SSE.esp",
+			"228422|LADX_SSE.esp",
+			"229812|LADX_SSE.esp",
+			"229808|LADX_SSE.esp",
+			"247753|LADX_SSE.esp",
+			"662708|LADX_SSE.esp",
+			"662717|LADX_SSE.esp",
 			"662633|LADX_SSE.esp",
 			"662643|LADX_SSE.esp",
 			"662619|LADX_SSE.esp",
@@ -1027,11 +1018,8 @@
 			"662631|LADX_SSE.esp",
 			"305740|LADX_SSE.esp",
 			"662647|LADX_SSE.esp"
-
-
 		],
-		"dragonbone" : 
-		[
+		"dragonbone": [
 			"24537|The Amazing World of Bikini Armors REMASTERED.esp",
 			"24539|The Amazing World of Bikini Armors REMASTERED.esp",
 			"24541|The Amazing World of Bikini Armors REMASTERED.esp",
@@ -1097,7 +1085,6 @@
 			"2283|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
 			"2254|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp",
 			"2246|(Pumpkin)-TEWOBA-TheExpandedWorldofBikiniArmor.esp"
-
 		]
 	}
 }
