@@ -37,25 +37,19 @@ theme:
 
 nav:
   - Home: index.md
-  - For Players:
-    - Getting Started: players/getting-started.md
-    - Needs & Survival: players/needs.md
-    - Licences: players/licences.md
-    - Tolls, Eviction & Gates: players/tolls-eviction-gates.md
-    - Misogyny & Inequality: players/misogyny.md
-    - Sex, Trauma & Effects: players/sex-and-effects.md
-    - Cum & Bukkake: players/cum.md
-    - Bikini Armors & EXP: players/bikini-armors.md
-    - Begging & Kennel: players/begging-kennel.md
-    - Stashes, Pickpocket & Dismemberment: players/stashes-pickpocket.md
-    - Mod Integrations: players/integrations.md
-    - MCM Reference: players/mcm-reference.md
-  - For Mod Authors:
-    - Overview: authors/overview.md
-    - Adapter Architecture: authors/adapter-architecture.md
-    - Adding an Integration: authors/adding-an-integration.md
-    - Papyrus Gotchas: authors/papyrus-gotchas.md
-    - Building from Source: authors/building.md
+  - Getting Started: players/getting-started.md
+  - Needs & Survival: players/needs.md
+  - Licences: players/licences.md
+  - Tolls, Eviction & Gates: players/tolls-eviction-gates.md
+  - Misogyny & Inequality: players/misogyny.md
+  - Sex, Trauma & Effects: players/sex-and-effects.md
+  - Cum & Bukkake: players/cum.md
+  - Bikini Armors & EXP: players/bikini-armors.md
+  - Begging & Kennel: players/begging-kennel.md
+  - Stashes, Pickpocket & Dismemberment: players/stashes-pickpocket.md
+  - Mod Integrations: players/integrations.md
+  - MCM Reference: players/mcm-reference.md
+  - Internals: internals.md
 
 markdown_extensions:
   - admonition

@@ -3,7 +3,7 @@
 SexLab Survival's signature design is that it plays well with a large ecosystem of optional survival and LoversLab mods. Every one of these integrations is **dormant until SLS detects the other mod** — if a supported mod is present its features light up; if it's absent SLS quietly skips it, with no broken quests and no missing-master errors from the integration itself.
 
 !!! note "How this works under the hood"
-    Each integration is gated behind a mod-presence check (`Game.GetModByName(...)`) and, for most, a paired adapter layer. The technical design is documented for mod authors on the [Adapter Architecture](../authors/adapter-architecture.md) page.
+    Each integration is gated behind a mod-presence check (`Game.GetModByName(...)`) and, for most, a paired adapter layer. The technical design is documented on the [Internals](../internals.md#adapter-architecture-the-important-part) page.
 
 You don't need any of these. Install the ones you want and SLS adapts.
 
