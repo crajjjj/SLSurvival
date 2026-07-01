@@ -1,3 +1,6 @@
+Documentation site (GitHub Pages, built from docs/ via .github/workflows/docs.yml)
+https://crajjjj.github.io/SLSurvival/
+
 Dev env setup manual
 https://gist.github.com/mrowrpurr/e164735e14ee6d07daf4f4217caf3714
 Video
