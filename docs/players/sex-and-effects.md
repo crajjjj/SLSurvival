@@ -20,7 +20,7 @@ Sex can become a need in its own right. **Compulsive Sex** builds an urge over t
 
 ## Other options
 
-Beyond the effects above, the **Sex & Effects** page carries a number of additional, harder-edged optional mechanics. These are off or configurable in the MCM and are not detailed here — review the in-game page and enable only what suits your playthrough.
+Beyond the effects above, the **Sex & Effects** page carries a number of additional, harder-edged optional mechanics, off or configurable in the MCM. Review the in-game page and enable only what suits your playthrough.
 
 ## Trauma
 

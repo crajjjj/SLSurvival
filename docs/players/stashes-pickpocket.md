@@ -16,7 +16,7 @@ This is set on the **Pickpocket & Dismemberment** page — tune how much your re
 
 ## Other options
 
-The **Pickpocket & Dismemberment** page also holds an optional hardcore punishment mechanic. It is off by default and configurable in the MCM; it is not detailed here — review the in-game page and enable only what suits your playthrough.
+The **Pickpocket & Dismemberment** page also holds an optional hardcore punishment mechanic, off by default and configurable in the MCM. Review the in-game page and enable only what suits your playthrough.
 
 !!! note
     Stashes are configured on the **Stashes** MCM page; pickpocket rules and the page's other options live on the **Pickpocket & Dismemberment** MCM page.

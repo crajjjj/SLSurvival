@@ -15,7 +15,7 @@ The per-drop amount and how readily citizens give are configurable in the MCM. E
 
 ## Other options
 
-The **Begging & Kennel** page also holds additional, harder-edged optional mechanics tied to confinement and slavery-themed content. These are off or configurable in the MCM and are not detailed here — enable only what suits your playthrough.
+The **Begging & Kennel** page also holds additional, harder-edged optional mechanics tied to confinement and slavery-themed content, off or configurable in the MCM. Enable only what suits your playthrough.
 
 !!! note
     Begging and the page's other options are all configured on the **Begging & Kennel** MCM page.
