@@ -10,11 +10,7 @@
   <a href="https://github.com/crajjjj/SLSurvival/releases/latest"><img src="https://img.shields.io/github/v/release/crajjjj/SLSurvival?label=release" alt="Latest release"></a>
   <img src="https://img.shields.io/badge/Skyrim-SE%2FAE-orange" alt="Skyrim SE/AE">
   <img src="https://img.shields.io/badge/scripting-pure%20Papyrus-8A2BE2" alt="Pure Papyrus">
-  <img src="https://img.shields.io/badge/content-18%2B-black" alt="18+ content"><br>
-  <a href="https://github.com/crajjjj/SLSurvival/releases"><img src="https://img.shields.io/github/downloads/crajjjj/SLSurvival/total" alt="Total downloads"></a>
-  <img src="https://img.shields.io/github/last-commit/crajjjj/SLSurvival" alt="Last commit">
-  <img src="https://img.shields.io/github/languages/top/crajjjj/SLSurvival" alt="Top language">
-  <img src="https://img.shields.io/github/repo-size/crajjjj/SLSurvival" alt="Repo size">
+  <img src="https://img.shields.io/badge/content-18%2B-black" alt="18+ content">
 </p>
 
 A large Skyrim SE gameplay and survival overhaul — needs, licences, tolls, misogyny, and dozens of optional LoversLab / survival mod integrations, all behind a resilient adapter layer. **Pure Papyrus**, no SKSE plugin of its own.
