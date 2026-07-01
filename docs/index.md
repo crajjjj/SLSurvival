@@ -6,8 +6,8 @@ A large Skyrim SE gameplay and survival overhaul. It layers a web of interlockin
 
 SexLab Survival is **pure Papyrus** — it ships no SKSE plugin of its own. Everything is driven by scripts, a single plugin (`SL Survival.esp`), and a packed archive of assets.
 
-!!! warning "Adult content"
-    SexLab Survival is a mature (18+) mod built on the SexLab framework. It depends on adult mods from [LoversLab](https://www.loverslab.com/files/file/5914-sexlab-survival/) and is not available on the Nexus. These docs describe gameplay systems and configuration; install the mod only where that is appropriate.
+!!! warning "Adult mod — reference documentation"
+    SexLab Survival is a mature (18+) Skyrim mod built on the SexLab framework. **These pages are reference documentation:** they describe the mod's gameplay systems, MCM options, and mod compatibility so players can configure it and authors can integrate with it. They contain no pornographic media and exist to document software behaviour, not to depict sexual content. Install and use the mod only where appropriate for your age and local laws.
 
 ## Start here
 
@@ -20,7 +20,7 @@ New to the mod? Read [Getting Started](players/getting-started.md) — requireme
 - [Tolls, Eviction & Gates](players/tolls-eviction-gates.md) — city gate tolls, inn eviction, and paying your way in
 - [Misogyny & Inequality](players/misogyny.md) — how the world treats a woman with no licences
 - [Sex, Trauma & Effects](players/sex-and-effects.md) — sex experience, corruption, ahegao, trauma and arousal effects
-- [Cum & Bukkake](players/cum.md) — cum layering, visibility, cleaning up, and the social consequences
+- [Cum](players/cum.md) — the cum-overlay state, its visibility, and cleaning it off
 - [Bikini Armors & EXP](players/bikini-armors.md) — the bikini-armor rating system and skill EXP tuning
 - [Begging & Kennel](players/begging-kennel.md) — earning coin the hard way, and the kennel
 - [Stashes, Pickpocket & Dismemberment](players/stashes-pickpocket.md) — hidden stashes, pickpocket rules, and the grimmer penalties

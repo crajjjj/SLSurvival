@@ -22,7 +22,7 @@ Some partners corrupt you. **Creature Corruption** and **Dremora Orgasms Corrupt
 
 Sex can become a need in its own right. **Compulsive Sex** builds an urge over time, governed by **Time Between Fucks** — the longer you go without, the stronger the compulsion pushing you back toward it. It turns abstinence into its own kind of pressure rather than a neutral choice.
 
-## Enjoyment & rape mechanics
+## Arousal thresholds & assault gates
 
 - **Cock Size Bonus Enjoyment** ties how much your character gets out of an encounter to her partner's size, adding a bit of variety to how different encounters land.
 - **Minimum Rapist Arousal** sets the arousal threshold an NPC must cross before non-consensual events become possible — a gate on when the world can turn on you.
@@ -32,7 +32,7 @@ Sex can become a need in its own right. **Compulsive Sex** builds an urge over t
 
 The **Trauma** page models the psychological after-effects of assault. Rather than an encounter ending cleanly, it can leave your character shaken, with knock-on effects that persist afterward. It's the mental counterpart to the physical marks the rest of these systems leave — and, like the rest, something you can dial down or off if you'd rather keep encounters consequence-light.
 
-See also [Cum & Bukkake](cum.md) for the visible residue an encounter leaves and the social fallout that follows.
+See also [Cum](cum.md) for the visible overlay an encounter leaves and the social fallout that follows.
 
 !!! note
     Everything here lives on the **Sex & Effects** and **Trauma** MCM pages. Each system — experience, corruption, ahegao, jiggles, compulsion, the rape gates, and trauma — can be tuned or disabled individually there.

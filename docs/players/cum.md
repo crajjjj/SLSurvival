@@ -1,14 +1,14 @@
-# Cum & Bukkake
+# Cum
 
-After sex, SexLab Survival doesn't just fade to black and move on — it leaves visible evidence on your character. Cum layers onto the player as a texture, builds up over repeated encounters, becomes something the world can see, and has to be dealt with. This page covers the **Cum** MCM page.
+This page covers the **Cum** MCM page. After a sex scene, SLS applies a body-texture overlay that accumulates in stages, can be noticed by NPCs, and has to be cleaned off. Mechanically it behaves like one of the mod's tracked states.
 
-## Visible layering
+## Overlay stages
 
-SLS renders cum on your character through the cum-texture systems (SlaveTats and compatible frameworks — see [Mod Integrations](integrations.md)). It applies in **layers**: one encounter marks you, several mark you more heavily. The residue accumulates rather than resetting after each scene, so a busy stretch leaves your character increasingly covered until you do something about it.
+SLS applies the overlay through cum-texture systems (SlaveTats and compatible frameworks — see [Mod Integrations](integrations.md)). It stacks in **stages**: additional scenes raise the stage, and the overlay persists across scenes until it is cleaned, rather than clearing automatically.
 
 ## Social visibility
 
-The layering isn't just cosmetic. Cum is **socially visible** — NPCs notice a woman who's obviously been used, and that reads into the [Misogyny & Inequality](misogyny.md) system. Walking into town covered draws exactly the kind of contempt and attention that misogyny is built to dispense. It becomes one more thing about you the world reacts to, alongside exposure and arousal.
+The overlay is flagged as **socially visible**: NPCs can react to a character carrying it, which feeds the [Misogyny & Inequality](misogyny.md) system alongside exposure and arousal. It becomes one more tracked attribute the world responds to.
 
 ## A need in its own right
 

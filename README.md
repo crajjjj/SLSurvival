@@ -17,7 +17,7 @@ A large Skyrim SE gameplay and survival overhaul — needs, licences, tolls, mis
 
 **Original author:** Monoman1.
 
-> ⚠️ **Adult (18+) content.** Built on the SexLab framework and other LoversLab mods; not available on the Nexus.
+> ⚠️ **Adult (18+) mod.** Built on the SexLab framework and other LoversLab mods; not available on the Nexus. This repository holds the mod's **source and reference documentation** — it describes software behaviour and contains no pornographic media.
 
 ## Download
 
