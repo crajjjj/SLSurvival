@@ -44,6 +44,7 @@
                             <description>Integrates SL Survival's needs/fatigue/sleep with SunHelm Survival (adds the _SLS_IntShs/_SLS_InterfaceShs adapter and a SunHelm-aware _SLS_Needs/_SLS_SleepDeprivation, plus the SL Survival Sunhelm Patch.esp). REQUIRES SunHelm Survival (SunHelmSurvival.esp). Leave unchecked if you use iNeed/Frostfall/etc. instead.</description>
                             <files>
                                 <folder source="optional\SunHelm\scripts" destination="scripts" priority="1" />
+                                <folder source="optional\SunHelm\skse" destination="skse" priority="1" />
                                 <file source="optional\SunHelm\SL Survival Sunhelm Patch.esp" destination="SL Survival Sunhelm Patch.esp" priority="1" />
                             </files>
                             <typeDescriptor>
