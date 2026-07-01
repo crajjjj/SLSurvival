@@ -19,11 +19,11 @@ New to the mod? Read [Getting Started](players/getting-started.md) — requireme
 - [Licences](players/licences.md) — the permit system: weapons, dress, magic, freedom and how to buy them
 - [Tolls, Eviction & Gates](players/tolls-eviction-gates.md) — city gate tolls, inn eviction, and paying your way in
 - [Misogyny & Inequality](players/misogyny.md) — how the world treats a woman with no licences
-- [Sex, Trauma & Effects](players/sex-and-effects.md) — sex experience, corruption, ahegao, trauma and arousal effects
+- [Sex, Trauma & Effects](players/sex-and-effects.md) — sex experience, ahegao, jiggles, trauma and arousal effects
 - [Cum](players/cum.md) — the cum-overlay state, its visibility, and cleaning it off
 - [Bikini Armors & EXP](players/bikini-armors.md) — the bikini-armor rating system and skill EXP tuning
-- [Begging & Kennel](players/begging-kennel.md) — earning coin the hard way, and the kennel
-- [Stashes, Pickpocket & Dismemberment](players/stashes-pickpocket.md) — hidden stashes, pickpocket rules, and the grimmer penalties
+- [Begging](players/begging-kennel.md) — earning coin the hard way when the economy has stripped you
+- [Stashes & Pickpocket](players/stashes-pickpocket.md) — hidden stashes and pickpocket rules
 - [Mod Integrations](players/integrations.md) — the full list of supported optional mods and what each unlocks
 - [MCM Reference](players/mcm-reference.md) — every MCM page at a glance
 

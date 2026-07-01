@@ -8,7 +8,7 @@ When misogyny is enabled, being a woman in the wrong place with the wrong paperw
 
 - **Guard harassment.** Guards notice an unlicensed or naked woman and act on it — verbal contempt, demands, and enforcement of the licence system rather than simply ignoring you.
 - **Refusal of service.** Merchants, innkeepers and other NPCs can decline to deal with a woman who isn't presenting acceptably or lacks the licences that grant her standing.
-- **Forced events.** In the harshest cases the world doesn't just disapprove — it acts. Misogyny is what escalates a bad situation into something that happens *to* you rather than around you.
+- **Escalation.** Contempt doesn't always stay verbal — misogyny is what turns a bad reaction into harsher consequences. The harder-edged outcomes are optional and configured in the MCM.
 
 ## How it ties into licences
 

@@ -18,8 +18,8 @@ Quick reference to every page in the SexLab Survival MCM, in the order they appe
 | 9 | Licences 1 | Licence system (first page of options) | [Licences](licences.md) |
 | 10 | Licences 2 | Licence system (second page of options) | [Licences](licences.md) |
 | 11 | Stashes | Contraband/stash mechanics | [Stashes & Pickpocket](stashes-pickpocket.md) |
-| 12 | Begging & Kennel | Begging for coin and kennel confinement | [Begging & Kennel](begging-kennel.md) |
-| 13 | Pickpocket & Dismemberment | Pickpocket rules and dismemberment mechanics | [Stashes & Pickpocket](stashes-pickpocket.md) |
+| 12 | Begging & Kennel | Begging for coin and related options | [Begging](begging-kennel.md) |
+| 13 | Pickpocket & Dismemberment | Pickpocket rules and other options | [Stashes & Pickpocket](stashes-pickpocket.md) |
 | 14 | Bikini Armors & Exp | Bikini-armor rules and experience settings | [Bikini Armors](bikini-armors.md) |
 | 15 | Inn Room Prices | Inn/room pricing options | — |
 | 16 | Interfaces | Toggle detected mod integrations | [Mod Integrations](integrations.md) |

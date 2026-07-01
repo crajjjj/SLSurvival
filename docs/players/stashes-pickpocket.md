@@ -1,6 +1,6 @@
-# Stashes, Pickpocket & Dismemberment
+# Stashes & Pickpocket
 
-This page covers two related MCM pages: **Stashes**, and **Pickpocket & Dismemberment**. Together they deal with hiding what you own, the risks of taking what you don't, and — at the hardcore end — losing pieces of yourself as punishment.
+This page covers two related MCM pages: **Stashes**, and **Pickpocket & Dismemberment**. Together they deal with hiding what you own and the risks of taking what you don't.
 
 ## Stashes
 
@@ -14,22 +14,9 @@ SLS modifies vanilla pickpocketing rules. Devious effects change what your hands
 
 This is set on the **Pickpocket & Dismemberment** page — tune how much your restraints interfere with pickpocketing, or turn the restriction off.
 
-## Dismemberment
+## Other options
 
-Dismemberment is a **hardcore, opt-in punishment system**: as penalties escalate, limbs can be removed — **arms, legs, hands, feet** — as a lasting, visible consequence. It is the harshest tier of SLS's punishment ladder and ties into the [Misogyny & Inequality](misogyny.md) systems.
-
-You control exactly how it behaves:
-
-| Option | Effect |
-|--------|--------|
-| **Arms First** / **Legs First** | Which limbs are taken before others |
-| **One Level At A Time** | Escalate a single step per punishment |
-| **Max In One Chop** | Cap how much is removed at once |
-| **Everything** | Allow full removal |
-| **Up To Forearms Only** | Limit how far arm removal goes |
-
-!!! warning "Off by default, extreme by design"
-    Dismemberment is disabled unless you turn it on. It is permanent, punishing content — enable it only if you want that level of hardcore consequence, and set the escalation options above to bound how far it can go.
+The **Pickpocket & Dismemberment** page also holds an optional hardcore punishment mechanic. It is off by default and configurable in the MCM; it is not detailed here — review the in-game page and enable only what suits your playthrough.
 
 !!! note
-    Stashes are configured on the **Stashes** MCM page; pickpocket rules and every dismemberment option live on the **Pickpocket & Dismemberment** MCM page.
+    Stashes are configured on the **Stashes** MCM page; pickpocket rules and the page's other options live on the **Pickpocket & Dismemberment** MCM page.

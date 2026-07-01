@@ -27,7 +27,7 @@ You don't need any of these. Install the ones you want and SLS adapts.
 | Deviously Cursed Loot | Cursed-loot events are tracked and interact with SLS |
 | Devious Followers | Follower debt/will and resistance-loss mechanics |
 | ZaZ Animation Pack | Slave factions and bondage furniture effects |
-| Amputator Framework | Visual limb removal for the dismemberment system |
+| Amputator Framework | Optional visual-effects framework support |
 
 ## Sex frameworks, arousal & scenes
 
@@ -38,9 +38,9 @@ You don't need any of these. Install the ones you want and SLS adapts.
 | SexLab - Sexual Fame [SLSF] | Sexual-fame reputation feeds SLS |
 | Apropos 2 | Wear-and-tear scene descriptions |
 | SexLab Dialogues | Extra dialogue/rest effect |
-| Creature Framework | Creature-scene support |
+| Creature Framework | Creature mod framework support |
 | SlaveTats | Renders SLS-driven marks (cum, tattoos) on the body |
-| Rape Tattoos | Tattoo application offered as a toll/degradation option |
+| Rape Tattoos | Tattoo application option |
 
 ## Body, cum & scaling
 
@@ -63,9 +63,9 @@ You don't need any of these. Install the ones you want and SLS adapts.
 
 | Mod | What it unlocks |
 |-----|-----------------|
-| Slaverun Reloaded | Town enslavement rules that SLS responds to |
-| Simple Slavery | Enslavement handoff (e.g. failed kennel/rescue outcomes) |
-| Sanguine's Debauchery | Enslavement handoff as an alternative outcome |
+| Slaverun Reloaded | Slavery-themed content integration |
+| Simple Slavery | Handoff integration for certain failure outcomes |
+| Sanguine's Debauchery | Handoff integration as an alternative outcome |
 | TDF Aggressive Prostitution | Dancing offered as a toll payment |
 | SexLab Pay Crime (Pay Sex Crime) | Pay off bounties with sex |
 | Paradise Halls | Slave faction recognised |
@@ -75,7 +75,7 @@ You don't need any of these. Install the ones you want and SLS adapts.
 
 | Mod | What it unlocks |
 |-----|-----------------|
-| Fertility Mode **or** Beeing Female | Pregnancy/fertility state; provides the "Fertility" drug used in toll/rape drugging |
+| Fertility Mode **or** Beeing Female | Pregnancy/fertility state; provides the "Fertility" drug used in toll drug events |
 | Player Succubus Quest (PSQ) | Succubus state integration |
 | Extensible Follower Framework (EFF) | Follower framework support (e.g. followers stealing gold) |
 | FNIS Sexy Move | Walk-style integration |
@@ -83,7 +83,7 @@ You don't need any of these. Install the ones you want and SLS adapts.
 | yps Immersive Fashion | Piercings/hair/nails (requires the tweak version) |
 | Simply Knock | Knock-to-enter / trespassing handling (**Frostfall & Simply Knock** MCM page) |
 | JKs Skyrim | Adds the extra Riften gate as a toll door |
-| Dawnguard | Adds the husky voice type to the dog-cum race list |
+| Dawnguard | Adds a voice type used in creature-race handling |
 
 !!! note "The list evolves"
     Supported mods and their required versions change between SLS releases, and this table reflects the integrations present in the current source. Treat the [SexLab Survival LoversLab page](https://www.loverslab.com/files/file/5914-sexlab-survival/) as the authoritative, current list.

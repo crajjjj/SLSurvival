@@ -1,6 +1,6 @@
-# Begging & Kennel
+# Begging
 
-When tolls, licences and gates have bled your purse dry, SexLab Survival gives a woman at the bottom two grim ways to keep going: begging for coin in the streets, and — darker still — being kept in a kennel. Both live on the **Begging & Kennel** MCM page.
+When tolls, licences and gates have bled your purse dry, SexLab Survival gives a woman at the bottom a way to keep going: begging for coin in the streets. It lives on the **Begging & Kennel** MCM page.
 
 ## Begging
 
@@ -13,14 +13,9 @@ It is not a living wage. It is a floor — a way to scrape together enough coin 
 
 The per-drop amount and how readily citizens give are configurable in the MCM. Expect coppers, not fortunes.
 
-## Kennel
+## Other options
 
-The **Kennel** is a bleak housing and imprisonment option: instead of renting or owning a home, a woman can be kept in a kennel — housed like an animal rather than a citizen. It is the accommodation of someone who has lost, or never had, standing in town.
-
-The kennel ties into the mod's slavery themes and its Slaverun integration. Options such as **In Slaverun Towns** and **Auto Start Slaverun** govern where and when kennel/slavery behaviour applies, letting you scope this to Slaverun-affected settlements or let it begin automatically.
-
-!!! warning "Hardcore, opt-in themes"
-    Kennel and Slaverun content is heavy degradation/imprisonment material. It is gated behind these options for a reason — leave them off if you do not want this layer, and enable them only when you want that harsher play.
+The **Begging & Kennel** page also holds additional, harder-edged optional mechanics tied to confinement and slavery-themed content. These are off or configurable in the MCM and are not detailed here — enable only what suits your playthrough.
 
 !!! note
-    Both begging and the kennel — including **In Slaverun Towns** and **Auto Start Slaverun** — are configured on the **Begging & Kennel** MCM page.
+    Begging and the page's other options are all configured on the **Begging & Kennel** MCM page.
