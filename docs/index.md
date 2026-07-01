@@ -1,6 +1,6 @@
 # SexLab Survival
 
-*Based on the work of Monoman1.*
+*Original author: Monoman1.*
 
 A large Skyrim SE gameplay and survival overhaul. It layers a web of interlocking pressures on the player — needs, licences, tolls, misogyny, trauma — and ties them together with **dozens of optional LoversLab and survival mods**, so the mod keeps running no matter which of those you happen to have installed.
 
