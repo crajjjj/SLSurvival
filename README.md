@@ -11,3 +11,6 @@ https://www.loverslab.com/topic/154099-unable-to-compile-sls-script/
 _SLS_IntSlso:  OrgasmEffect() arg fix
 ma and sgo obsolete
 TIF__04057C32: Menu.Init.PpFailDevices fix
+BikiniArmors.json: parked missing LADX_SSE.esp entries (stops BuildBikinis 255-armors warning)
+RapeDrug/TollDrug: FM Fertility -> Fertility; prefers Beeing Female Tonic when installed
+FOMOD: SunHelm StorageUtil patch folder
