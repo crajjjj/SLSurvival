@@ -26,7 +26,7 @@ You don't need any of these. Install the ones you want and SLS adapts.
 | Devious Devices (Expansion) | Restraints drive licences, tolls, begging and device-slot logic |
 | Deviously Cursed Loot | Cursed-loot events are tracked and interact with SLS |
 | Devious Followers | Follower debt/will and resistance-loss mechanics |
-| ZaZ Animation Pack | Slave factions and bondage furniture effects |
+| ZaZ Animation Pack | Faction and bondage-furniture effects |
 | Amputator Framework | Optional visual-effects framework support |
 
 ## Sex frameworks, arousal & scenes
@@ -39,8 +39,7 @@ You don't need any of these. Install the ones you want and SLS adapts.
 | Apropos 2 | Wear-and-tear scene descriptions |
 | SexLab Dialogues | Extra dialogue/rest effect |
 | Creature Framework | Creature mod framework support |
-| SlaveTats | Tattoo/overlay integration for SLS-applied body marks |
-| Rape Tattoos | Tattoo integration |
+| SlaveTats (and tattoo add-ons) | Tattoo/overlay integration for SLS-applied body marks |
 
 ## Body, cum & scaling
 
@@ -59,16 +58,16 @@ You don't need any of these. Install the ones you want and SLS adapts.
 | SexLab Skooma Whore | Drug lists power forced-drugging and drug toll demands |
 | Soulgem Oven | Adapter exists but is **deliberately left disabled** in the current build |
 
-## Slavery & prostitution
+## Prostitution & captivity
 
 | Mod | What it unlocks |
 |-----|-----------------|
-| Slaverun Reloaded | Slavery-themed content integration |
+| Slaverun Reloaded | Optional town-rules content integration |
 | Simple Slavery | Handoff integration for certain failure outcomes |
 | Sanguine's Debauchery | Handoff integration as an alternative outcome |
 | TDF Aggressive Prostitution | Dancing offered as a toll payment |
 | SexLab Pay Crime (Pay Sex Crime) | Pay off bounties with sex |
-| Paradise Halls | Slave faction recognised |
+| Paradise Halls | Faction recognised |
 | Sexy Bandit Captives | Captor faction recognised |
 
 ## Fertility, followers & flavour
