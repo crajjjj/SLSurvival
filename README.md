@@ -1,13 +1,18 @@
 # SexLab Survival
 
 <p align="center">
+  <a href="https://github.com/crajjjj/SLSurvival/releases/latest"><img src="https://img.shields.io/badge/⬇%20Download-Latest%20Release-2ea44f?style=for-the-badge" alt="Download latest release"></a>
+</p>
+
+<p align="center">
   <a href="https://crajjjj.github.io/SLSurvival/"><img src="https://img.shields.io/badge/docs-GitHub%20Pages-brightgreen?logo=readthedocs&logoColor=white" alt="Documentation"></a>
   <a href="https://github.com/crajjjj/SLSurvival/actions/workflows/docs.yml"><img src="https://github.com/crajjjj/SLSurvival/actions/workflows/docs.yml/badge.svg" alt="Deploy docs"></a>
-  <img src="https://img.shields.io/badge/version-0.700-blue" alt="Version 0.700">
+  <a href="https://github.com/crajjjj/SLSurvival/releases/latest"><img src="https://img.shields.io/github/v/release/crajjjj/SLSurvival?label=release" alt="Latest release"></a>
   <img src="https://img.shields.io/badge/Skyrim-SE%2FAE-orange" alt="Skyrim SE/AE">
   <img src="https://img.shields.io/badge/scripting-pure%20Papyrus-8A2BE2" alt="Pure Papyrus">
-  <a href="https://www.loverslab.com/files/file/5914-sexlab-survival/"><img src="https://img.shields.io/badge/LoversLab-download-red" alt="LoversLab"></a>
+  <a href="https://www.loverslab.com/files/file/5914-sexlab-survival/"><img src="https://img.shields.io/badge/LoversLab-page-red" alt="LoversLab"></a>
   <img src="https://img.shields.io/badge/content-18%2B-black" alt="18+ content"><br>
+  <a href="https://github.com/crajjjj/SLSurvival/releases"><img src="https://img.shields.io/github/downloads/crajjjj/SLSurvival/total" alt="Total downloads"></a>
   <img src="https://img.shields.io/github/last-commit/crajjjj/SLSurvival" alt="Last commit">
   <img src="https://img.shields.io/github/languages/top/crajjjj/SLSurvival" alt="Top language">
   <img src="https://img.shields.io/github/repo-size/crajjjj/SLSurvival" alt="Repo size">
@@ -18,6 +23,13 @@ A large Skyrim SE gameplay and survival overhaul — needs, licences, tolls, mis
 **Original author:** Monoman1.
 
 > ⚠️ **Adult (18+) content.** Built on the SexLab framework and other LoversLab mods; not available on the Nexus.
+
+## Download
+
+- **[Latest release](https://github.com/crajjjj/SLSurvival/releases/latest)** — packaged FOMOD archive, install with a mod manager (MO2 recommended).
+- **[LoversLab file page](https://www.loverslab.com/files/file/5914-sexlab-survival/)** — description, requirements, and support thread.
+
+See [Getting Started](https://crajjjj.github.io/SLSurvival/players/getting-started/) for requirements, load order, and the FOMOD options.
 
 ## Documentation
 
