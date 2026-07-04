@@ -7723,30 +7723,45 @@ Function BuildBikiniLists()
 		Form akForm
 		Int ResolveErrorCount = 0
 		Int NonArmorCount = 0
+		; Entries for optional plugins are parked in "<key>__LADX_disabled" so a missing plugin (LADX_SSE.esp)
+		; doesn't spam resolve errors. Merge them back only when that plugin is actually present.
+		Bool LadxPresent = Game.GetModByName("LADX_SSE.esp") != 255
+		Int Pass
+		String JsonKey
 		While i > 0
 			i -= 1
-			
+
 			(LvlItems[i] as LeveledItem).Revert()
-			j = JsonUtil.FormListCount("SL Survival/BikiniArmors.json", JsonKeys[i])
 			If IsInMcm
 				SetTextOptionValue(BikiniBuildListOID_T, "Building " + JsonKeys[i] + " bikinis")
 			EndIf
-			While j > 0
-				j -= 1
-				Debug.Trace("_SLS_: i: " + i + ". j: " + j)
-				;Debug.Trace("_SLS_: LVLI: Adding " + JsonUtil.FormListGet("SL Survival/BikiniArmors.json", JsonKeys[i], j) + " to " + LvlItems[i])
-				akForm = JsonUtil.FormListGet("SL Survival/BikiniArmors.json", JsonKeys[i], j)
-				If akForm as Armor
-					(LvlItems[i] as LeveledItem).AddForm(akForm, 1, 1)
-				Else
-					If akForm
-						Debug.Trace("_SLS_: BuildBikinis(): Json entry is not an armor record: " + JsonKeys[i] + " at index: " + j)
-						NonArmorCount += 1
-					Else
-						Debug.Trace("_SLS_: BuildBikinis(): Json form could not be resolved: " + JsonKeys[i] + " at index: " + j)
-						ResolveErrorCount += 1
-					EndIf
+			Pass = 0
+			While Pass < 2
+				JsonKey = JsonKeys[i]
+				If Pass == 1
+					JsonKey = JsonKeys[i] + "__LADX_disabled"
 				EndIf
+				If Pass == 0 || LadxPresent
+					j = JsonUtil.FormListCount("SL Survival/BikiniArmors.json", JsonKey)
+					While j > 0
+						j -= 1
+						Debug.Trace("_SLS_: i: " + i + ". j: " + j)
+						;Debug.Trace("_SLS_: LVLI: Adding " + JsonUtil.FormListGet("SL Survival/BikiniArmors.json", JsonKey, j) + " to " + LvlItems[i])
+						akForm = JsonUtil.FormListGet("SL Survival/BikiniArmors.json", JsonKey, j)
+						If akForm as Armor
+							(LvlItems[i] as LeveledItem).AddForm(akForm, 1, 1)
+						Else
+							If akForm
+								Debug.Trace("_SLS_: BuildBikinis(): Json entry is not an armor record: " + JsonKey + " at index: " + j)
+								NonArmorCount += 1
+							Else
+								Debug.Trace("_SLS_: BuildBikinis(): Json form could not be resolved: " + JsonKey + " at index: " + j)
+								ResolveErrorCount += 1
+							EndIf
+						EndIf
+					EndWhile
+				EndIf
+				Pass += 1
 			EndWhile
 		EndWhile
 		
@@ -9169,7 +9184,7 @@ Function LoadSettings()
 		ForceDrug.RapeDrugHumanCum = JsonUtil.GetIntValue("SL Survival/Settings.json", "RapeDrugHumanCum", missing = 1)
 		ForceDrug.RapeDrugCreatureCum = JsonUtil.GetIntValue("SL Survival/Settings.json", "RapeDrugCreatureCum", missing = 0)
 		ForceDrug.RapeDrugInflate = JsonUtil.GetIntValue("SL Survival/Settings.json", "RapeDrugInflate", missing = (Game.GetModByName("SexLab Inflation Framework.esp") != 255) as Int)
-		ForceDrug.RapeDrugFmFertility = JsonUtil.GetIntValue("SL Survival/Settings.json", "RapeDrugFmFertility", missing = (Game.GetModByName("Fertility Mode.esm") != 255) as Int)
+		ForceDrug.RapeDrugFmFertility = JsonUtil.GetIntValue("SL Survival/Settings.json", "RapeDrugFmFertility", missing = (Game.GetModByName("Fertility Mode.esm") != 255 || Game.GetModByName("BeeingFemale.esm") != 255) as Int)
 		ForceDrug.RapeDrugSlenAphrodisiac = JsonUtil.GetIntValue("SL Survival/Settings.json", "RapeDrugSlenAphrodisiac", missing = (Game.GetModByName("SexLab Eager NPCs.esp") != 255) as Int)
 		ForceDrug.RapeDrugSensitivity = JsonUtil.GetIntValue("SL Survival/Settings.json", "RapeDrugSensitivity", missing = 1)
 		ForceDrug.TollDrugLactacid = JsonUtil.GetIntValue("SL Survival/Settings.json", "TollDrugLactacid", missing = (Game.GetModByName("MilkModNEW.esp") != 255) as Int)
@@ -9177,7 +9192,7 @@ Function LoadSettings()
 		ForceDrug.TollDrugHumanCum = JsonUtil.GetIntValue("SL Survival/Settings.json", "TollDrugHumanCum", missing = 1)
 		ForceDrug.TollDrugCreatureCum = JsonUtil.GetIntValue("SL Survival/Settings.json", "TollDrugCreatureCum", missing = 0)
 		ForceDrug.TollDrugInflate = JsonUtil.GetIntValue("SL Survival/Settings.json", "TollDrugInflate", missing = (Game.GetModByName("SexLab Inflation Framework.esp") != 255) as Int)
-		ForceDrug.TollDrugFmFertility = JsonUtil.GetIntValue("SL Survival/Settings.json", "TollDrugFmFertility", missing = (Game.GetModByName("Fertility Mode.esm") != 255) as Int)
+		ForceDrug.TollDrugFmFertility = JsonUtil.GetIntValue("SL Survival/Settings.json", "TollDrugFmFertility", missing = (Game.GetModByName("Fertility Mode.esm") != 255 || Game.GetModByName("BeeingFemale.esm") != 255) as Int)
 		ForceDrug.TollDrugSlenAphrodisiac = JsonUtil.GetIntValue("SL Survival/Settings.json", "TollDrugSlenAphrodisiac", missing = (Game.GetModByName("SexLab Eager NPCs.esp") != 255) as Int)
 		ForceDrug.TollDrugSensitivity = JsonUtil.GetIntValue("SL Survival/Settings.json", "TollDrugSensitivity", missing = 1)
 		CumAddict.AutoSuckVictim = JsonUtil.GetIntValue("SL Survival/Settings.json", "AutoSuckVictim", missing = 1)

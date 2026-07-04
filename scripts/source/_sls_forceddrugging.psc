@@ -7,7 +7,7 @@ Event OnInit()
 		TollDrugHumanCum = true
 		TollDrugCreatureCum = false
 		TollDrugInflate = Game.GetModByName("SexLab Inflation Framework.esp") != 255
-		TollDrugFmFertility = Game.GetModByName("Fertility Mode.esm") != 255
+		TollDrugFmFertility = Game.GetModByName("Fertility Mode.esm") != 255 || Game.GetModByName("BeeingFemale.esm") != 255
 		TollDrugSlenAphrodisiac = Game.GetModByName("SexLab Eager NPCs.esp") != 255
 		TollDrugSensitivity = Game.GetModByName("SLSO.esp") != 255
 		

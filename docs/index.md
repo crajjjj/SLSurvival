@@ -33,4 +33,4 @@ New to the mod? Read [Getting Started](players/getting-started.md) — requireme
 
 ---
 
-The changelog and downloads live on the [LoversLab file page](https://www.loverslab.com/files/file/5914-sexlab-survival/). Source is on [GitHub](https://github.com/crajjjj/SLSurvival).
+Downloads and releases are on [GitHub Releases](https://github.com/crajjjj/SLSurvival/releases/latest); source is on [GitHub](https://github.com/crajjjj/SLSurvival). The [LoversLab file page](https://www.loverslab.com/files/file/5914-sexlab-survival/) remains the reference for exact dependency versions.

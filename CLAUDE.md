@@ -2,7 +2,7 @@
 
 Large Skyrim SE gameplay/survival overhaul mod. Pure **Papyrus** (`.psc` → `.pex`), no SKSE plugin of its own. ~812 source scripts. Heavily integrates with dozens of optional LoversLab/survival mods through a consistent adapter layer (see *Adapter Architecture* — it is the most important thing in this project).
 
-Current version: **0.700** (`meta.ini`).
+Current version: **0.701** (`meta.ini`).
 
 ## Git Commits
 Do **not** include a `Co-Authored-By` trailer in commit messages. Commits should look authored solely by the user (matches the convention in the user's other Skyrim mods).
@@ -95,7 +95,7 @@ Script properties filled via the Creation Kit in `SL Survival.esp` must **not** 
 - Unary minus needs spaces: `x = y - 1`, not `x = y-1`.
 
 ## Code Conventions
-- Keep edits ASCII unless the file already contains non-ASCII.
+- Keep edits ASCII in code and data files (`.psc`, `.json`, `.yml`, `.xml`) unless the file already contains non-ASCII. Markdown prose (`docs/**`, `README.md`) may use typographic punctuation (em dash, ellipsis, arrows).
 - Comments explain *why* (a hidden constraint, an invariant, a mod-version workaround), not *what*.
 - After fixing an `_SLS_Int*`/`_SLS_Interface*` bug, recompile just that script (see *Build*) and confirm `0 error(s), 0 warning(s)`.
 
@@ -110,8 +110,11 @@ scripts/source/        *.psc sources (812) — edit here
 interface/             MCM translations, UI
 seq/  sound/  meshes/  textures/   Game assets
 dependencies/          Bundled *.psc sources for every imported mod (compile-time only)
+docs/                  MkDocs player guide + internals (published to GitHub Pages)
+mkdocs.yml             MkDocs Material site config (nav, theme, extensions)
+.github/workflows/     CI — docs.yml builds and deploys the docs site
 Build/                 Zip output target
-readme.md              Dev-env links + terse change notes
+README.md              Public landing page — badges, download, docs links
 ```
 
 `dependencies/` is the source-of-truth for what external API a given `_SLS_Int*` is allowed to call — grep there to confirm a function/script name exists before relying on it.

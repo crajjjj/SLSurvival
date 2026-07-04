@@ -29,7 +29,7 @@ See [Getting Started](https://crajjjj.github.io/SLSurvival/players/getting-start
 
 Full docs (player guide + internals): **<https://crajjjj.github.io/SLSurvival/>**
 
-Built from `docs/` and published to GitHub Pages by [`.github/workflows/docs.yml`](.github/workflows/docs.yml) on every push to `main`.
+Built from `docs/` and published to GitHub Pages by [`.github/workflows/docs.yml`](.github/workflows/docs.yml) on pushes to `main` that touch `docs/` or `mkdocs.yml`.
 
 ## Dev environment
 

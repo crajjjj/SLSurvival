@@ -15,8 +15,8 @@ This is a deliberate trade. Skimpy armor is light, cheap and everywhere, but it 
 
 SLS needs to know which of your installed armor records actually *are* bikini armors. The **BuildBikinis** process scans the installed bikini-armor plugins and builds that list so the rating reduction can be applied to the right items.
 
-!!! note "Housekeeping detail"
-    Skyrim tolerates only a limited number of armor entries per pass, and missing plugin entries can trigger a "255 armors" warning. SLS parks entries from absent plugins into a JSON file so the scan stays under that ceiling. This is internal bookkeeping — you do not need to manage it, but it explains why some parked entries appear disabled.
+!!! note "Missing bikini plugins are skipped automatically"
+    BuildBikinis only adds armors whose plugin is actually loaded, so entries for bikini plugins you do not have are skipped rather than erroring. Records for the LADX set (`LADX_SSE.esp`) ship parked in a disabled section of `BikiniArmors.json` and are folded back in automatically when that plugin is present, so you do not need to edit the file.
 
 ### Bikini breakdown (optional patch)
 
