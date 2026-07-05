@@ -64,7 +64,10 @@ State Installed
 	
 	Function GetAproposAlias(Actor akTarget)
 		; Search Apropos2 actor aliases as the player alias is not set in stone
-		Quest AproposQuest = Game.GetFormFromFile(0x02902C,"Apropos2.esp") as Quest
+		; Look up by editor ID, not a hardcoded FormID: Apropos2 is now shipped ESL-flagged, which
+		; compacts FormIDs (0x02902C -> 0x1B), so Game.GetFormFromFile(0x02902C) returns None. The
+		; editor ID is stable across the eslified/non-eslified "disparity". (See the Apropos ESL patch.)
+		Quest AproposQuest = Quest.GetQuest("Apropos2Actors")
 		AproposTwoAlias = None
 		Int i = 0
 		ReferenceAlias AliasSelect
@@ -113,7 +116,7 @@ EndFunction
 
 Event OnEndState()
 	Utility.Wait(5.0) ; Wait before entering active state to help avoid making function calls to scripts that may not have initialized yet.
-	ActorsQuest = Game.GetFormFromFile(0x02902C, "Apropos2.esp") as Quest
+	ActorsQuest = Quest.GetQuest("Apropos2Actors") ; editor-ID lookup: survives Apropos2's ESL FormID compaction
 EndEvent
 
 Quest ActorsQuest
