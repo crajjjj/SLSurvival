@@ -5,8 +5,10 @@ SexLab Survival (SLS) is a large survival and gameplay overhaul built on the Sex
 !!! warning "Adult content"
     SLS is an adult (18+) mod. It depends on the SexLab framework and other LoversLab mods and includes explicit sexual content. Do not install it unless you are of legal age and understand what SexLab adds to your game.
 
-!!! danger "Start a new game"
-    SLS is extremely script-heavy. Adding it (or any large scripted mod) mid-playthrough can leave stale scripts, half-initialised quests, and broken state baked into your save. **Start a new game** after installing. If you must test on an existing save, expect problems and keep a backup.
+!!! danger "New to SLS? Start a new game"
+    SLS is extremely script-heavy, and adding it to a save that never had it can bake stale scripts and half-initialised quests into that save. Installing SexLab Survival for the first time? **Start a new game.**
+
+    **Updating an existing SLS install with this patch is fine on your current save** — it's a script/plugin update, and SLS migrates its own state on load. Back up first, as with any mod update.
 
 ## Requirements
 
