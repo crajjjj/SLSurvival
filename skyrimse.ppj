@@ -6,11 +6,12 @@
     Optimize="false" 
     Release="false" 
     Zip="true"
-    Package="true"
-    Final="false">
+    Package="false"
+    Final="false"><!-- PATCH build: Package="false" = no BSA. See note on <Packages>/<ZipFiles> below. -->
+
     <Variables>
         <!-- Set the name of your mod: -->
-        <Variable Name="ModName" Value="SLSurvival" />
+        <Variable Name="ModName" Value="SLSurvival patch" />
         <Variable Name="SkyrimScripts" Value="C:\SteamLibrary\steamapps\common\Skyrim Special Edition\Data\Source\Scripts" />
         <!-- The folder where you store all of your mods -->
         <Variable Name="ModsFolder" Value="..\" />
@@ -89,9 +90,11 @@
         <!-- Relative path to folder containing .psc Papyrus source code files for this project -->
         <Folder>@ImportsFolder</Folder>
     </Folders>
-    <!-- The following section is for .bsa archives. You can enable it by setting Package="true" in the PapyrusProject -->
+    <!-- BSA DISABLED for the patch build (Package="false"). The original SexLab Survival ships LOOSE
+         scripts, and loose files always beat a BSA, so our scripts MUST also be loose to win; a BSA
+         here would be silently overridden by the original and revert every fix. Kept for reference /
+         a possible future standalone build. -->
     <Packages Output=".">
-        <!-- BSA name MUST match the plugin "SL Survival.esp" (with the space) or SE won't auto-mount it and no scripts load. Do NOT use @ModName (SLSurvival) here. -->
         <Package Name="SL Survival" RootDir=".">
             <Match In="interface">*</Match>
             <Match In="scripts\source">*.psc</Match>
@@ -99,21 +102,17 @@
             <Match In="seq">*</Match>
             <Match In="sound">*</Match>
         </Package>
-        <!-- If you have any texture files, uncomment the following to create a Textures .bsa archive with texture files -->
-        <!-- <Package Name="@ModName - Textures" RootDir=".">
-            <Include>*.dds</Include>
-        </Package> -->
     </Packages>
-    <!-- The following section is for .zip archive. You can enable it by setting Zip="true" in the PapyrusProject -->
+    <!-- PATCH .zip: ships ONLY SL Survival's own changed files, all LOOSE. Textures, meshes, sound and
+         seq are inherited from Monoman1's original SexLab Survival, which must be installed BELOW this
+         in priority (see docs/README). No BSA - scripts ship loose so they override the original's. -->
     <ZipFiles Output="Build">
         <ZipFile Name="@ModName" RootDir="." Compression="deflate">
-            <Match In="meshes\actors\character">*</Match>
-            <Match In="SKSE\Plugins">*.*</Match>
-            <Match In="textures">*</Match>
+            <Match In="scripts">*.pex</Match><!-- loose compiled scripts (override the original's loose scripts) -->
+            <Match In="interface">*</Match><!-- MCM translations (changed) -->
+            <Match In="SKSE\Plugins">*.*</Match><!-- StorageUtilData JSON (BikiniArmors.json etc.) -->
             <Match In="fomod">*</Match><!-- FOMOD installer (info.xml + ModuleConfig.xml) -->
             <Match In="optional">*</Match><!-- optional patch payloads referenced by ModuleConfig.xml -->
-            <Include NoRecurse="true">SL Survival.bsa</Include><!-- pack only the correctly-named archive, not any stale SLSurvival.bsa -->
-            <Include>meta.ini</Include>
             <Include>SL Survival.esp</Include>
             <Include>readme.md</Include>
         </ZipFile>

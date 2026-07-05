@@ -21,7 +21,9 @@ A large Skyrim SE gameplay and survival overhaul — needs, licences, tolls, mis
 
 ## Download
 
-**[Latest release](https://github.com/crajjjj/SLSurvival/releases/latest)** — packaged FOMOD archive, install with a mod manager (MO2 recommended).
+**[Latest release](https://github.com/crajjjj/SLSurvival/releases/latest)** — FOMOD archive, install with a mod manager (MO2 recommended).
+
+> ⚠️ **This build is a patch** over Monoman1's original [SexLab Survival](https://www.loverslab.com/topic/99955-sexlab-survival/) (download in the thread posts). Install the original first — it supplies the textures, meshes and sound — then install this patch **below** it in priority so its updated scripts and plugin win.
 
 See [Getting Started](https://crajjjj.github.io/SLSurvival/players/getting-started/) for requirements, load order, and the FOMOD options.
 

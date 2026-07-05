@@ -12,6 +12,9 @@ SexLab Survival (SLS) is a large survival and gameplay overhaul built on the Sex
 
 SLS is built on a core stack of framework mods. All of these must be installed and working before SLS will function:
 
+!!! danger "This release is a patch over the original SexLab Survival"
+    This build ships only SexLab Survival's own plugin, scripts and data. **Monoman1's original SexLab Survival supplies the textures, meshes and sound** and must be installed **first, below this patch** in your mod manager so this patch's files win. Get the original from the [SexLab Survival forum thread](https://www.loverslab.com/topic/99955-sexlab-survival/) (download in the posts). Without it you will see missing meshes and purple textures.
+
 | Dependency | Purpose |
 |------------|---------|
 | SexLab framework | Core animation/scene framework SLS is built on |
@@ -31,7 +34,7 @@ Beyond the core stack, SLS integrates with **dozens of optional** survival and L
 
 1. Use a **mod manager** — Mod Organizer 2 (MO2) is recommended. Manual installation is not supported.
 2. Install all core dependencies above (and any optional integrations you want) first.
-3. Install SLS. The base mod (`SL Survival.esp` + `SL Survival.bsa` + meshes/textures/SKSE) is always installed; the **FOMOD installer** then offers a "Select Any" group of optional patches — check the ones matching your setup:
+3. Install Monoman1's original **[SexLab Survival](https://www.loverslab.com/topic/99955-sexlab-survival/)** (from the thread posts) — it supplies the textures, meshes and sound. Then install **this patch** and place it **below the original** (higher priority) so its updated scripts and plugin win. The patch's base files (`SL Survival.esp`, loose scripts, MCM translations, SKSE data) are always installed; the **FOMOD installer** then offers a "Select Any" group of optional patches — check the ones matching your setup:
     - **SunHelm Survival Patch** — needs/fatigue/sleep integration; requires SunHelm Survival. Leave unchecked if you use iNeed/Frostfall/RND instead.
     - **Bikini Armor Break (TAWoBA)** — armor-break configs/meshes; requires The Amazing World of Bikini Armors REMASTERED.
     - **Animal Friend Teammates** — tamed animals follow and fight as teammates (off by default; can be unreliable).
@@ -57,7 +60,7 @@ If the SLS entry is missing from your MCM list, work through these in order:
 1. **Wait longer.** On a heavy load order the MCM can take a couple of minutes to populate. Then **save and reload** — this often forces late-registering menus to appear.
 2. **Confirm SkyUI is installed and working.** No SkyUI means no MCM at all.
 3. **Confirm PapyrusUtil / StorageUtil is installed.** SLS depends on it; if it's missing, scripts fail to initialise.
-4. **Confirm the SLS scripts actually loaded.** Check that the mod's BSA is named correctly and that its scripts are present. If scripts didn't load, the MCM can't register.
+4. **Confirm this patch overrides the original.** Its loose scripts must win over the original SexLab Survival's — place this patch **below** the original (higher priority) in your mod manager. If the original's older scripts load instead, the MCM and fixes won't appear.
 5. **Check the Papyrus log.** Enable Papyrus logging and look for errors referencing SLS or its dependencies — missing masters, `None` casts, or unresolved types point at the real problem.
 
 !!! tip "Still stuck?"

@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    SexLab Survival FOMOD installer.
+    SexLab Survival FOMOD installer - PATCH over Monoman1's original SexLab Survival.
+
+    This ships ONLY SL Survival's own changed files. Textures, meshes and sound are NOT included; they
+    are inherited from Monoman1's original SexLab Survival, which MUST be installed and placed BELOW this
+    mod in priority. Our loose scripts/esp override the original's.
 
     Layout in the packaged archive:
-      SL Survival.esp, SL Survival.bsa   (base - always installed)
-      meshes\, SKSE\, textures\          (base loose assets - always installed)
-      optional\<PatchName>\...           (one folder per optional patch; loose files that override the BSA)
+      SL Survival.esp                    (base - always installed, replaces the original's esp)
+      scripts\, interface\, SKSE\        (base loose assets - always installed, override the original)
+      optional\<PatchName>\...           (one folder per optional patch; loose files)
       fomod\info.xml, fomod\ModuleConfig.xml
 
     TO ADD A NEW OPTIONAL PATCH:
@@ -16,13 +20,13 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://qconsulting.ca/fo3/ModConfig5.0.xsd">
     <moduleName>SexLab Survival</moduleName>
 
-    <!-- Base mod - always installed -->
+    <!-- Base - always installed. Loose files that override Monoman1's original (installed below this).
+         No BSA, and no textures/meshes/sound: those come from the original SexLab Survival. -->
     <requiredInstallFiles>
         <file source="SL Survival.esp" destination="SL Survival.esp" priority="0" />
-        <file source="SL Survival.bsa" destination="SL Survival.bsa" priority="0" />
-        <folder source="meshes" destination="meshes" priority="0" />
+        <folder source="scripts" destination="scripts" priority="0" />
+        <folder source="interface" destination="interface" priority="0" />
         <folder source="SKSE" destination="SKSE" priority="0" />
-        <folder source="textures" destination="textures" priority="0" />
     </requiredInstallFiles>
 
     <installSteps order="Explicit">
@@ -31,7 +35,7 @@
                 <group name="Optional Patches" type="SelectAny">
                     <plugins order="Explicit">
                         <plugin name="Animal Friend Teammates">
-                            <description>Tamed animal friends are flagged as player teammates when befriended (so they follow and fight alongside you), and the flag is cleared when they are dismissed. Installs a loose _sls_animalfriend.pex that overrides the BSA. Note: the base mod leaves this off because the engine's "wait then re-follow" can be unreliable for teammates. Default: off.</description>
+                            <description>Tamed animal friends are flagged as player teammates when befriended (so they follow and fight alongside you), and the flag is cleared when they are dismissed. Installs a loose _sls_animalfriend.pex that overrides the base script. Note: the base mod leaves this off because the engine's "wait then re-follow" can be unreliable for teammates. Default: off.</description>
                             <files>
                                 <file source="optional\AnimalFriendTeammate\scripts\_sls_animalfriend.pex" destination="scripts\_sls_animalfriend.pex" priority="1" />
                             </files>

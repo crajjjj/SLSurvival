@@ -33,4 +33,4 @@ New to the mod? Read [Getting Started](players/getting-started.md) — requireme
 
 ---
 
-Downloads and releases are on [GitHub Releases](https://github.com/crajjjj/SLSurvival/releases/latest); source is on [GitHub](https://github.com/crajjjj/SLSurvival). The [LoversLab file page](https://www.loverslab.com/files/file/5914-sexlab-survival/) remains the reference for exact dependency versions.
+This build is a **patch** over Monoman1's original [SexLab Survival](https://www.loverslab.com/topic/99955-sexlab-survival/) (download in the thread posts) — install the original first; it supplies the textures, meshes and sound. Patch downloads are on [GitHub Releases](https://github.com/crajjjj/SLSurvival/releases/latest); source is on [GitHub](https://github.com/crajjjj/SLSurvival).

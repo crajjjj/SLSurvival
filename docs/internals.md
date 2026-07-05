@@ -15,8 +15,8 @@ A single reference for how SexLab Survival is built — for anyone reading the s
 | `fomod/` | The FOMOD installer definition (optional patches). |
 | `dependencies/` | Bundled `.psc` sources for every imported external mod — **compile-time only**. |
 
-!!! warning "The BSA name must match the plugin"
-    The packaged archive **must** be named `SL Survival.bsa` (matching `SL Survival.esp`), not `SLSurvival.bsa`. If the names don't match, the engine won't load the archive — no scripts load and the MCM silently vanishes.
+!!! warning "Current release ships loose (a patch); the BSA note applies only to a standalone build"
+    The current release is a **patch** over Monoman1's original SexLab Survival and ships **loose scripts (no BSA)** — the original's loose scripts would override a BSA and revert every fix, so ours must be loose to win. If you ever build a **standalone** BSA instead, it **must** be named `SL Survival.bsa` (matching `SL Survival.esp`), not `SLSurvival.bsa`, or the engine won't mount it — no scripts load and the MCM silently vanishes.
 
 ## How the code is organized
 
