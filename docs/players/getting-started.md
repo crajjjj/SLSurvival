@@ -15,7 +15,7 @@ SexLab Survival (SLS) is a large survival and gameplay overhaul built on the Sex
 SLS is built on a core stack of framework mods. All of these must be installed and working before SLS will function:
 
 !!! danger "This release is a patch over the original SexLab Survival"
-    This build ships only SexLab Survival's own plugin, scripts and data. **Monoman1's original SexLab Survival supplies the textures, meshes and sound** and must be installed **first, below this patch** in your mod manager so this patch's files win. Get the original from the [SexLab Survival forum thread](https://www.loverslab.com/topic/99955-sexlab-survival/) (download in the posts). Without it you will see missing meshes and purple textures.
+    This build ships only SexLab Survival's own plugin, scripts and data. **Monoman1's original SexLab Survival supplies the textures, meshes and sound** and must be installed **first, with this patch placed below it** (below = higher priority in MO2) so the patch's files win. Get the original from the [SexLab Survival forum thread](https://www.loverslab.com/topic/99955-sexlab-survival/) (download in the posts). Without it you will see missing meshes and purple textures.
 
 | Dependency | Purpose |
 |------------|---------|

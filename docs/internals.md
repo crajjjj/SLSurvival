@@ -1,14 +1,13 @@
 # Internals
 
-A single reference for how SexLab Survival is built — for anyone reading the source, patching it, or wiring in a new optional mod. SLS is **pure Papyrus**: no SKSE plugin of its own, just Creation Kit forms plus ~800 `.psc` scripts, one plugin, and a packed archive.
+A single reference for how SexLab Survival is built — for anyone reading the source, patching it, or wiring in a new optional mod. SLS is **pure Papyrus**: no SKSE plugin of its own, just Creation Kit forms plus ~800 `.psc` scripts and one plugin.
 
 ## What ships
 
 | File | Role |
 |------|------|
 | `SL Survival.esp` | The main plugin — all forms, quests, dialogue, magic effects, and the **CK-filled script properties** that bind scripts to forms. |
-| `SL Survival.bsa` | Packed assets (scripts, meshes, textures, sound, SEQ). |
-| `scripts/` | Compiled `*.pex`, loaded **loose** over the BSA. |
+| `scripts/` | Compiled `*.pex`. The patch ships these **loose** (they override the original's loose scripts); a standalone build would instead pack them into `SL Survival.bsa`. Textures, meshes, sound and SEQ come from the original mod. |
 | `scripts/source/` | The `*.psc` sources — **this is where you edit**. |
 | `interface/` | MCM translation files and UI. |
 | `skyrimse.ppj` | Papyrus project file: the full 54-folder import list and packaging config. |
@@ -116,7 +115,7 @@ The language quirks that bite everyone working in this codebase — most are sil
 
 ## Building from source
 
-SLS compiles with the **Skyrim SE Papyrus compiler**. Sources live in `scripts/source/*.psc`; compiled `*.pex` go to `scripts/` (loaded loose over the BSA).
+SLS compiles with the **Skyrim SE Papyrus compiler**. Sources live in `scripts/source/*.psc`; compiled `*.pex` go to `scripts/` (loaded loose).
 
 !!! danger "You must pass the project's *entire* import list"
     SLS scripts transitively pull in SexLab / Devious Devices / FNIS types (`MfgConsoleFunc`, `FNIS_aa`, `NiOverride`, …). A short import list fails type resolution on dependencies you never touched. The reliable way to get all 54 import folders is to read them straight out of `skyrimse.ppj`.
@@ -136,7 +135,7 @@ $compiler = "C:\SteamLibrary\steamapps\common\Skyrim Special Edition\Papyrus Com
 - Replace `_SLS_IntCf.psc` with the script you're compiling; adjust the two paths in `$vars` to your install.
 - Output `.pex` lands in `scripts/`. A clean result reads `0 error(s), 0 warning(s)`.
 - `TESV_Papyrus_Flags.flg` resolves via the vanilla `@SkyrimScripts` import path, not the project root.
-- Full build / BSA packaging is done via the `.ppj` (`Package="true"`, `Zip="true"`) — only when packaging a release.
+- Packaging is done via the `.ppj` — only when packaging a release. The patch build uses `Package="false"` (no BSA; loose scripts) + `Zip="true"`; a standalone build would set `Package="true"` to pack `SL Survival.bsa`.
 
 ### Editing these docs
 

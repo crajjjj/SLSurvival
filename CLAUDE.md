@@ -27,7 +27,7 @@ $compiler = "C:\SteamLibrary\steamapps\common\Skyrim Special Edition\Papyrus Com
 
 - Output `.pex` goes to `scripts/`. Source lives in `scripts/source/`.
 - `TESV_Papyrus_Flags.flg` is resolved via the vanilla `@SkyrimScripts` import path, not the project root.
-- Compiling the whole project / building the BSA is done via the `.ppj` (`Package="true"`, `Zip="true"`) in the user's normal toolchain — only do that when asked.
+- Compiling the whole project / packaging is done via the `.ppj` in the user's normal toolchain — only do that when asked. The patch build uses `Package="false"` (no BSA; loose scripts) + `Zip="true"`; a standalone build sets `Package="true"` to pack `SL Survival.bsa`.
 
 ## Adapter Architecture (read this first)
 
@@ -103,9 +103,9 @@ Script properties filled via the Creation Kit in `SL Survival.esp` must **not** 
 
 ```
 SL Survival.esp        Main plugin (forms, quests, dialogue, CK-filled properties)
-SLSurvival.bsa         Packed assets
+SL Survival.bsa        Packed assets (standalone build only; the patch ships loose scripts)
 skyrimse.ppj           Papyrus project (import list, packaging config)
-scripts/               Compiled *.pex (loose, loaded over the BSA)
+scripts/               Compiled *.pex (loose; the patch ships these, overriding the original)
 scripts/source/        *.psc sources (812) — edit here
 interface/             MCM translations, UI
 seq/  sound/  meshes/  textures/   Game assets
