@@ -73,6 +73,13 @@ Event OnMenuOpen(String MenuName)
 EndEvent
 
 Function ReinitNav()
+	; When the mechanic is disabled the compass isn't ours to manage; force it visible.
+	; Without this, importing settings with CompassMechanics=off re-hides the compass
+	; (ResetCompass -> ReinitNav hides it because the player has no map item).
+	If !Menu.CompassMechanics
+		ToggleCompass(true)
+		Return
+	EndIf
 	If (PlayerRef.GetItemCount(_SLS_MapAndCompass) == 0 && !TempAccess) || Devious.IsPlayerBlindfolded()
 		ToggleCompass(false)
 		

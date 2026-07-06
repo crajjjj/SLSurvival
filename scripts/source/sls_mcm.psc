@@ -20,10 +20,13 @@ Event OnConfigInit()
 		PpLootKeysChance = 0.0
 	EndIf
 	
-	If Game.GetModByName("Amputator.esm") == 255
-		AmpType = 0
-		ToggleDismemberment()
-	EndIf
+	; Combat dismemberment is opt-in. _SLS_AmputationQuest is Start Game Enabled, so its OnHit
+	; trigger is live from game start; the only gate is AmpType. Previously AmpType kept its
+	; default of 2 ("Hands first") whenever Amputator was installed, so players got amputated in
+	; combat without ever enabling it. Start disabled and stop the quest until the player opts in
+	; on the Player Dismemberment page (which is blocked unless Amputator is present).
+	AmpType = 0
+	ToggleDismemberment()
 	
 	PlayerRef.AddPerk(_SLS_InequalitySkillsPerk)
 	PlayerRef.AddPerk(_SLS_InequalityBuySellPerk)
@@ -9025,6 +9028,22 @@ Function ToggleTolls()
 	ToggleTollGateGuards()
 EndFunction
 
+; Non-interactive counterpart of ToggleTolls()'s object enable/disable, for use during
+; settings import: ToggleTolls() prompts (messageboxes) so it can't run in the import pass,
+; which is why importing Init.TollEnable never showed/hid the physical toll gates.
+Function RefreshTollObjects()
+	Formlist TollObjs = Game.GetFormFromFile(0x0F8868, "SL Survival.esp") as Formlist
+	Int i = 0
+	While i < TollObjs.GetSize()
+		If Init.TollEnable
+			(TollObjs.GetAt(i) as ObjectReference).Enable()
+		Else
+			(TollObjs.GetAt(i) as ObjectReference).Disable()
+		EndIf
+		i += 1
+	EndWhile
+EndFunction
+
 Function ToggleAhegao()
 	If StorageUtil.GetIntValue(Self, "AhegaoEnable", Missing = 1) == 1
 		(Game.GetFormFromFile(0x0FCE71, "SL Survival.esp") as Quest).Start() ; _SLS_AhegaoQuest
@@ -9112,7 +9131,7 @@ Function LoadSettings()
 		Init.SlsCreatureEvents = JsonUtil.GetIntValue("SL Survival/Settings.json", "Init.SlsCreatureEvents", missing = 0)
 		AnimalBreedEnable = JsonUtil.GetIntValue("SL Survival/Settings.json", "AnimalBreedEnable", missing = 0)
 		DeviousEffectsEnable = JsonUtil.GetIntValue("SL Survival/Settings.json", "DeviousEffectsEnable", missing = 0)
-		DevEffNoGagTradingOID = JsonUtil.GetIntValue("SL Survival/Settings.json", "DevEffNoGagTradingOID", missing = 0)
+		DevEffNoGagTrading = JsonUtil.GetIntValue("SL Survival/Settings.json", "DevEffNoGagTrading", missing = 0)
 		BondFurnEnable = JsonUtil.GetIntValue("SL Survival/Settings.json", "BondFurnEnable", missing = 1)
 		InequalitySkills = JsonUtil.GetIntValue("SL Survival/Settings.json", "InequalitySkills", missing = 1)
 		InequalityBuySell = JsonUtil.GetIntValue("SL Survival/Settings.json", "InequalityBuySell", missing = 1)
@@ -9339,7 +9358,46 @@ Function LoadSettings()
 		(Game.GetFormFromFile(0xF728A, "Skyrim.esm") as GlobalVariable).SetValueInt(JsonUtil.GetIntValue("SL Survival/Settings.json", "HousePriceWindhelm", Missing = 12000))
 		(Game.GetFormFromFile(0xF728D, "Skyrim.esm") as GlobalVariable).SetValueInt(JsonUtil.GetIntValue("SL Survival/Settings.json", "HousePriceRiften", Missing = 8000))
 		AllInOne.Fav.Favorite =  JsonUtil.GetIntValue("SL Survival/Settings.json", "AllInOne.Fav.Favorite", missing = 11)
-		
+
+		; Patch: MCM options the original never wired into import (mirrored in SaveSettings)
+		StorageUtil.SetIntValue(Self, "CombatEquipEnabled", JsonUtil.GetIntValue("SL Survival/Settings.json", "CombatEquipEnabled", missing = 1))
+		StorageUtil.SetIntValue(Self, "SteepFallEnabled", JsonUtil.GetIntValue("SL Survival/Settings.json", "SteepFallEnabled", missing = 0))
+		HalfNakedStrips = JsonUtil.GetIntValue("SL Survival/Settings.json", "HalfNakedStrips", missing = 0)
+		DremoraCorruption = JsonUtil.GetIntValue("SL Survival/Settings.json", "DremoraCorruption", missing = 0)
+		StorageUtil.SetIntValue(Self, "Jiggles", JsonUtil.GetIntValue("SL Survival/Settings.json", "Jiggles", missing = 1))
+		SexMinStamMagRates = JsonUtil.GetIntValue("SL Survival/Settings.json", "SexMinStamMagRates", missing = 1)
+		Trauma.PlayerSqueaks = JsonUtil.GetIntValue("SL Survival/Settings.json", "PlayerSqueaks", missing = 1)
+		SuccubusCumSwallowEnergyPerRank = JsonUtil.GetIntValue("SL Survival/Settings.json", "SuccubusCumSwallowEnergyPerRank", missing = 1)
+		FfRescueEvents = JsonUtil.GetIntValue("SL Survival/Settings.json", "FfRescueEvents", missing = 1)
+		LocTrack.ResidentsDontPayTolls = JsonUtil.GetIntValue("SL Survival/Settings.json", "ResidentsDontPayTolls", missing = 1)
+		ConfiscationFine = JsonUtil.GetIntValue("SL Survival/Settings.json", "ConfiscationFine", missing = 100)
+		ConfiscationFineSlaverun = JsonUtil.GetIntValue("SL Survival/Settings.json", "ConfiscationFineSlaverun", missing = 200)
+		Frostfall.MaxLicsToLose = JsonUtil.GetIntValue("SL Survival/Settings.json", "MaxLicsToLose", missing = 1)
+		(_SLS_LicTownCheckQuest as _SLS_LicTownCheck).EnforcerGuardsMin = JsonUtil.GetIntValue("SL Survival/Settings.json", "EnforcerGuardsMin", missing = 3)
+		(_SLS_LicTownCheckQuest as _SLS_LicTownCheck).EnforcerGuardsMax = JsonUtil.GetIntValue("SL Survival/Settings.json", "EnforcerGuardsMax", missing = 7)
+		LicUtil.LicCurfewEnable = JsonUtil.GetIntValue("SL Survival/Settings.json", "LicCurfewEnable", missing = 1)
+		LicUtil.LicCostCurfewShort = JsonUtil.GetIntValue("SL Survival/Settings.json", "LicCostCurfewShort", missing = 1000)
+		LicUtil.LicCostCurfewLong = JsonUtil.GetIntValue("SL Survival/Settings.json", "LicCostCurfewLong", missing = 3000)
+		LicUtil.LicCostCurfewPer = JsonUtil.GetIntValue("SL Survival/Settings.json", "LicCostCurfewPer", missing = 20000)
+		LicUtil.LicWhoreEnable = JsonUtil.GetIntValue("SL Survival/Settings.json", "LicWhoreEnable", missing = 1)
+		LicUtil.LicCostWhoreShort = JsonUtil.GetIntValue("SL Survival/Settings.json", "LicCostWhoreShort", missing = 100)
+		LicUtil.LicCostWhoreLong = JsonUtil.GetIntValue("SL Survival/Settings.json", "LicCostWhoreLong", missing = 300)
+		LicUtil.LicCostWhorePer = JsonUtil.GetIntValue("SL Survival/Settings.json", "LicCostWhorePer", missing = 1000)
+		LicUtil.LicPropertyEnable = JsonUtil.GetIntValue("SL Survival/Settings.json", "LicPropertyEnable", missing = 1)
+		LicUtil.LicCostPropertyShort = JsonUtil.GetIntValue("SL Survival/Settings.json", "LicCostPropertyShort", missing = 1000)
+		LicUtil.LicCostPropertyLong = JsonUtil.GetIntValue("SL Survival/Settings.json", "LicCostPropertyLong", missing = 6000)
+		LicUtil.LicCostPropertyPer = JsonUtil.GetIntValue("SL Survival/Settings.json", "LicCostPropertyPer", missing = 100000)
+		LicUtil.LicFreedomEnable = JsonUtil.GetIntValue("SL Survival/Settings.json", "LicFreedomEnable", missing = 2)
+		LicUtil.LicCostFreedomShort = JsonUtil.GetIntValue("SL Survival/Settings.json", "LicCostFreedomShort", missing = 500)
+		LicUtil.LicCostFreedomLong = JsonUtil.GetIntValue("SL Survival/Settings.json", "LicCostFreedomLong", missing = 5000)
+		LicUtil.LicCostFreedomPer = JsonUtil.GetIntValue("SL Survival/Settings.json", "LicCostFreedomPer", missing = 250000)
+		AmpType = JsonUtil.GetIntValue("SL Survival/Settings.json", "AmpType", missing = 2)
+		StorageUtil.SetIntValue(Self, "DismemberCombatStop", JsonUtil.GetIntValue("SL Survival/Settings.json", "DismemberCombatStop", missing = 1))
+		(Game.GetFormFromFile(0x108062, "SL Survival.esp") as GlobalVariable).SetValueInt(JsonUtil.GetIntValue("SL Survival/Settings.json", "BikBreakEnable", missing = 1))
+		(Game.GetFormFromFile(0x10A737, "SL Survival.esp") as GlobalVariable).SetValueInt(JsonUtil.GetIntValue("SL Survival/Settings.json", "BikBreakTawoba", missing = 0))
+		LocTrack.SetInnPrices = JsonUtil.GetIntValue("SL Survival/Settings.json", "SetInnPrices", missing = 0)
+		FollowersStealGold = JsonUtil.GetIntValue("SL Survival/Settings.json", "FollowersStealGold", missing = 1)
+
 		If IsInMcm
 			SetTextOptionValue(ImportSettingsOID_T, "Loading Floats")
 		EndIf
@@ -9474,7 +9532,7 @@ Function LoadSettings()
 		RapeForcedSkoomaChance = JsonUtil.GetFloatValue("SL Survival/Settings.json", "RapeForcedSkoomaChance", missing = 35.0)
 		RapeMinArousal = JsonUtil.GetFloatValue("SL Survival/Settings.json", "RapeMinArousal", missing = 50.0)
 		DeviousGagDebuff = JsonUtil.GetFloatValue("SL Survival/Settings.json", "DeviousGagDebuff", missing = 80.0)
-		StorageUtil.SetFloatValue(Self, "CumAddictDayDreamVol", StorageUtil.GetFloatValue(Self, "CumAddictDayDreamVol", Missing = 1.0))
+		StorageUtil.SetFloatValue(Self, "CumAddictDayDreamVol", JsonUtil.GetFloatValue("SL Survival/Settings.json", "CumAddictDayDreamVol", missing = 1.0))
 		Main.Slif.ScaleMaxBreasts = JsonUtil.GetFloatValue("SL Survival/Settings.json", "ScaleMaxBreasts", missing = 3.3)
 		Main.Slif.ScaleMaxBelly = JsonUtil.GetFloatValue("SL Survival/Settings.json", "ScaleMaxBelly", missing = 5.5)
 		Main.Slif.ScaleMaxAss = JsonUtil.GetFloatValue("SL Survival/Settings.json", "ScaleMaxAss", missing = 2.3)
@@ -9513,7 +9571,27 @@ Function LoadSettings()
 		(Game.GetFormFromFile(0x10C223, "SL Survival.esp") as GlobalVariable).SetValue(JsonUtil.GetFloatValue("SL Survival/Settings.json", "_SLS_LicMagicCurseLimit", Missing = -10))
 		(Game.GetFormFromFile(0x1118A1, "SL Survival.esp") as GlobalVariable).SetValue(JsonUtil.GetFloatValue("SL Survival/Settings.json", "_SLS_EnforcerChaseDistance", Missing = 1024.0)) ; _SLS_LicInspChaseDistance		
 		CumSwallow.CumInsideBonusEnjMult = JsonUtil.GetFloatValue("SL Survival/Settings.json", "CumSwallow.CumInsideBonusEnjMult", missing = 1.0)
-		
+
+		; Patch: MCM float sliders the original never wired into import (mirrored in SaveSettings)
+		StorageUtil.SetFloatValue(Self, "BarefootStaggerChance", JsonUtil.GetFloatValue("SL Survival/Settings.json", "BarefootStaggerChance", missing = 10.0))
+		SexMinStaminaRate = JsonUtil.GetFloatValue("SL Survival/Settings.json", "SexMinStaminaRate", missing = 2.5)
+		SexMinStaminaMult = JsonUtil.GetFloatValue("SL Survival/Settings.json", "SexMinStaminaMult", missing = 60.0)
+		SexMinMagickaRate = JsonUtil.GetFloatValue("SL Survival/Settings.json", "SexMinMagickaRate", missing = 1.5)
+		SexMinMagickaMult = JsonUtil.GetFloatValue("SL Survival/Settings.json", "SexMinMagickaMult", missing = 50.0)
+		AnimalFriend.Wildling.WildlingPointsLossPerRank = JsonUtil.GetFloatValue("SL Survival/Settings.json", "WildlingPointsLossPerRank", missing = 2.5)
+		AnimalFriend.Wildling.AllurePointsPerLevel = JsonUtil.GetFloatValue("SL Survival/Settings.json", "AllurePointsPerLevel", missing = 2.0)
+		Sla.FondleCap = JsonUtil.GetFloatValue("SL Survival/Settings.json", "FondleCap", missing = 80.0)
+		Sla.FondleHalfLifeDays = JsonUtil.GetFloatValue("SL Survival/Settings.json", "FondleHalfLifeDays", missing = 0.0833)
+		Sla.TeaseHalfLifeDays = JsonUtil.GetFloatValue("SL Survival/Settings.json", "TeaseHalfLifeDays", missing = 0.0417)
+		Sla.ArousalHalfLifeDays = JsonUtil.GetFloatValue("SL Survival/Settings.json", "ArousalHalfLifeDays", missing = 0.0833)
+		CumRegenTime = JsonUtil.GetFloatValue("SL Survival/Settings.json", "CumRegenTime", missing = 24.0)
+		CumEffectVolThres = JsonUtil.GetFloatValue("SL Survival/Settings.json", "CumEffectVolThres", missing = 85.0)
+		SuccubusCumSwallowEnergyMult = JsonUtil.GetFloatValue("SL Survival/Settings.json", "SuccubusCumSwallowEnergyMult", missing = 1.0)
+		EvictionLimit = JsonUtil.GetFloatValue("SL Survival/Settings.json", "EvictionLimit", missing = 500.0)
+		SlaverunEvictionLimit = JsonUtil.GetFloatValue("SL Survival/Settings.json", "SlaverunEvictionLimit", missing = 200.0)
+		LicUtil.DrenchLicDestroyChance = JsonUtil.GetFloatValue("SL Survival/Settings.json", "DrenchLicDestroyChance", missing = 0.0)
+		StorageUtil.SetFloatValue(None, "_SLS_LicBikOutOfBreathAnimChance", JsonUtil.GetFloatValue("SL Survival/Settings.json", "_SLS_LicBikOutOfBreathAnimChance", missing = 60.0))
+
 		; Int list
 		LocTrack.InnCosts = JsonUtil.IntListToArray("SL Survival/Settings.json", "InnCosts")
 		
@@ -9546,7 +9624,13 @@ Function LoadSettings()
 		ToggleBellyInflation()
 		DoToggleAnimalBreeding = true
 		ToggleTollGateLocks()
+		RefreshTollObjects() ; import didn't show/hide the physical toll gates
 		ToggleCompassMechanics()
+		ToggleJiggles() ; import set StorageUtil "Jiggles" but never applied it
+		SendModEvent("_SLS_BarefootStaggerChance") ; notify listeners of imported stagger chance
+		StorageUtil.SetIntValue(Self, "DoToggleCombatEquip", 1) ; apply imported CombatEquipEnabled on menu close
+		StorageUtil.SetIntValue(Self, "DoToggleSteepFall", 1) ; apply imported SteepFallEnabled on menu close
+		StorageUtil.SetIntValue(Self, "DoToggleCurfew", 1) ; apply imported LicCurfewEnable on menu close
 		;SetTollCost()
 		DoTollDodgingToggle = true
 		TollUtil.IsCurfewTimeByLoc(PlayerRef.GetCurrentLocation())
@@ -10064,6 +10148,64 @@ Function SaveSettings()
 		; Int list
 		JsonUtil.IntListCopy("SL Survival/Settings.json", "InnCosts", LocTrack.InnCosts)
 		
+		; Patch: MCM options the original never wired into export (mirrored in LoadSettings)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "CombatEquipEnabled", StorageUtil.GetIntValue(Self, "CombatEquipEnabled", Missing = 1))
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "SteepFallEnabled", StorageUtil.GetIntValue(Self, "SteepFallEnabled", Missing = 0))
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "HalfNakedStrips", HalfNakedStrips as Int)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "DremoraCorruption", DremoraCorruption as Int)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "Jiggles", StorageUtil.GetIntValue(Self, "Jiggles", Missing = 1))
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "SexMinStamMagRates", SexMinStamMagRates as Int)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "PlayerSqueaks", Trauma.PlayerSqueaks as Int)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "SuccubusCumSwallowEnergyPerRank", SuccubusCumSwallowEnergyPerRank as Int)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "FfRescueEvents", FfRescueEvents as Int)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "ResidentsDontPayTolls", LocTrack.ResidentsDontPayTolls as Int)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "ConfiscationFine", ConfiscationFine)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "ConfiscationFineSlaverun", ConfiscationFineSlaverun)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "MaxLicsToLose", Frostfall.MaxLicsToLose)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "EnforcerGuardsMin", (_SLS_LicTownCheckQuest as _SLS_LicTownCheck).EnforcerGuardsMin)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "EnforcerGuardsMax", (_SLS_LicTownCheckQuest as _SLS_LicTownCheck).EnforcerGuardsMax)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "LicCurfewEnable", LicUtil.LicCurfewEnable as Int)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "LicCostCurfewShort", LicUtil.LicCostCurfewShort)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "LicCostCurfewLong", LicUtil.LicCostCurfewLong)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "LicCostCurfewPer", LicUtil.LicCostCurfewPer)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "LicWhoreEnable", LicUtil.LicWhoreEnable as Int)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "LicCostWhoreShort", LicUtil.LicCostWhoreShort)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "LicCostWhoreLong", LicUtil.LicCostWhoreLong)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "LicCostWhorePer", LicUtil.LicCostWhorePer)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "LicPropertyEnable", LicUtil.LicPropertyEnable as Int)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "LicCostPropertyShort", LicUtil.LicCostPropertyShort)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "LicCostPropertyLong", LicUtil.LicCostPropertyLong)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "LicCostPropertyPer", LicUtil.LicCostPropertyPer)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "LicFreedomEnable", LicUtil.LicFreedomEnable)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "LicCostFreedomShort", LicUtil.LicCostFreedomShort)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "LicCostFreedomLong", LicUtil.LicCostFreedomLong)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "LicCostFreedomPer", LicUtil.LicCostFreedomPer)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "AmpType", AmpType)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "DismemberCombatStop", StorageUtil.GetIntValue(Self, "DismemberCombatStop", Missing = 1))
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "BikBreakEnable", (Game.GetFormFromFile(0x108062, "SL Survival.esp") as GlobalVariable).GetValueInt())
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "BikBreakTawoba", (Game.GetFormFromFile(0x10A737, "SL Survival.esp") as GlobalVariable).GetValueInt())
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "SetInnPrices", LocTrack.SetInnPrices as Int)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "RapeDrugSensitivity", ForceDrug.RapeDrugSensitivity as Int)
+		JsonUtil.SetIntValue("SL Survival/Settings.json", "TollDrugSensitivity", ForceDrug.TollDrugSensitivity as Int)
+		JsonUtil.SetFloatValue("SL Survival/Settings.json", "BarefootStaggerChance", StorageUtil.GetFloatValue(Self, "BarefootStaggerChance", Missing = 10.0))
+		JsonUtil.SetFloatValue("SL Survival/Settings.json", "SexMinStaminaRate", SexMinStaminaRate)
+		JsonUtil.SetFloatValue("SL Survival/Settings.json", "SexMinStaminaMult", SexMinStaminaMult)
+		JsonUtil.SetFloatValue("SL Survival/Settings.json", "SexMinMagickaRate", SexMinMagickaRate)
+		JsonUtil.SetFloatValue("SL Survival/Settings.json", "SexMinMagickaMult", SexMinMagickaMult)
+		JsonUtil.SetFloatValue("SL Survival/Settings.json", "WildlingPointsLossPerRank", AnimalFriend.Wildling.WildlingPointsLossPerRank)
+		JsonUtil.SetFloatValue("SL Survival/Settings.json", "AllurePointsPerLevel", AnimalFriend.Wildling.AllurePointsPerLevel)
+		JsonUtil.SetFloatValue("SL Survival/Settings.json", "FondleCap", Sla.FondleCap)
+		JsonUtil.SetFloatValue("SL Survival/Settings.json", "FondleHalfLifeDays", Sla.FondleHalfLifeDays)
+		JsonUtil.SetFloatValue("SL Survival/Settings.json", "TeaseHalfLifeDays", Sla.TeaseHalfLifeDays)
+		JsonUtil.SetFloatValue("SL Survival/Settings.json", "ArousalHalfLifeDays", Sla.ArousalHalfLifeDays)
+		JsonUtil.SetFloatValue("SL Survival/Settings.json", "CumRegenTime", CumRegenTime)
+		JsonUtil.SetFloatValue("SL Survival/Settings.json", "CumEffectVolThres", CumEffectVolThres)
+		JsonUtil.SetFloatValue("SL Survival/Settings.json", "SuccubusCumSwallowEnergyMult", SuccubusCumSwallowEnergyMult)
+		JsonUtil.SetFloatValue("SL Survival/Settings.json", "EvictionLimit", EvictionLimit)
+		JsonUtil.SetFloatValue("SL Survival/Settings.json", "SlaverunEvictionLimit", SlaverunEvictionLimit)
+		JsonUtil.SetFloatValue("SL Survival/Settings.json", "DrenchLicDestroyChance", LicUtil.DrenchLicDestroyChance)
+		JsonUtil.SetFloatValue("SL Survival/Settings.json", "_SLS_LicBikOutOfBreathAnimChance", StorageUtil.GetFloatValue(None, "_SLS_LicBikOutOfBreathAnimChance", Missing = 60.0))
+
 		; Forms
 		SaveFormlistToJson(_SLS_CumHasLactacidVoices, "SL Survival/Settings.json", "_SLS_CumHasLactacidVoices", ClearJsonKey = true)
 
