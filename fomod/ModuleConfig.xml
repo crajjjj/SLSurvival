@@ -67,6 +67,16 @@
                             </typeDescriptor>
                         </plugin>
 
+                        <plugin name="SMP Physics Tongue Meshes">
+                            <description>Replaces SL Survival's stock (static) tongue meshes with HDT-SMP rigged versions (tongue bones tong1 1-5 + tong.xml physics config), so the tongue used by the ahegao / cum-desperate features has jiggle physics. REQUIRES an HDT-SMP setup (Faster HDT-SMP). Overrides the original SexLab Survival's tongue meshes under meshes\0halofarm\tongues. Purely cosmetic - the expression features work without it. Default: off.</description>
+                            <files>
+                                <folder source="optional\SmpTongue\meshes" destination="meshes" priority="1" />
+                            </files>
+                            <typeDescriptor>
+                                <type name="Optional" />
+                            </typeDescriptor>
+                        </plugin>
+
                         <plugin name="Battle Wound / Bruise Textures">
                             <description>Extra battle-wound (bruise) body overlay textures used by SL Survival's wound system.</description>
                             <files>
