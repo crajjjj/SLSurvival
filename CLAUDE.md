@@ -29,6 +29,20 @@ $compiler = "C:\SteamLibrary\steamapps\common\Skyrim Special Edition\Papyrus Com
 - `TESV_Papyrus_Flags.flg` is resolved via the vanilla `@SkyrimScripts` import path, not the project root.
 - Compiling the whole project / packaging is done via the `.ppj` in the user's normal toolchain — only do that when asked. The patch build uses `Package="false"` (no BSA; loose scripts) + `Zip="true"`; a standalone build sets `Package="true"` to pack `SL Survival.bsa`.
 
+## Versioning (bumping the release)
+
+Only bump when the **current** version is git-tagged (released); if it's untagged, fold new changes into the existing version and just commit (see the global "don't double-bump" rule). Bumping to `X.YYY` means updating **four** places — the first three are the release marker, the fourth is the *in-game* version:
+
+1. `meta.ini` → `version=X.YYY.0.0`. **Gitignored** (MO2 per-mod metadata) — update it locally so MO2 shows the right version, but it won't appear in the commit.
+2. `fomod/info.xml` → `<Version>X.YYY</Version>`. Tracked; this is the real committed release marker.
+3. `CLAUDE.md` → the "Current version" line at the top of this file.
+4. `scripts/source/sls_main.psc` → the in-game `Version` float (this is what the **MCM** displays via `Main.Version`, and it doubles as the save-migration counter). Easy to forget — `0.701`/`0.702` did, so the MCM read `0.700` for three releases. To move it:
+   - `OnInit`: set the new-game baseline `Version = X.YYY`.
+   - End of `VersionCheck()`: add a stamp gate **outside** the `If Version < 0.700` wrapper — `If Version < X.YYY` / `UpdateVersion(X.YYY)` / `EndIf` — so existing saves also update the displayed version. Put *real* data-migration work for the release **inside** its own gate here only if the release needs it; a pure version bump just needs the stamp.
+   - Recompile `sls_main.pex` (see *Build*) and confirm `0 error(s), 0 warning(s)`.
+
+Skip step 4 if you deliberately want the MCM version to lag (script-only hotfix with no migration) — but the default is to keep it in sync. Don't create the `X.YYY` git tag yourself; tagging is the user's "this shipped" signal.
+
 ## Adapter Architecture (read this first)
 
 Every optional-mod integration is split into a **pair**, so SLS keeps working when the other mod is absent:
