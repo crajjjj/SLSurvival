@@ -1,6 +1,9 @@
 Scriptname _SLS_AmputationAlias extends ReferenceAlias  
 
 Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
+	If Menu.AmpType == 0 ; Dismemberment disabled. This quest is Start Game Enabled, so the alias stays live regardless; gate the trigger itself.
+		Return
+	EndIf
 	If abPowerAttack && !abHitBlocked && !abBashAttack
 		If Amp.IsDismemberWeapon(akSource, akAggressor as Actor)
 			Float DismemberActual
