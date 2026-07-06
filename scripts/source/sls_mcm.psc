@@ -9391,7 +9391,11 @@ Function LoadSettings()
 		LicUtil.LicCostFreedomShort = JsonUtil.GetIntValue("SL Survival/Settings.json", "LicCostFreedomShort", missing = 500)
 		LicUtil.LicCostFreedomLong = JsonUtil.GetIntValue("SL Survival/Settings.json", "LicCostFreedomLong", missing = 5000)
 		LicUtil.LicCostFreedomPer = JsonUtil.GetIntValue("SL Survival/Settings.json", "LicCostFreedomPer", missing = 250000)
-		AmpType = JsonUtil.GetIntValue("SL Survival/Settings.json", "AmpType", missing = 2)
+		; missing = 0 (not 2): combat dismemberment is opt-in as of 0.703, and settings files exported
+		; before 0.703 never wrote an "AmpType" key. Defaulting a missing key to 2 would silently re-enable
+		; dismemberment on import - the exact non-consensual behavior 0.703 removed - and the import path
+		; has no Amputator-installed guard (the MCM page does), so there'd be no UI to turn it back off.
+		AmpType = JsonUtil.GetIntValue("SL Survival/Settings.json", "AmpType", missing = 0)
 		StorageUtil.SetIntValue(Self, "DismemberCombatStop", JsonUtil.GetIntValue("SL Survival/Settings.json", "DismemberCombatStop", missing = 1))
 		(Game.GetFormFromFile(0x108062, "SL Survival.esp") as GlobalVariable).SetValueInt(JsonUtil.GetIntValue("SL Survival/Settings.json", "BikBreakEnable", missing = 1))
 		(Game.GetFormFromFile(0x10A737, "SL Survival.esp") as GlobalVariable).SetValueInt(JsonUtil.GetIntValue("SL Survival/Settings.json", "BikBreakTawoba", missing = 0))
@@ -10814,7 +10818,7 @@ Float IneqSpeedVal = 10.0
 Float IneqDamageVal = 20.0
 Float IneqDestVal = 20.0
 
-Int Property AmpType = 2 Auto Hidden ; Off/Random/Hands first
+Int Property AmpType = 0 Auto Hidden ; Off/Random/Hands first. Default Off: dismemberment is opt-in (0.703). _SLS_AmputationQuest is Start Game Enabled, so a nonzero default would arm the OnHit trigger before OnConfigInit could gate it.
 Int Property AmpDepth = 2 Auto Hidden ; One level at a time/Max in one go/Random
 Int Property MaxAmpDepthArms = 1 Auto Hidden
 Int Property MaxAmpDepthLegs = 1 Auto Hidden

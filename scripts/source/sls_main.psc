@@ -702,8 +702,14 @@ Function VersionCheck()
 
 	; 0.701 and 0.702 were script-only fixes with no save migration, so the internal Version (shown in the
 	; MCM) stayed at 0.700. Stamp 0.703 OUTSIDE the "< 0.700" wrapper above so existing 0.700-0.702 saves
-	; still update the displayed version. No data migration here - just the version stamp.
+	; still update the displayed version.
 	If Version < 0.703
+		; 0.703 makes combat dismemberment opt-in. Pre-0.703, AmpType defaulted to 2 ("Hands first") for
+		; everyone with Amputator installed, so existing saves are armed without the player ever choosing it.
+		; OnConfigInit's new AmpType=0 only runs on new games, so reset it here too and stop the quest. A
+		; player who deliberately wants dismemberment re-enables it once on the Player Dismemberment page.
+		Menu.AmpType = 0
+		Menu.ToggleDismemberment()
 		UpdateVersion(0.703)
 	EndIf
 EndFunction
