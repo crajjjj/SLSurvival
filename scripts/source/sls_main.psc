@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.700
+	Version = 0.703
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	AddInventoryEventFilter(_SLS_EvictionNotice)
@@ -698,6 +698,13 @@ Function VersionCheck()
 			(Game.GetFormFromFile(0x07DF73, "SL Survival.esp") as _SLS_InterfaceSlax).RestartInterface()
 			UpdateVersion(0.700)
 		EndIf
+	EndIf
+
+	; 0.701 and 0.702 were script-only fixes with no save migration, so the internal Version (shown in the
+	; MCM) stayed at 0.700. Stamp 0.703 OUTSIDE the "< 0.700" wrapper above so existing 0.700-0.702 saves
+	; still update the displayed version. No data migration here - just the version stamp.
+	If Version < 0.703
+		UpdateVersion(0.703)
 	EndIf
 EndFunction
 
