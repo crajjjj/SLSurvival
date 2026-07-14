@@ -161,10 +161,29 @@ Function OrgasmEvent(Actor ActorRef = None, Int tid, Bool HasPlayer)
 					;debug.messagebox("Stage: " + SexLab.GetController(tid).Stage + ". Mouth: " + Anim.UseOpenMouth(0, SexLab.GetController(tid).Stage))
 					;Debug.MessageBox("OpenMouths: " + Anim.OpenMouths)
 					; SexLab P+ stubs sslBaseAnimation.UseOpenMouth() to always return false (scene data moved
-					; to its native registry), which killed swallowing entirely under P+. The actual mouth
-					; state (sslBaseExpression.IsMouthOpen) works on both frameworks - P+ opens the mouth on
-					; oral stages natively - so accept it as an equivalent signal.
-					If MouthIsManualOpen || Anim.UseOpenMouth(PlayerPos, SexLab.GetController(tid).Stage) || sslBaseExpression.IsMouthOpen(PlayerRef)
+					; to its native registry), which killed swallowing entirely under P+. Prefer P+'s native
+					; collision tracking: actor-pair precise, so multi-actor scenes swallow the load of the
+					; male the player is actually on, not whichever male the gather loop picked. With no
+					; collision data (or on legacy SexLab, where Slpp stays in its empty state) fall back to
+					; the legacy anim-data flag or the actual mouth state.
+					Bool StageMouthOpen
+					Int OralState = -1 ; guard: Slpp unfilled must mean "fall back", and a None-call would return 0 ("P+ says no")
+					If Slpp
+						OralState = Slpp.GetOralState(tid, PlayerRef, Male)
+					EndIf
+					If OralState == 1
+						StageMouthOpen = true
+					ElseIf OralState == 0 ; P+ is authoritative: not on Male - but maybe on another male in the scene
+						Actor OralPartner = Slpp.GetOralPartner(tid, PlayerRef)
+						If OralPartner && (OralPartner.HasKeyword(ActorTypeCreature) || Sexlab.GetGender(OralPartner) == 0 || Sexlab.GetGender(OralPartner) == 2)
+							Male = OralPartner ; swallow the load of the male she's actually sucking
+							LoadSize = Util.GetLoadSize(Male)
+							StageMouthOpen = true
+						EndIf
+					Else ; -1: no P+ collision data - legacy checks
+						StageMouthOpen = Anim.UseOpenMouth(PlayerPos, SexLab.GetController(tid).Stage) || sslBaseExpression.IsMouthOpen(PlayerRef)
+					EndIf
+					If MouthIsManualOpen || StageMouthOpen
 						If Sexlab.IsVictim(tid, PlayerRef)
 							If DoSwallowCumBonusEnjoyment(Anim, tid, LoadSize)
 								Debug.Notification("My traitorous pussy creams as I'm forced to swallow his load")
@@ -390,6 +409,7 @@ SLS_Init Property Init Auto
 _SLS_InterfaceFrostfall Property FrostInterface Auto
 _SLS_InterfaceDevious Property Devious Auto
 _SLS_InterfaceSlso Property Slso Auto
+_SLS_InterfaceSlpp Property Slpp Auto ; CK-fill pending: until filled, the P+ collision gate falls back to legacy checks
 SLS_Mcm Property Menu Auto
 _SLS_Needs Property Needs Auto
 _SLS_CumAddict Property CumAddict Auto
