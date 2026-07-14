@@ -10,6 +10,10 @@ Event OnPlayerLoadGame()
 EndEvent
 
 Function RegForEvents()
+	; P+ replaces SexLab.esm in place, so probe its SKSE plugin version rather than
+	; GetModByName. Cached here (OnInit + OnPlayerLoadGame) so the orgasm path never
+	; probes; _SLS_IntSlpp globals resolve lazily, safe whichever framework is loaded.
+	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
 	If Game.GetModByName("SLSO.esp") != 255
 		RegisterForModEvent("SexLabOrgasmSeparate", "OnSexLabOrgasmSeparate")
 	Else
@@ -164,17 +168,17 @@ Function OrgasmEvent(Actor ActorRef = None, Int tid, Bool HasPlayer)
 					; to its native registry), which killed swallowing entirely under P+. Prefer P+'s native
 					; collision tracking: actor-pair precise, so multi-actor scenes swallow the load of the
 					; male the player is actually on, not whichever male the gather loop picked. With no
-					; collision data (or on legacy SexLab, where Slpp stays in its empty state) fall back to
-					; the legacy anim-data flag or the actual mouth state.
+					; collision data (or on legacy SexLab, where bSexLabPP is false) fall back to the
+					; legacy anim-data flag or the actual mouth state.
 					Bool StageMouthOpen
-					Int OralState = -1 ; guard: Slpp unfilled must mean "fall back", and a None-call would return 0 ("P+ says no")
-					If Slpp
-						OralState = Slpp.GetOralState(tid, PlayerRef, Male)
+					Int OralState = -1
+					If bSexLabPP
+						OralState = _SLS_IntSlpp.GetOralState(Sexlab, tid, PlayerRef, Male)
 					EndIf
 					If OralState == 1
 						StageMouthOpen = true
 					ElseIf OralState == 0 ; P+ is authoritative: not on Male - but maybe on another male in the scene
-						Actor OralPartner = Slpp.GetOralPartner(tid, PlayerRef)
+						Actor OralPartner = _SLS_IntSlpp.GetOralPartner(Sexlab, tid, PlayerRef)
 						If OralPartner && (OralPartner.HasKeyword(ActorTypeCreature) || Sexlab.GetGender(OralPartner) == 0 || Sexlab.GetGender(OralPartner) == 2)
 							Male = OralPartner ; swallow the load of the male she's actually sucking
 							LoadSize = Util.GetLoadSize(Male)
@@ -409,7 +413,8 @@ SLS_Init Property Init Auto
 _SLS_InterfaceFrostfall Property FrostInterface Auto
 _SLS_InterfaceDevious Property Devious Auto
 _SLS_InterfaceSlso Property Slso Auto
-_SLS_InterfaceSlpp Property Slpp Auto ; CK-fill pending: until filled, the P+ collision gate falls back to legacy checks
+
+Bool bSexLabPP ; cached by RegForEvents (OnInit/OnPlayerLoadGame); gates the P+ collision calls
 SLS_Mcm Property Menu Auto
 _SLS_Needs Property Needs Auto
 _SLS_CumAddict Property CumAddict Auto
