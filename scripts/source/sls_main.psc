@@ -3,9 +3,10 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.703
+	Version = 0.704
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
+	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
 	AddInventoryEventFilter(_SLS_EvictionNotice)
 	AddInventoryEventFilter(Gold001)
 	AddInventoryEventFilter(WhiterunBreezehomeKey)
@@ -122,6 +123,7 @@ EndFunction
 
 Function LoadGameMaintenance()
 	UiExtensionsCheck()
+	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
 	Init.PlayerLoadsGame()
 	;Debug.Messagebox("0xFEFFFFFD: " + 0xFEFFFFFD +"\n0xFEFFFFFE: " + 0xFEFFFFFE + "\n0xFEFFFFFF: " + 0xFEFFFFFF + "\n\n0xFF000000: " + 0xFF000000 + "\n0xFF000001: " + 0xFF000001 + "\n0xFFFFFFFE: " + 0xFEFFFFFE + "\n0xFFFFFFFF: " + 0xFFFFFFFF)
 	
@@ -711,6 +713,11 @@ Function VersionCheck()
 		Menu.AmpType = 0
 		Menu.ToggleDismemberment()
 		UpdateVersion(0.703)
+	EndIf
+
+	; 0.704 is a script-only fix to the SexLab P+ animation filtering, with no save migration.
+	If Version < 0.704
+		UpdateVersion(0.704)
 	EndIf
 EndFunction
 
@@ -1436,8 +1443,7 @@ Function SexTeleport(Int TeleportType, Actor[] SexActors)
 	EndWhile
 EndFunction
 
-Bool  CurSceneRandomAgg
-String Function GetAnimationsTags(Int AggCat, String StartingTags, Float Willpower)
+String Function GetAnimationsTags(Int AggCat, String StartingTags, Float Willpower, Bool RandomAgg)
 	;Debug.Messagebox("GetAnimationsTags\n\nAggCat: " + AggCat + "\nStartingTags: " + StartingTags + "\nWillpower: " + Willpower)
 	If AggCat == 0 ; Not Aggressive
 		Return StartingTags
@@ -1449,18 +1455,16 @@ String Function GetAnimationsTags(Int AggCat, String StartingTags, Float Willpow
 		If Willpower <= 3
 			Return StartingTags
 		ElseIf Willpower <= 7
-			CurSceneRandomAgg = SetCurSceneRandomAgg(AggCat, Willpower)
-			If CurSceneRandomAgg
-				Return StartingTags
-			Else
+			If RandomAgg
 				Return AddAggString(StartingTags)
+			Else
+				Return StartingTags
 			EndIf
 		Else
 			Return AddAggString(StartingTags)
 		EndIf
 	Else ; Use DF Willpower % Chance
-		CurSceneRandomAgg = SetCurSceneRandomAgg(AggCat, Willpower)
-		If CurSceneRandomAgg
+		If RandomAgg
 			Return AddAggString(StartingTags)
 		Else
 			Return StartingTags
@@ -1468,67 +1472,81 @@ String Function GetAnimationsTags(Int AggCat, String StartingTags, Float Willpow
 	EndIf
 EndFunction
 
-Function SetCurSceneRandomAgg(Int AggCat, Float Willpower)
+Bool Function RollRandomAgg(Int AggCat, Float Willpower)
 	If AggCat == 3 ; Use DF Willpower Fixed
-		CurSceneRandomAgg = Utility.RandomFloat(0.0, 100.0) > 50.0
+		Return Utility.RandomFloat(0.0, 100.0) > 50.0
 	Else ; Use DF Willpower % Chance
-		CurSceneRandomAgg = (10.0 - Willpower) > Utility.RandomFloat(0.0, 10.0) 
+		Return (10.0 - Willpower) > Utility.RandomFloat(0.0, 10.0)
 	EndIf
 EndFunction
 
-String Function GetSuppressTags(Int AggCat, String StartingTags, Float Willpower)
+String Function GetSuppressTags(Int AggCat, String StartingTags, Float Willpower, Bool RandomAgg)
 	;Debug.Messagebox("GetSuppressTags\n\nAggCat: " + AggCat + "\nStartingTags: " + StartingTags + "\nWillpower: " + Willpower)
 	If AggCat == 0 ; Not Aggressive
-		Return AddAggString(StartingTags)
-	ElseIf AggCat == 1 ; Aggressive
+		Return AddAggString(StartingTags, AsSuppress = true)
+	ElseIf AggCat == 1 ; Don't Care
 		Return StartingTags
-	ElseIf AggCat == 2 ; Don't Care
+	ElseIf AggCat == 2 ; Aggressive
 		Return StartingTags
 	ElseIf AggCat == 3 ; Use DF Willpower Static
 		If Willpower <= 3
-			Return AddAggString(StartingTags)
+			Return AddAggString(StartingTags, AsSuppress = true)
 		ElseIf Willpower <= 7
-			CurSceneRandomAgg = SetCurSceneRandomAgg(AggCat, Willpower)
-			If CurSceneRandomAgg
+			If RandomAgg
 				Return StartingTags
 			Else
-				Return AddAggString(StartingTags)
+				Return AddAggString(StartingTags, AsSuppress = true)
 			EndIf
 		Else
 			Return StartingTags
 		EndIf
 	Else ; Use DF Willpower % Chance
-		CurSceneRandomAgg = SetCurSceneRandomAgg(AggCat, Willpower)
-		If CurSceneRandomAgg
+		If RandomAgg
 			Return StartingTags
 		Else
-			Return AddAggString(StartingTags)
+			Return AddAggString(StartingTags, AsSuppress = true)
 		EndIf
 	EndIf
 EndFunction
 
-sslBaseAnimation[] Function BeginGetAnims(Int ActorCount, Int SexCat, Bool IsCreatureScene, String AnimTags, String SuppressTags)
+; RandomAgg is rolled here, once per scene, and passed to both tag builders as a parameter. It must NOT live
+; in script state: any external call unlocks this script, so a second scene entering BeginGetAnims could
+; re-roll a shared variable mid-flight and leave one side demanding Aggressive while the other suppresses it.
+;
+; LastAttempt - false when the caller has a broader retry of its own left to try (see StartDogSexOral). The
+; P+ safety net below returns the whole registry, which would read as success and rob the caller of that retry.
+sslBaseAnimation[] Function BeginGetAnims(Int ActorCount, Int SexCat, Bool IsCreatureScene, String AnimTags, String SuppressTags, Bool LastAttempt = true)
 	Float Willpower = Dflow.UpdateWillLocal()
-	If SexCat == 0 ; Unspecified - Default aggressive
-		AnimTags = GetAnimationsTags(AggCat = 2, StartingTags = AnimTags, Willpower = Willpower)
-		SuppressTags = GetSuppressTags(AggCat = 2, StartingTags = SuppressTags, Willpower = Willpower)
-		Return GetAnims(ActorCount, IsCreatureScene, AnimTags, SuppressTags)
-		
-	ElseIf SexCat == 1 ; Toll sex
-		AnimTags = GetAnimationsTags(AggCat = Menu.TollSexAgg, StartingTags = AnimTags, Willpower = Willpower)
-		SuppressTags = GetSuppressTags(AggCat = Menu.TollSexAgg, StartingTags = SuppressTags, Willpower = Willpower)
-		Return GetAnims(ActorCount, IsCreatureScene, AnimTags, SuppressTags)
-		
+	Int AggCat = 2 ; SexCat 0: Unspecified - Default aggressive
+	If SexCat == 1 ; Toll sex
+		AggCat = Menu.TollSexAgg
 	ElseIf SexCat == 2 ; Beg sex
-		AnimTags = GetAnimationsTags(AggCat = Menu.BegSexAgg, StartingTags = AnimTags, Willpower = Willpower)
-		SuppressTags = GetSuppressTags(AggCat = Menu.BegSexAgg, StartingTags = SuppressTags, Willpower = Willpower)
-		Return GetAnims(ActorCount, IsCreatureScene, AnimTags, SuppressTags)
-		
-	Else ; Kennel sex
-		AnimTags = GetAnimationsTags(AggCat = Menu.KennelSexAgg, StartingTags = AnimTags, Willpower = Willpower)
-		SuppressTags = GetSuppressTags(AggCat = Menu.KennelSexAgg, StartingTags = SuppressTags, Willpower = Willpower)
-		Return GetAnims(ActorCount, IsCreatureScene, AnimTags, SuppressTags)
+		AggCat = Menu.BegSexAgg
+	ElseIf SexCat != 0 ; Kennel sex
+		AggCat = Menu.KennelSexAgg
 	EndIf
+	Bool RandomAgg = false
+	If AggCat >= 3 ; One roll for both sides - separate rolls could demand and suppress Aggressive at once
+		RandomAgg = RollRandomAgg(AggCat, Willpower)
+	EndIf
+	String FilterTags = GetAnimationsTags(AggCat, StartingTags = AnimTags, Willpower = Willpower, RandomAgg = RandomAgg)
+	String FilterSuppress = GetSuppressTags(AggCat, StartingTags = SuppressTags, Willpower = Willpower, RandomAgg = RandomAgg)
+	sslBaseAnimation[] Anims = GetAnims(ActorCount, IsCreatureScene, FilterTags, FilterSuppress)
+
+	; Nothing carries the demanded aggression tag - drop the demand, but keep FilterSuppress. Every fallback
+	; below has to preserve it: relaxing a "Not Aggressive" prohibition would play the very Aggressive/Forced
+	; scenes the player excluded, which is the opposite of a graceful degradation.
+	If Anims.Length == 0 && FilterTags != AnimTags
+		Anims = GetAnims(ActorCount, IsCreatureScene, AnimTags, FilterSuppress)
+	EndIf
+
+	; P+ starts a completely unfiltered scene when handed no animations at all, so never let an empty list
+	; reach StartSex - offer everything except foreplay instead. Incompatible scenes are discarded by its
+	; thread ctor. Legacy SexLab picks sanely by actor on an empty list, so leave it alone there.
+	If Anims.Length == 0 && LastAttempt && bSexLabPP
+		Anims = GetAnims(ActorCount, IsCreatureScene, "", AddLeadInSuppress(FilterSuppress))
+	EndIf
+	Return Anims
 EndFunction
 
 sslBaseAnimation[] Function GetAnims(Int ActorCount, Bool IsCreatureScene, String AnimTags, String SuppressTags)
@@ -1540,11 +1558,32 @@ sslBaseAnimation[] Function GetAnims(Int ActorCount, Bool IsCreatureScene, Strin
 	EndIf
 EndFunction
 
-String Function AddAggString(String Tags)
+; Cached at OnInit/OnPlayerLoadGame from the _SLS_IntSlpp adapter - the probe is a native SKSE call and
+; AddAggString runs on every animation query.
+Bool bSexLabPP
+
+String Function AddAggString(String Tags, Bool AsSuppress = false)
+	; SexLab P+ tags its aggressive scenes Forced, not Aggressive - only scenes converted from old SLAL packs
+	; still carry Aggressive. On the required side P+ understands ~Tag as "any of these"; legacy SexLab does not,
+	; so it keeps the plain Aggressive tag there. Suppress lists match any entry on both frameworks.
+	String AggTags = "Aggressive"
+	If AsSuppress
+		AggTags = "Aggressive,Forced"
+	ElseIf bSexLabPP
+		AggTags = "~Aggressive,~Forced"
+	EndIf
 	If Tags == ""
-		Return "Aggressive"
+		Return AggTags
 	Else
-		Return Tags + ",Aggressive"
+		Return Tags + "," + AggTags
+	EndIf
+EndFunction
+
+String Function AddLeadInSuppress(String Tags)
+	If Tags == ""
+		Return "LeadIn,Kissing"
+	Else
+		Return Tags + ",LeadIn,Kissing"
 	EndIf
 EndFunction
 
@@ -1579,20 +1618,30 @@ Function Masturbate(Actor akTarget, sslBaseAnimation Anim = None)
 	SexActors[0] = PlayerRef
 	sslBaseAnimation[] animations
 	If !Anim
-		String AnimTags = "Solo"
-		If akTarget.GetActorBase().GetSex() == 1
-			AnimTags += ",F"
-		Else
-			AnimTags += ",M"
+		animations = GetMasturbationAnims(akTarget)
+		If animations.Length == 0 ; P+ starts a completely unfiltered scene on an empty list - do nothing rather than launch an arbitrary one
+			Debug.Notification("No masturbation animations are installed.")
+			Return
 		EndIf
-		String SuppressTags = ""
-		animations = GetAnims(1, false, AnimTags, SuppressTags)
-	
 	Else
 		animations = new sslBaseAnimation[1]
 		animations[0] = Anim
 	EndIf
 	Sexlab.StartSex(sexActors, animations, None)
+EndFunction
+
+sslBaseAnimation[] Function GetMasturbationAnims(Actor akTarget)
+	String AnimTags = "Solo"
+	If akTarget.GetActorBase().GetSex() == 1
+		AnimTags += ",F"
+	Else
+		AnimTags += ",M"
+	EndIf
+	sslBaseAnimation[] Anims = GetAnims(1, false, AnimTags, "")
+	If Anims.Length == 0 ; P+ doesn't auto-add gender tags (F/M) at registration like legacy SexLab - retry ungendered
+		Anims = GetAnims(1, false, "Solo", "")
+	EndIf
+	Return Anims
 EndFunction
 
 Function StartSexOralMale(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFame = true, Actor Victim = none, Int TeleportType = 0)
@@ -1617,10 +1666,7 @@ Function StartSexOralMale(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFame =
 	String AnimTags = "Blowjob"
 	String SuppressTags = "Cunnilingus"
 	sslBaseAnimation[] animations = BeginGetAnims(2, SexCat = SexCat, IsCreatureScene = false, AnimTags = AnimTags, SuppressTags = SuppressTags)
-	If animations.Length == 0 ; Fallback to not filtering aggressive tag if no animations found
-		animations = SexLab.GetAnimationsByTags(2, AnimTags, SuppressTags)
-	EndIf
-	
+
 	actor[] sexActors =  new actor[2]
 	SexActors[0] = PlayerRef
 	SexActors[1] = akSpeaker
@@ -1658,10 +1704,7 @@ Function StartSexOralFemale(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFame
 	String AnimTags = "Cunnilingus"
 	String SuppressTags = ""
 	sslBaseAnimation[] animations = BeginGetAnims(2, SexCat = SexCat, IsCreatureScene = false, AnimTags = AnimTags, SuppressTags = SuppressTags)
-	If animations.Length == 0 ; Fallback to not filtering aggressive tag if no animations found
-		animations = SexLab.GetAnimationsByTags(2, AnimTags, SuppressTags)
-	EndIf
-	
+
 	actor[] sexActors =  new actor[2]
 	SexActors[0] = PlayerRef
 	SexActors[1] = akSpeaker
@@ -1694,10 +1737,7 @@ Function StartSexVaginal(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFame = 
 	String AnimTags = "Vaginal"
 	String SuppressTags = ""
 	sslBaseAnimation[] animations = BeginGetAnims(2, SexCat = SexCat, IsCreatureScene = false, AnimTags = AnimTags, SuppressTags = SuppressTags)
-	If animations.Length == 0 ; Fallback to not filtering aggressive tag if no animations found
-		animations = SexLab.GetAnimationsByTags(2, AnimTags, SuppressTags)
-	EndIf
-	
+
 	actor[] sexActors =  new actor[2]
 	SexActors[0] = PlayerRef
 	SexActors[1] = akSpeaker
@@ -1730,10 +1770,7 @@ Function StartSexAnal(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFame = tru
 	String AnimTags = "Anal"
 	String SuppressTags = ""
 	sslBaseAnimation[] animations = BeginGetAnims(2, SexCat = SexCat, IsCreatureScene = false, AnimTags = AnimTags, SuppressTags = SuppressTags)
-	If animations.Length == 0 ; Fallback to not filtering aggressive tag if no animations found
-		animations = SexLab.GetAnimationsByTags(2, AnimTags, SuppressTags)
-	EndIf
-	
+
 	actor[] sexActors =  new actor[2]
 	SexActors[0] = PlayerRef
 	SexActors[1] = akSpeaker
@@ -1767,10 +1804,7 @@ Function StartSex3p(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFame = true,
 	String AnimTags = "Gangbang"
 	String SuppressTags = ""
 	sslBaseAnimation[] animations = BeginGetAnims(3, SexCat = SexCat, IsCreatureScene = false, AnimTags = AnimTags, SuppressTags = SuppressTags)
-	If animations.Length == 0 ; Fallback to not filtering aggressive tag if no animations found
-		animations = SexLab.GetAnimationsByTags(3, AnimTags, SuppressTags)
-	EndIf
-	
+
 	actor[] sexActors =  new actor[3]
 	SexActors[0] = PlayerRef
 	SexActors[1] = akSpeaker
@@ -1805,10 +1839,7 @@ Function StartSex4p(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFame = true,
 	String AnimTags = "Gangbang"
 	String SuppressTags = ""
 	sslBaseAnimation[] animations = BeginGetAnims(4, SexCat = SexCat, IsCreatureScene = false, AnimTags = AnimTags, SuppressTags = SuppressTags)
-	If animations.Length == 0 ; Fallback to not filtering aggressive tag if no animations found
-		animations = SexLab.GetAnimationsByTags(4, AnimTags, SuppressTags)
-	EndIf
-	
+
 	actor[] sexActors =  new actor[4]
 	SexActors[0] = PlayerRef
 	SexActors[1] = akSpeaker
@@ -1843,20 +1874,14 @@ Function StartDogSexOral(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFame = 
 		EndIf
 	EndIf
 	
-	String AnimTags = "Dog,Blowjob"
+	String AnimTags = "Dog,Blowjob" ; Try for blowjob animations first. Oral includes any scene with oral at any stage => may not cum in mouth
 	String SuppressTags = "Cunnilingus"
-	sslBaseAnimation[] animations = BeginGetAnims(2, SexCat = SexCat, IsCreatureScene = true, AnimTags = AnimTags, SuppressTags = SuppressTags)
-	If animations.Length == 0 ; Fallback to not filtering aggressive tag if no animations found
-		animations = SexLab.GetCreatureAnimationsByTags(2, AnimTags, SuppressTags)
-	EndIf
+	sslBaseAnimation[] animations = BeginGetAnims(2, SexCat = SexCat, IsCreatureScene = true, AnimTags = AnimTags, SuppressTags = SuppressTags, LastAttempt = false)
 	If animations.Length == 0
 		AnimTags = "Dog,Oral"
 		animations = BeginGetAnims(2, SexCat = SexCat, IsCreatureScene = true, AnimTags = AnimTags, SuppressTags = SuppressTags)
-		If animations.Length == 0 ; Fallback to not filtering aggressive tag if no animations found
-			animations = SexLab.GetCreatureAnimationsByTags(2, AnimTags, SuppressTags)
-		EndIf
 	EndIf
-	
+
 	actor[] sexActors =  new actor[2]
 	SexActors[0] = PlayerRef
 	SexActors[1] = BeggingDog01.GetReference() as Actor
@@ -1890,10 +1915,7 @@ Function StartDogSexVaginal(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFame
 	String AnimTags = "Dog,Vaginal"
 	String SuppressTags = "Cunnilingus"
 	sslBaseAnimation[] animations = BeginGetAnims(2, SexCat = SexCat, IsCreatureScene = true, AnimTags = AnimTags, SuppressTags = SuppressTags)
-	If animations.Length == 0 ; Fallback to not filtering aggressive tag if no animations found
-		animations = SexLab.GetCreatureAnimationsByTags(2, AnimTags, SuppressTags)
-	EndIf
-	
+
 	actor[] sexActors =  new actor[2]
 	SexActors[0] = PlayerRef
 	SexActors[1] = BeggingDog01.GetReference() as Actor
@@ -1927,10 +1949,7 @@ Function StartDogSexAnal(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFame = 
 	String AnimTags = "Dog,Anal"
 	String SuppressTags = "Cunnilingus"
 	sslBaseAnimation[] animations = BeginGetAnims(2, SexCat = SexCat, IsCreatureScene = true, AnimTags = AnimTags, SuppressTags = SuppressTags)
-	If animations.Length == 0 ; Fallback to not filtering aggressive tag if no animations found
-		animations = SexLab.GetCreatureAnimationsByTags(2, AnimTags, SuppressTags)
-	EndIf
-	
+
 	actor[] sexActors =  new actor[2]
 	SexActors[0] = PlayerRef
 	SexActors[1] = BeggingDog01.GetReference() as Actor
@@ -1964,10 +1983,7 @@ Function StartDogSex3p(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFame = tr
 	String AnimTags = "Dog"
 	String SuppressTags = ""
 	sslBaseAnimation[] animations = BeginGetAnims(3, SexCat = SexCat, IsCreatureScene = true, AnimTags = AnimTags, SuppressTags = SuppressTags)
-	If animations.Length == 0 ; Fallback to not filtering aggressive tag if no animations found
-		animations = SexLab.GetCreatureAnimationsByTags(3, AnimTags, SuppressTags)
-	EndIf
-	
+
 	actor[] sexActors =  new actor[3]
 	SexActors[0] = PlayerRef
 	SexActors[1] = BeggingDog01.GetReference() as Actor
@@ -2002,10 +2018,7 @@ Function StartDogSex4p(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFame = tr
 	String AnimTags = "Dog"
 	String SuppressTags = ""
 	sslBaseAnimation[] animations = BeginGetAnims(4, SexCat = SexCat, IsCreatureScene = true, AnimTags = AnimTags, SuppressTags = SuppressTags)
-	If animations.Length == 0 ; Fallback to not filtering aggressive tag if no animations found
-		animations = SexLab.GetCreatureAnimationsByTags(4, AnimTags, SuppressTags)
-	EndIf
-	
+
 	actor[] sexActors =  new actor[4]
 	SexActors[0] = PlayerRef
 	SexActors[1] = BeggingDog01.GetReference() as Actor
@@ -2042,18 +2055,12 @@ Function StartWolfSexOral(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFame =
 	
 	String AnimTags = "Wolf,Blowjob" ; Try for blowjob animations first. Oral includes any scene with oral at any stage => may not cum in mouth
 	String SuppressTags = "Cunnilingus"
-	sslBaseAnimation[] animations = SexLab.GetCreatureAnimationsByTags(2, AnimTags, TagSuppress = SuppressTags)
-	If animations.Length == 0 ; Fallback to not filtering aggressive tag if no animations found
-		animations = SexLab.GetCreatureAnimationsByTags(2, AnimTags, SuppressTags)
-	EndIf
+	sslBaseAnimation[] animations = BeginGetAnims(2, SexCat = SexCat, IsCreatureScene = true, AnimTags = AnimTags, SuppressTags = SuppressTags, LastAttempt = false)
 	If animations.Length == 0
 		AnimTags = "Wolf,Oral"
 		animations = BeginGetAnims(2, SexCat = SexCat, IsCreatureScene = true, AnimTags = AnimTags, SuppressTags = SuppressTags)
-		If animations.Length == 0 ; Fallback to not filtering aggressive tag if no animations found
-			animations = SexLab.GetCreatureAnimationsByTags(2, AnimTags, SuppressTags)
-		EndIf
 	EndIf
-	
+
 	actor[] sexActors =  new actor[2]
 	SexActors[0] = PlayerRef
 	SexActors[1] = BeggingWolf01.GetReference() as Actor
@@ -2087,10 +2094,7 @@ Function StartWolfSexVaginal(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFam
 	String AnimTags = "Wolf,Vaginal"
 	String SuppressTags = "Cunnilingus"
 	sslBaseAnimation[] animations = BeginGetAnims(2, SexCat = SexCat, IsCreatureScene = true, AnimTags = AnimTags, SuppressTags = SuppressTags)
-	If animations.Length == 0 ; Fallback to not filtering aggressive tag if no animations found
-		animations = SexLab.GetCreatureAnimationsByTags(2, AnimTags, SuppressTags)
-	EndIf
-	
+
 	actor[] sexActors =  new actor[2]
 	SexActors[0] = PlayerRef
 	SexActors[1] = BeggingWolf01.GetReference() as Actor
@@ -2123,10 +2127,7 @@ Function StartWolfSexAnal(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFame =
 	String AnimTags = "Wolf,Anal"
 	String SuppressTags = "Cunnilingus"
 	sslBaseAnimation[] animations = BeginGetAnims(2, SexCat = SexCat, IsCreatureScene = true, AnimTags = AnimTags, SuppressTags = SuppressTags)
-	If animations.Length == 0 ; Fallback to not filtering aggressive tag if no animations found
-		animations = SexLab.GetCreatureAnimationsByTags(2, AnimTags, SuppressTags)
-	EndIf
-	
+
 	actor[] sexActors =  new actor[2]
 	SexActors[0] = PlayerRef
 	SexActors[1] = BeggingWolf01.GetReference() as Actor
@@ -2161,10 +2162,7 @@ Function StartWolfSex3p(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFame = t
 	String AnimTags = "Wolf"
 	String SuppressTags = ""
 	sslBaseAnimation[] animations = BeginGetAnims(3, SexCat = SexCat, IsCreatureScene = true, AnimTags = AnimTags, SuppressTags = SuppressTags)
-	If animations.Length == 0 ; Fallback to not filtering aggressive tag if no animations found
-		animations = SexLab.GetCreatureAnimationsByTags(3, AnimTags, SuppressTags)
-	EndIf
-	
+
 	actor[] sexActors =  new actor[3]
 	SexActors[0] = PlayerRef
 	SexActors[1] = BeggingWolf01.GetReference() as Actor
@@ -2199,10 +2197,7 @@ Function StartWolfSex4p(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFame = t
 	String AnimTags = "Wolf"
 	String SuppressTags = ""
 	sslBaseAnimation[] animations = BeginGetAnims(4, SexCat = SexCat, IsCreatureScene = true, AnimTags = AnimTags, SuppressTags = SuppressTags)
-	If animations.Length == 0 ; Fallback to not filtering aggressive tag if no animations found
-		animations = SexLab.GetCreatureAnimationsByTags(4, AnimTags, SuppressTags)
-	EndIf
-	
+
 	actor[] sexActors =  new actor[4]
 	SexActors[0] = PlayerRef
 	SexActors[1] = BeggingWolf01.GetReference() as Actor
@@ -2237,19 +2232,14 @@ Function StartHorseSexOral(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFame 
 		EndIf
 	EndIf
 	
-	String AnimTags = "Horse,Blowjob"
+	String AnimTags = "Horse,Blowjob" ; Try for blowjob animations first. Oral includes any scene with oral at any stage => may not cum in mouth
 	String SuppressTags = ""
-	sslBaseAnimation[] animations = SexLab.GetCreatureAnimationsByTags(2, AnimTags, TagSuppress = SuppressTags)
-	If animations.Length == 0 ; Fallback to not filtering aggressive tag if no animations found
-		animations = SexLab.GetCreatureAnimationsByTags(2, AnimTags, SuppressTags)
-	EndIf
+	sslBaseAnimation[] animations = BeginGetAnims(2, SexCat = SexCat, IsCreatureScene = true, AnimTags = AnimTags, SuppressTags = SuppressTags, LastAttempt = false)
 	If animations.Length == 0
 		AnimTags = "Horse,Oral"
 		animations = BeginGetAnims(2, SexCat = SexCat, IsCreatureScene = true, AnimTags = AnimTags, SuppressTags = SuppressTags)
-		If animations.Length == 0 ; Fallback to not filtering aggressive tag if no animations found
-			animations = SexLab.GetCreatureAnimationsByTags(2, AnimTags, SuppressTags)
-		EndIf
 	EndIf
+
 	actor[] sexActors =  new actor[2]
 	SexActors[0] = PlayerRef
 	SexActors[1] = BeggingHorse01.GetReference() as Actor
@@ -2283,10 +2273,7 @@ Function StartHorseSexVaginal(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFa
 	String AnimTags = "Horse,Vaginal"
 	String SuppressTags = ""
 	sslBaseAnimation[] animations = BeginGetAnims(2, SexCat = SexCat, IsCreatureScene = true, AnimTags = AnimTags, SuppressTags = SuppressTags)
-	If animations.Length == 0 ; Fallback to not filtering aggressive tag if no animations found
-		animations = SexLab.GetCreatureAnimationsByTags(2, AnimTags, SuppressTags)
-	EndIf
-	
+
 	actor[] sexActors =  new actor[2]
 	SexActors[0] = PlayerRef
 	SexActors[1] = BeggingHorse01.GetReference() as Actor
@@ -2320,10 +2307,7 @@ Function StartHorseSexAnal(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFame 
 	String AnimTags = "Horse,Anal"
 	String SuppressTags = ""
 	sslBaseAnimation[] animations = BeginGetAnims(2, SexCat = SexCat, IsCreatureScene = true, AnimTags = AnimTags, SuppressTags = SuppressTags)
-	If animations.Length == 0 ; Fallback to not filtering aggressive tag if no animations found
-		animations = SexLab.GetCreatureAnimationsByTags(2, AnimTags, SuppressTags)
-	EndIf
-	
+
 	actor[] sexActors =  new actor[2]
 	SexActors[0] = PlayerRef
 	SexActors[1] = BeggingHorse01.GetReference() as Actor
@@ -2357,10 +2341,7 @@ Function StartHorseSex3p(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFame = 
 	String AnimTags = "Horse"
 	String SuppressTags = ""
 	sslBaseAnimation[] animations = BeginGetAnims(3, SexCat = SexCat, IsCreatureScene = true, AnimTags = AnimTags, SuppressTags = SuppressTags)
-	If animations.Length == 0 ; Fallback to not filtering aggressive tag if no animations found
-		animations = SexLab.GetCreatureAnimationsByTags(3, AnimTags, SuppressTags)
-	EndIf
-	
+
 	actor[] sexActors =  new actor[3]
 	SexActors[0] = PlayerRef
 	SexActors[1] = BeggingHorse01.GetReference() as Actor
@@ -2395,10 +2376,7 @@ Function StartHorseSex4p(Actor akSpeaker, Int SexCat = 0, Bool DecWillIncFame = 
 	String AnimTags = "Horse"
 	String SuppressTags = ""
 	sslBaseAnimation[] animations = BeginGetAnims(4, SexCat = SexCat, IsCreatureScene = true, AnimTags = AnimTags, SuppressTags = SuppressTags)
-	If animations.Length == 0 ; Fallback to not filtering aggressive tag if no animations found
-		animations = SexLab.GetCreatureAnimationsByTags(4, AnimTags, SuppressTags)
-	EndIf
-	
+
 	actor[] sexActors =  new actor[4]
 	SexActors[0] = PlayerRef
 	SexActors[1] = BeggingHorse01.GetReference() as Actor

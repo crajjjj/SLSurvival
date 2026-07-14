@@ -537,14 +537,11 @@ Function Masturbate()
 EndFunction
 
 sslBaseAnimation Function ShowMasturbationList()
-	String AnimTags = "Solo"
-	If PlayerRef.GetActorBase().GetSex() == 1
-		AnimTags += ",F"
-	Else
-		AnimTags += ",M"
+	sslBaseAnimation[] animations = Main.GetMasturbationAnims(PlayerRef)
+	If animations.Length == 0 ; Nothing to list - the "Random" entry below would index an empty array
+		Debug.Notification("No masturbation animations are installed.")
+		Return None
 	EndIf
-	String SuppressTags = ""
-	sslBaseAnimation[] animations = Main.GetAnims(1, false, AnimTags, SuppressTags)
 
 	UIListMenu ListMenu = UIExtensions.GetMenu("UIListMenu") as UIListMenu
 	ListMenu.AddEntryItem("Random ")
