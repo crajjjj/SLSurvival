@@ -160,7 +160,11 @@ Function OrgasmEvent(Actor ActorRef = None, Int tid, Bool HasPlayer)
 					
 					;debug.messagebox("Stage: " + SexLab.GetController(tid).Stage + ". Mouth: " + Anim.UseOpenMouth(0, SexLab.GetController(tid).Stage))
 					;Debug.MessageBox("OpenMouths: " + Anim.OpenMouths)
-					If MouthIsManualOpen || Anim.UseOpenMouth(PlayerPos, SexLab.GetController(tid).Stage)
+					; SexLab P+ stubs sslBaseAnimation.UseOpenMouth() to always return false (scene data moved
+					; to its native registry), which killed swallowing entirely under P+. The actual mouth
+					; state (sslBaseExpression.IsMouthOpen) works on both frameworks - P+ opens the mouth on
+					; oral stages natively - so accept it as an equivalent signal.
+					If MouthIsManualOpen || Anim.UseOpenMouth(PlayerPos, SexLab.GetController(tid).Stage) || sslBaseExpression.IsMouthOpen(PlayerRef)
 						If Sexlab.IsVictim(tid, PlayerRef)
 							If DoSwallowCumBonusEnjoyment(Anim, tid, LoadSize)
 								Debug.Notification("My traitorous pussy creams as I'm forced to swallow his load")
