@@ -57,9 +57,17 @@ Function RandomizeEnforcers()
 		While i > 0
 			i -= 1
 			Enforcer = FlSelect.GetAt(i) as Actor
-			Enforcer.Enable()
-			If !Enforcer.IsDead()
-				_SLS_LicTownBlank.AddForm(Enforcer)
+			If Enforcer
+				; Only touch enforcers that actually need enabling. Enable() on an already-enabled
+				; actor still queues an EnableFunctor, which writes the fade amount straight into the
+				; ref's 3D - and this runs off a location change, so that 3D can be mid-load. Null
+				; deref = CTD a few seconds after the transition.
+				If Enforcer.IsDisabled()
+					Enforcer.Enable()
+				EndIf
+				If !Enforcer.IsDead()
+					_SLS_LicTownBlank.AddForm(Enforcer)
+				EndIf
 			EndIf
 		EndWhile
 		
@@ -72,8 +80,10 @@ Function RandomizeEnforcers()
 		;Utility.Wait(2.0)
 		While _SLS_LicTownBlank.GetSize() > EnforcerCount
 			Enforcer = _SLS_LicTownBlank.GetAt(Utility.RandomInt(0, _SLS_LicTownBlank.GetSize() - 1)) as Actor
-			Enforcer.Disable()
-			_SLS_LicTownBlank.RemoveAddedForm(Enforcer)
+			If Enforcer && !Enforcer.IsDisabled()
+				Enforcer.Disable()
+			EndIf
+			_SLS_LicTownBlank.RemoveAddedForm(Enforcer) ; must run unconditionally or the loop never shrinks
 		EndWhile
 		;Debug.Messagebox("Randomize enforcers - END")
 	EndIf

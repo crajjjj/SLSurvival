@@ -9000,6 +9000,7 @@ Function ToggleTolls()
 	Debug.Messagebox("The menu may freeze for a moment...\nBe patient\n\nYou may need to enter/exit towns for changes to take effect")
 	Formlist TollObjs = Game.GetFormFromFile(0x0F8868, "SL Survival.esp") as Formlist
 	Int i = 0
+	Init.IsTollPaid = !Init.TollEnable ; toll dialogue keys off IsTollPaid, so stand the guards down (or back up) now rather than on the next town entry
 	If !Init.TollEnable
 		TollDodging = false
 		DoTollDodgingToggle = true
@@ -9032,6 +9033,7 @@ EndFunction
 ; settings import: ToggleTolls() prompts (messageboxes) so it can't run in the import pass,
 ; which is why importing Init.TollEnable never showed/hid the physical toll gates.
 Function RefreshTollObjects()
+	Init.IsTollPaid = !Init.TollEnable
 	Formlist TollObjs = Game.GetFormFromFile(0x0F8868, "SL Survival.esp") as Formlist
 	Int i = 0
 	While i < TollObjs.GetSize()

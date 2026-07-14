@@ -355,10 +355,16 @@ Function SetIsInsideWalls(Int LocIndex)
 		TollDisguise.SetGuardDistance(PlayerCurrentLocIndex)
 	
 	ElseIf !WasInside && Init.IsPlayerInside ; Was outside and now is inside
-		Init.IsTollPaid = false
+		; Every toll dialogue INFO in the plugin is conditioned on IsTollPaid, never on TollEnable,
+		; so the master toggle used to only hide the toll furniture while guards kept forcegreeting
+		; and taking payment in devices. Treat a disabled toll as already paid - the same exemption
+		; path residents get - and don't arm toll-dodge tracking.
+		Init.IsTollPaid = !Init.TollEnable
 		;Debug.Messagebox("Was outside and now is inside")
-		TollDodge.TollGateLoad(PlayerCurrentLocString, true)
-		TollDodge.HasDodgedToll(PlayerCurrentLocString)
+		If Init.TollEnable
+			TollDodge.TollGateLoad(PlayerCurrentLocString, true)
+			TollDodge.HasDodgedToll(PlayerCurrentLocString)
+		EndIf
 		ToggleGuardWarningQuests(Active = true)
 		TollDisguise.SetGuardDistance(PlayerCurrentLocIndex)
 	EndIf	
