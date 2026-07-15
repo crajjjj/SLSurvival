@@ -14,7 +14,19 @@ Function RegForEvents()
 	; GetModByName. Cached here (OnInit + OnPlayerLoadGame) so the orgasm path never
 	; probes; _SLS_IntSlpp globals resolve lazily, safe whichever framework is loaded.
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
-	If Game.GetModByName("SLSO.esp") != 255
+	; Mod-event registrations persist in the save - clear the paths this branch won't use
+	; so switching frameworks mid-save can't leave a stale registration double-triggering.
+	UnregisterForModEvent("SexLabApplyCumFX")
+	UnregisterForModEvent("SexLabOrgasmSeparate")
+	UnregisterForModEvent("HookOrgasmStart")
+	If bSexLabPP
+		; P+ decides cum target/source/orifice natively per male orgasm (pair collision with
+		; scene-tag fallback) and reports it on this event - use it as the load signal.
+		; HookOrgasmStart stays for the non-load side jobs (milk leak, male orgasm times);
+		; OrgasmEvent skips its load-interaction section when bSexLabPP.
+		RegisterForModEvent("SexLabApplyCumFX", "OnSexLabApplyCumFX")
+		RegisterForModEvent("HookOrgasmStart", "OnOrgasmStart")
+	ElseIf Game.GetModByName("SLSO.esp") != 255
 		RegisterForModEvent("SexLabOrgasmSeparate", "OnSexLabOrgasmSeparate")
 	Else
 		RegisterForModEvent("HookOrgasmStart", "OnOrgasmStart")
@@ -107,7 +119,7 @@ Function OrgasmEvent(Actor ActorRef = None, Int tid, Bool HasPlayer)
 	Int i = 0
 	Int Gender
 	Actor[] actorList
-	If HasPlayer && ActorRef != PlayerRef
+	If HasPlayer && ActorRef != PlayerRef && !bSexLabPP ; under P+ the loads arrive per-male on OnSexLabApplyCumFX instead
 		Debug.Trace("SLS_: Actor had orgasm and player is in the same scene")
 		;sslThreadController Thread = SexLab.GetController(tid)
 		sslBaseAnimation Anim = sexlab.HookAnimation(tid)
@@ -159,143 +171,12 @@ Function OrgasmEvent(Actor ActorRef = None, Int tid, Bool HasPlayer)
 			Debug.Trace("SLS_: Male count = " + MaleCount)
 			If MaleCount > 0
 				Float LoadSize = Util.GetLoadSize(Male)
-				Bool Swallowed = false
 				If ;/MouthIsManualOpen || /;(Anim.HasTag("Oral") || Anim.HasTag("Blowjob")) && (Anim.HasTag("69") || (!Anim.HasTag("Cunnilingus") && !Anim.HasTag("Licking")))
-					
 					;debug.messagebox("Stage: " + SexLab.GetController(tid).Stage + ". Mouth: " + Anim.UseOpenMouth(0, SexLab.GetController(tid).Stage))
 					;Debug.MessageBox("OpenMouths: " + Anim.OpenMouths)
-					; SexLab P+ stubs sslBaseAnimation.UseOpenMouth() to always return false (scene data moved
-					; to its native registry), which killed swallowing entirely under P+. Prefer P+'s native
-					; collision tracking: actor-pair precise, so multi-actor scenes swallow the load of the
-					; male the player is actually on, not whichever male the gather loop picked. With no
-					; collision data (or on legacy SexLab, where bSexLabPP is false) fall back to the
-					; legacy anim-data flag or the actual mouth state.
-					Bool StageMouthOpen
-					Int OralState = -1
-					If bSexLabPP
-						OralState = _SLS_IntSlpp.GetOralState(Sexlab, tid, PlayerRef, Male)
-					EndIf
-					If OralState == 1
-						StageMouthOpen = true
-					ElseIf OralState == 0 ; P+ is authoritative: not on Male - but maybe on another male in the scene
-						Actor OralPartner = _SLS_IntSlpp.GetOralPartner(Sexlab, tid, PlayerRef)
-						If OralPartner && (OralPartner.HasKeyword(ActorTypeCreature) || Sexlab.GetGender(OralPartner) == 0 || Sexlab.GetGender(OralPartner) == 2)
-							Male = OralPartner ; swallow the load of the male she's actually sucking
-							LoadSize = Util.GetLoadSize(Male)
-							StageMouthOpen = true
-						EndIf
-					Else ; -1: no P+ collision data - legacy checks
-						StageMouthOpen = Anim.UseOpenMouth(PlayerPos, SexLab.GetController(tid).Stage) || sslBaseExpression.IsMouthOpen(PlayerRef)
-					EndIf
-					If MouthIsManualOpen || StageMouthOpen
-						If Sexlab.IsVictim(tid, PlayerRef)
-							If DoSwallowCumBonusEnjoyment(Anim, tid, LoadSize)
-								Debug.Notification("My traitorous pussy creams as I'm forced to swallow his load")
-							Else
-								Debug.Notification("I'm forced to swallow down his load")
-							EndIf
-							Util.DoCumSwallow(CumSource = Male, CumAmount = LoadSize, DidSwallow = true)
-							Swallowed = true
-							
-						Else
-							int ibutton
-							Int MsgType
-							Float CumFullness = Util.GetLoadFullnessMod(Male)
-							If Needs.IsDesperate()
-								ibutton = 1
-								Debug.Notification("I can't help myself such is my desperation")
-							
-							ElseIf CumAddict.GetHungerState() < 3.0 && PlayerRef.GetItemCount(_SLS_CumEmpty) > 0 && CumFullness > 0.8
-								MsgType = 1
-								ibutton = _SLS_SwallowCollect.Show()
-								
-							ElseIf Util.GetSkoomaJunkieLevel(PlayerRef, IsWithdrawing = true) || Util.IsHighOnSkooma(PlayerRef)
-								ibutton = 1
-								Debug.Notification("Unable to think clearly I drink all of his cum down")
-							
-							ElseIf IsCumAddictReflexSwallow()
-								ibutton = 1
-								Debug.Notification("I instinctively swallow his cum without thinking")
-							Else
-								If PlayerRef.GetItemCount(_SLS_CumEmpty) > 0 && CumFullness > 0.8
-									ibutton = _SLS_SpitSwallowCollect.Show()
-								Else
-									ibutton = _SLS_SpitSwallow.Show()
-								EndIf
-							EndIf
-							
-							If MsgType == 1
-								ibutton += 1
-							EndIf
-							
-							If ibutton == 0 ; Spit
-								Util.DoCumSwallow(CumSource = Male, CumAmount = LoadSize, DidSwallow = false)
-								Debug.Notification("I manage to spit most of it out but some still goes down my throat")
-							ElseIf ibutton == 1 ; Swallow
-								Swallowed = true
-								;Debug.MessageBox("Enjoy: " + Slso.GetEnjoyment(tid, PlayerRef))
-								If DoSwallowCumBonusEnjoyment(Anim, tid, LoadSize)
-									Debug.Notification("My pussy creams as I gulp down his cum greedily")
-								Else
-									Debug.Notification("I gulp down his cum greedily")
-								EndIf
-								Util.DoCumSwallow(CumSource = Male, CumAmount = LoadSize, DidSwallow = true)
-								
-							Else ; Collect
-								Debug.Notification("I manage to collect most of it but some still ends up on my face and down my throat")
-								PlayerRef.AddItem(CumAddict.GetCumPotionFromActor(Male))
-								PlayerRef.RemoveItem(CumAddict._SLS_CumEmpty, 1)
-								Util.DoCumSwallow(CumSource = Male, CumAmount = LoadSize, DidSwallow = false)
-							EndIf
-						EndIf
-					EndIf
-					If Init.FrostfallInstalled
-						If Swallowed
-							debug.trace("SLS_: swallowed")
-							FrostInterface.ModWetness((LoadSize * 50.0 * MaleCount)/2.0)
-							FrostInterface.ModExposure(-(LoadSize * 16.0 * MaleCount))
-						Else
-							debug.trace("SLS_: Didn't swallow")
-							FrostInterface.ModWetness(Math.Ceiling(LoadSize* 50.0 * 4.0* MaleCount*Menu.CumWetMult))
-							FrostInterface.ModExposure(-(Math.Ceiling(LoadSize * 32.0 * MaleCount * Menu.CumExposureMult)))
-						EndIf
-					EndIf
-					If Swallowed
-						If TollUtil.IsTollSwallowDeal
-							Int RanInt = Utility.RandomInt(40,60)
-							Debug.Notification("Good girl (Toll reduced by " + RanInt + " septims)")
-							_SLS_TollCost.SetValueInt(_SLS_TollCost.GetValueInt() - RanInt)
-							TollUtil.IsTollSwallowDeal = false
-						EndIf
-					EndIf
-					If LoadSize >= 4.0 ; Add additional cum layer for bigger balls
-						Sexlab.AddCum(PlayerRef, Vaginal = false, Oral = true, Anal = false)
-						Debug.trace("SLS_: Added more cum to face")
-					EndIf
+					DoPlayerOralLoad(Male, tid, LoadSize, MaleCount, MouthIsManualOpen || Anim.UseOpenMouth(PlayerPos, SexLab.GetController(tid).Stage))
 				Else
-					debug.trace("_SLS_: He blew a load in/on you")
-					FrostInterface.ModWetness(Math.Ceiling(LoadSize * 50.0 * MaleCount * Menu.CumWetMult))
-					FrostInterface.ModExposure(-(Math.Ceiling(LoadSize * 20.0 * MaleCount * Menu.CumExposureMult)))
-					
-					; Add additional cum layer for bigger balls
-					If ;/LoadSize >= 1.0 &&/; (Anim.HasTag("Vaginal") || Anim.HasTag("Anal"))
-						If !Swallowed
-							DoCumInsideBonusEnjoyment(Anim, tid, LoadSize)
-						EndIf
-						If LoadSize >= 1.0
-							DoCumFillSound(LoadSize)
-						EndIf
-						If LoadSize >= 4.0
-							If Anim.HasTag("Vaginal")
-								Sexlab.AddCum(PlayerRef, Vaginal = true, Oral = false, Anal = false)
-								Debug.trace("SLS_: Added more cum to pussy")
-								
-							ElseIf Anim.HasTag("Anal")
-								Sexlab.AddCum(PlayerRef, Vaginal = false, Oral = false, Anal = true)
-								Debug.trace("SLS_: Added more cum to ass")
-							EndIf
-						EndIf
-					EndIf
+					DoPlayerInsideLoad(tid, LoadSize, MaleCount, Anim.HasTag("Vaginal"), Anim.HasTag("Anal"))
 				EndIf
 			EndIf
 		Else
@@ -307,6 +188,9 @@ Function OrgasmEvent(Actor ActorRef = None, Int tid, Bool HasPlayer)
 	EndIf
 	
 	; Set last orgasm time for cum fullness
+	If bSexLabPP && ActorRef == None && HasPlayer && !actorList
+		actorList = SexLab.HookActors(tid as string) ; the interaction section that populates it is skipped under P+
+	EndIf
 	If ActorRef == None && actorList ; SLSO not installed; actorList is only populated when the player shares the scene
 		Actor NextActor
 		i = 0 ; reset: i was already advanced to actorList.Length by the male-count loop above, so this loop would otherwise never run
@@ -323,7 +207,7 @@ Function OrgasmEvent(Actor ActorRef = None, Int tid, Bool HasPlayer)
 			i += 1
 		EndWhile
 
-	Else ; SLSO installed - process one orgasm at a time.
+	ElseIf ActorRef ; SLSO installed - process one orgasm at a time. (Guard: a player-less whole-scene orgasm has neither actorList nor ActorRef)
 		If ActorRef.HasKeyword(ActorTypeCreature)
 			StorageUtil.SetFloatValue(ActorRef, "_SLS_LastOrgasmTime", Utility.GetCurrentGameTime())
 		Else
@@ -334,6 +218,145 @@ Function OrgasmEvent(Actor ActorRef = None, Int tid, Bool HasPlayer)
 		EndIf
 	EndIf
 	;Debug.Messagebox("After orgasm load size: " + Util.GetLoadSizeActual(ActorRef, Util.GetLoadSize(ActorRef)) + "\nLastTime: " + StorageUtil.GetFloatValue(ActorRef, "_SLS_LastOrgasmTime", Missing = -7.0))
+EndFunction
+
+; SexLab P+ decides cum target/source/orifice natively per male orgasm - pair collision with a
+; scene-tag fallback - and reports it here (registered only when bSexLabPP). This replaces the
+; legacy male-gathering + open-mouth gate for P+: the event already answers "whose load landed
+; where on whom". FX types: 0 = vaginal, 1 = anal, 2 = oral.
+Event OnSexLabApplyCumFX(Form TargetForm, Form SourceForm, int aiType)
+	If TargetForm as Actor != PlayerRef || SourceForm as Actor == None
+		Return
+	EndIf
+	If StorageUtil.FormListCount(None, "_SLS_BlockCumDrinkingSex") > 0
+		Return
+	EndIf
+	Actor Male = SourceForm as Actor
+	Int tid = Sexlab.FindPlayerController()
+	Float LoadSize = Util.GetLoadSize(Male)
+	If aiType == 2 ; oral: P+'s collision already established the player's mouth is on the source
+		DoPlayerOralLoad(Male, tid, LoadSize, 1, MouthOnCock = true)
+	Else
+		DoPlayerInsideLoad(tid, LoadSize, 1, IsVaginal = aiType == 0, IsAnal = aiType == 1)
+	EndIf
+EndEvent
+
+; The oral-load interaction: forced/chosen swallow, spit or collect, then wetness, the toll
+; deal and the big-load face layer. MouthOnCock: legacy passes manual-open or the anim-data
+; stage flag; the P+ path passes true (its native pair collision already said so).
+Function DoPlayerOralLoad(Actor Male, Int tid, Float LoadSize, Int MaleCount, Bool MouthOnCock)
+	Bool Swallowed = false
+	If MouthOnCock
+		If Sexlab.IsVictim(tid, PlayerRef)
+			If DoSwallowCumBonusEnjoyment(None, tid, LoadSize)
+				Debug.Notification("My traitorous pussy creams as I'm forced to swallow his load")
+			Else
+				Debug.Notification("I'm forced to swallow down his load")
+			EndIf
+			Util.DoCumSwallow(CumSource = Male, CumAmount = LoadSize, DidSwallow = true)
+			Swallowed = true
+
+		Else
+			int ibutton
+			Int MsgType
+			Float CumFullness = Util.GetLoadFullnessMod(Male)
+			If Needs.IsDesperate()
+				ibutton = 1
+				Debug.Notification("I can't help myself such is my desperation")
+
+			ElseIf CumAddict.GetHungerState() < 3.0 && PlayerRef.GetItemCount(_SLS_CumEmpty) > 0 && CumFullness > 0.8
+				MsgType = 1
+				ibutton = _SLS_SwallowCollect.Show()
+
+			ElseIf Util.GetSkoomaJunkieLevel(PlayerRef, IsWithdrawing = true) || Util.IsHighOnSkooma(PlayerRef)
+				ibutton = 1
+				Debug.Notification("Unable to think clearly I drink all of his cum down")
+
+			ElseIf IsCumAddictReflexSwallow()
+				ibutton = 1
+				Debug.Notification("I instinctively swallow his cum without thinking")
+			Else
+				If PlayerRef.GetItemCount(_SLS_CumEmpty) > 0 && CumFullness > 0.8
+					ibutton = _SLS_SpitSwallowCollect.Show()
+				Else
+					ibutton = _SLS_SpitSwallow.Show()
+				EndIf
+			EndIf
+
+			If MsgType == 1
+				ibutton += 1
+			EndIf
+
+			If ibutton == 0 ; Spit
+				Util.DoCumSwallow(CumSource = Male, CumAmount = LoadSize, DidSwallow = false)
+				Debug.Notification("I manage to spit most of it out but some still goes down my throat")
+			ElseIf ibutton == 1 ; Swallow
+				Swallowed = true
+				;Debug.MessageBox("Enjoy: " + Slso.GetEnjoyment(tid, PlayerRef))
+				If DoSwallowCumBonusEnjoyment(None, tid, LoadSize)
+					Debug.Notification("My pussy creams as I gulp down his cum greedily")
+				Else
+					Debug.Notification("I gulp down his cum greedily")
+				EndIf
+				Util.DoCumSwallow(CumSource = Male, CumAmount = LoadSize, DidSwallow = true)
+
+			Else ; Collect
+				Debug.Notification("I manage to collect most of it but some still ends up on my face and down my throat")
+				PlayerRef.AddItem(CumAddict.GetCumPotionFromActor(Male))
+				PlayerRef.RemoveItem(CumAddict._SLS_CumEmpty, 1)
+				Util.DoCumSwallow(CumSource = Male, CumAmount = LoadSize, DidSwallow = false)
+			EndIf
+		EndIf
+	EndIf
+	If Init.FrostfallInstalled
+		If Swallowed
+			debug.trace("SLS_: swallowed")
+			FrostInterface.ModWetness((LoadSize * 50.0 * MaleCount)/2.0)
+			FrostInterface.ModExposure(-(LoadSize * 16.0 * MaleCount))
+		Else
+			debug.trace("SLS_: Didn't swallow")
+			FrostInterface.ModWetness(Math.Ceiling(LoadSize* 50.0 * 4.0* MaleCount*Menu.CumWetMult))
+			FrostInterface.ModExposure(-(Math.Ceiling(LoadSize * 32.0 * MaleCount * Menu.CumExposureMult)))
+		EndIf
+	EndIf
+	If Swallowed
+		If TollUtil.IsTollSwallowDeal
+			Int RanInt = Utility.RandomInt(40,60)
+			Debug.Notification("Good girl (Toll reduced by " + RanInt + " septims)")
+			_SLS_TollCost.SetValueInt(_SLS_TollCost.GetValueInt() - RanInt)
+			TollUtil.IsTollSwallowDeal = false
+		EndIf
+	EndIf
+	If LoadSize >= 4.0 ; Add additional cum layer for bigger balls
+		Sexlab.AddCum(PlayerRef, Vaginal = false, Oral = true, Anal = false)
+		Debug.trace("SLS_: Added more cum to face")
+	EndIf
+EndFunction
+
+; A load somewhere other than the mouth: wetness plus, for vaginal/anal, the inside-bonus
+; enjoyment, the fill sound and the big-load layer.
+Function DoPlayerInsideLoad(Int tid, Float LoadSize, Int MaleCount, Bool IsVaginal, Bool IsAnal)
+	debug.trace("_SLS_: He blew a load in/on you")
+	FrostInterface.ModWetness(Math.Ceiling(LoadSize * 50.0 * MaleCount * Menu.CumWetMult))
+	FrostInterface.ModExposure(-(Math.Ceiling(LoadSize * 20.0 * MaleCount * Menu.CumExposureMult)))
+
+	; Add additional cum layer for bigger balls
+	If IsVaginal || IsAnal
+		DoCumInsideBonusEnjoyment(None, tid, LoadSize)
+		If LoadSize >= 1.0
+			DoCumFillSound(LoadSize)
+		EndIf
+		If LoadSize >= 4.0
+			If IsVaginal
+				Sexlab.AddCum(PlayerRef, Vaginal = true, Oral = false, Anal = false)
+				Debug.trace("SLS_: Added more cum to pussy")
+
+			ElseIf IsAnal
+				Sexlab.AddCum(PlayerRef, Vaginal = false, Oral = false, Anal = true)
+				Debug.trace("SLS_: Added more cum to ass")
+			EndIf
+		EndIf
+	EndIf
 EndFunction
 
 Function DoCumFillSound(Float LoadSize)
