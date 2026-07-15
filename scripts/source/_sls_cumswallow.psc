@@ -174,7 +174,11 @@ Function OrgasmEvent(Actor ActorRef = None, Int tid, Bool HasPlayer)
 				If ;/MouthIsManualOpen || /;(Anim.HasTag("Oral") || Anim.HasTag("Blowjob")) && (Anim.HasTag("69") || (!Anim.HasTag("Cunnilingus") && !Anim.HasTag("Licking")))
 					;debug.messagebox("Stage: " + SexLab.GetController(tid).Stage + ". Mouth: " + Anim.UseOpenMouth(0, SexLab.GetController(tid).Stage))
 					;Debug.MessageBox("OpenMouths: " + Anim.OpenMouths)
-					DoPlayerOralLoad(Male, tid, LoadSize, MaleCount, MouthIsManualOpen || Anim.UseOpenMouth(PlayerPos, SexLab.GetController(tid).Stage))
+					; IsMouthOpen fallback: P+ builds older than 2.17.1 fail the bSexLabPP probe and land here,
+					; and every P+ version stubs UseOpenMouth() to false - the actual mouth state (P+ opens the
+					; mouth on oral stages natively) is the only stage signal they have. Harmless on legacy
+					; SexLab, where UseOpenMouth-true stages open the mouth anyway.
+					DoPlayerOralLoad(Male, tid, LoadSize, MaleCount, MouthIsManualOpen || Anim.UseOpenMouth(PlayerPos, SexLab.GetController(tid).Stage) || sslBaseExpression.IsMouthOpen(PlayerRef))
 				Else
 					DoPlayerInsideLoad(tid, LoadSize, MaleCount, Anim.HasTag("Vaginal"), Anim.HasTag("Anal"))
 				EndIf
@@ -247,7 +251,10 @@ EndEvent
 Function DoPlayerOralLoad(Actor Male, Int tid, Float LoadSize, Int MaleCount, Bool MouthOnCock)
 	Bool Swallowed = false
 	If MouthOnCock
-		If Sexlab.IsVictim(tid, PlayerRef)
+		; tid can be -1 from the P+ event path if the scene tears down before the queued event
+		; runs (FindPlayerController no longer finds the player) - IsVictim on it would None-call
+		; inside SexLab; treat as non-victim instead of erroring
+		If tid >= 0 && Sexlab.IsVictim(tid, PlayerRef)
 			If DoSwallowCumBonusEnjoyment(None, tid, LoadSize)
 				Debug.Notification("My traitorous pussy creams as I'm forced to swallow his load")
 			Else

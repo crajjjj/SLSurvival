@@ -14,6 +14,11 @@ Bool Function GetIsInstalled() Global
 	Return SKSE.GetPluginVersion("SexLabUtil") >= 34668560
 EndFunction
 
+; --- Reserved API below: no SLS callers since 0.705 moved swallowing onto the
+; --- SexLabApplyCumFX event, kept as the building blocks for future pair-precise
+; --- P+ queries (e.g. CumAddict auto-suck). Delete if a P+ signature change ever
+; --- makes them a maintenance burden.
+
 ; The P+ public thread API for a thread id. The compile-time type must widen to Quest first
 ; because the legacy sslThreadController this compiles against doesn't extend SexLabThread;
 ; at runtime under P+ the controller IS a SexLabThread descendant, so the cast holds.
