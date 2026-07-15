@@ -394,6 +394,13 @@ EndFunction
 Bool Function DoSwallowCumBonusEnjoyment(sslBaseAnimation Anim, Int tid, Float LoadSize)
 	Float EnjBefore = Slso.GetEnjoyment(tid, PlayerRef)
 	DoCumInsideBonusEnjoyment(Anim, tid, LoadSize)
+	; Without SLSO, GetEnjoyment() is a hardcoded-0 no-op, so the wait loop below would never
+	; see a change and would spin until the player leaves the scene - blocking the swallow
+	; notification and DoCumSwallow that follow. The >=100 bonus can't fire without SLSO either,
+	; so bail out early. This path is now the common one under P+ (typically no SLSO).
+	If !Slso.GetIsInterfaceActive()
+		Return false
+	EndIf
 	While Sexlab.IsActorActive(PlayerRef) && Slso.GetEnjoyment(tid, PlayerRef) == EnjBefore ; Wait for bonus enjoyment to apply
 		Utility.Wait(0.2)
 	EndWhile
