@@ -83,6 +83,10 @@ bool function HasKeywordSub(form ObjRef, string LookFor) global native
 function PrintConsole(string output) global native
 Actor[] function MakeActorArray(Actor Actor1 = none, Actor Actor2 = none, Actor Actor3 = none, Actor Actor4 = none, Actor Actor5 = none) global native
 float function GetCurrentGameRealTime() global native
+bool Function IsGodModeEnabled() global native
+String Function GetTranslation(String asStr) global native
+String[] Function ShuffleStringArray(String[] asArray, String asSetFirst = "", int aiMaxLen = 128) native global
+Function HideElementsGameHUD(bool abHide = true) native global
 
 String[] Function MergeSplitTags(String asTags, String asTagsSuppress, bool abRequireAll) global
   String[] ret1 = PapyrusUtil.ClearEmpty(PapyrusUtil.StringSplit(asTags, ","))
@@ -111,14 +115,135 @@ String[] Function MergeSplitTags(String asTags, String asTagsSuppress, bool abRe
   EndIf
 EndFunction
 
+string function ActorName(Actor ActorRef) global
+	return ActorRef.GetLeveledActorBase().GetName()
+endFunction
+
+string[] function ActorNames(Actor[] ActorRefs) global
+    string[] ret = PapyrusUtil.StringArray(ActorRefs.Length)
+    int i = 0
+    while (i < ActorRefs.Length)
+        ret[i] = ActorName(ActorRefs[i])
+        i += 1
+    endwhile
+    return ret
+EndFunction
+
+float Function CalcPathingTargetDistance(int k) global
+    If (k==2||k==3||k==9||k==11||k==12||k==32||k==31||k==34||k==35||k==40||k==41||k==47)
+        return 300.0
+    ElseIf (k==18||k==24||k==27||k==38||k==46)
+        return 400.0
+    ElseIf (k==14||k==26||k==36)
+        return 800.0
+    EndIf
+    return 128.0
+EndFunction
+
+; ------------------------------------------------------- ;
+; --- Threading Utilities                             --- ;
+; ------------------------------------------------------- ;
+
+Function ToggleFreeCamera(int aiForceState = -1) global
+	;[-1:Toggle, 0:TFC_STAYS_OFF, 1:TFC_STAYS_ON]
+	bool bVRMode = GetConfig().HasVRIK
+	If (Game.GetCameraState() == 3)
+		If (aiForceState != 1)
+			If (!bVRMode)
+				MiscUtil.ToggleFreeCamera()
+			Else
+				Utility.SetIniBool("bDisablePlayerCollision:Havok", false)
+				SetActorMovement(Game.GetPlayer(), 2) ;MOVEMENT_LOCK
+			EndIf
+		EndIf
+		return
+	Else
+		If (aiForceState != 0)
+			ForceThirdPerson()
+			If (!bVRMode)
+				MiscUtil.SetFreeCameraSpeed(GetConfig().AutoSUCSM)
+				MiscUtil.ToggleFreeCamera()
+			Else
+				Utility.SetIniBool("bDisablePlayerCollision:Havok", true)
+				SetActorMovement(Game.GetPlayer(), 2) ;MOVEMENT_LOCK (bVRTPP==true)
+			EndIf
+		EndIf
+	EndIf
+EndFunction
+
+Function ForceThirdPerson() global
+	bool bVRMode = GetConfig().HasVRIK
+	bool bVRTPP = bVRMode && (GetConfig().POVModeVR == 2) ;VRIK_TPP_FREE
+	If (bVRTPP)
+		return
+	ElseIf (bVRMode)
+		GetConfig().SetPOVModeVRIK(2, abForced=true) ;VRIK_TPP_FREE
+		return
+	Else
+		While (Game.GetCameraState() == 0)
+			Game.ForceThirdPerson()
+		EndWhile
+	EndIf
+EndFunction
+
+Function SetActorMovement(Actor akActor, int aiMovement) global
+	;[0:MOVEMENT_RELEASE, 1:MOVEMENT_UNLOCK, 2:MOVEMENT_LOCK]
+	If ((!akActor) || (aiMovement < 0) || (aiMovement > 2))
+		return
+	EndIf
+	If (akActor != Game.GetPlayer())
+		If (aiMovement == 0) ;RELEASE
+			akActor.SetDontMove(false)
+			akActor.SetRestrained(false)
+		Else
+			akActor.SetDontMove(true)
+			akActor.SetRestrained(true)
+		EndIf
+		return
+	EndIf
+	bool bVRMode = GetConfig().HasVRIK
+	While (!bVRMode && Game.GetCameraState()==0)
+		Game.ForceThirdPerson()
+	EndWhile
+	If (aiMovement == 2) ;LOCK
+		bool bVRTPP = bVRMode && (GetConfig().POVModeVR == 2) ;VRIK_TPP_FREE
+		Game.SetPlayerAIDriven(!bVRTPP)
+		Game.DisablePlayerControls(abMovement=!bVRTPP, abCamSwitch=true, abSneaking=true, abMenu=false)
+	Else
+		Game.SetPlayerAIDriven(false)
+		If (aiMovement == 1) ;UNLOCK
+			Game.EnablePlayerControls(abFighting=false, abCamSwitch=false, abSneaking=false, abActivate=false)
+		Else ;RELEASE
+			Game.EnablePlayerControls()
+		EndIf
+	EndIf
+EndFunction
+
+Function UpdateAnimatingActorMovement(Actor akActor) global
+	If (!akActor)
+		return
+	EndIf
+	akActor.EvaluatePackage()
+	int aiFactionRank = akActor.GetFactionRank(GetConfig().AnimatingFaction)
+	int aiMovement = -1
+	If (aiFactionRank < 0) ; OnAliasClear / NotAnimating / OnExtThreadRelease -> MOVEMENT_RELEASE
+		aiMovement = 0
+	ElseIf (aiFactionRank == 0 || aiFactionRank == 2) ; OnActorUnlocked / OnPathing -> MOVEMENT_UNLOCK
+		aiMovement = 1
+	ElseIf (aiFactionRank == 1) ; OnSetActor / OnActorLocked / OnStateAnimating / OnExtThreadControl -> MOVEMENT_LOCK
+		aiMovement = 2
+	EndIf
+	SetActorMovement(akActor, aiMovement)
+EndFunction
+
 ; *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* ;
 ; ----------------------------------------------------------------------------- ;
-;								██╗     ███████╗ ██████╗  █████╗  ██████╗██╗   ██╗							;
-;								██║     ██╔════╝██╔════╝ ██╔══██╗██╔════╝╚██╗ ██╔╝							;
-;								██║     █████╗  ██║  ███╗███████║██║      ╚████╔╝ 							;
-;								██║     ██╔══╝  ██║   ██║██╔══██║██║       ╚██╔╝  							;
-;								███████╗███████╗╚██████╔╝██║  ██║╚██████╗   ██║   							;
-;								╚══════╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝   ╚═╝   							;
+;				██╗     ███████╗ ██████╗  █████╗  ██████╗██╗   ██╗				;
+;				██║     ██╔════╝██╔════╝ ██╔══██╗██╔════╝╚██╗ ██╔╝				;
+;				██║     █████╗  ██║  ███╗███████║██║      ╚████╔╝ 				;
+;				██║     ██╔══╝  ██║   ██║██╔══██║██║       ╚██╔╝  				;
+;				███████╗███████╗╚██████╔╝██║  ██║╚██████╗   ██║   				;
+;				╚══════╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝   ╚═╝   				;
 ; ----------------------------------------------------------------------------- ;
 ; *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* ;
 
@@ -144,10 +269,6 @@ sslThreadController function QuickStart(actor a1, actor a2 = none, actor a3 = no
 		return none
 	endIf
 	return SexLab.QuickStart(a1, a2, a3, a4, a5, victim, hook, animationTags)
-endFunction
-
-string function ActorName(Actor ActorRef) global
-	return ActorRef.GetLeveledActorBase().GetName()
 endFunction
 
 int Function GetSex(Actor akActor) global
@@ -355,5 +476,5 @@ bool function IsActor(Form FormRef) global
 endFunction
 
 function EnableFreeCamera(bool Enabling = true, float sucsm = 5.0) global
-	return MiscUtil.SetFreeCameraState(Enabling, sucsm)
+	return ToggleFreeCamera(Enabling as int)
 endFunction

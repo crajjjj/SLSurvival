@@ -10,7 +10,7 @@ function LoadCreatureAnimations()
 			MiscUtil.PrintConsole("WARNING! To continue with the SexLab animations setup close the console and all the menu")
 		endIf
 		Utility.Wait(0.1)
-		Game.ForceThirdPerson()
+		SexLabUtil.ForceThirdPerson()
 	endIf
 	bool SexLabCreature = Game.GetPlayer().GetAnimationVariableInt("SexLabCreature") >= 16300
 

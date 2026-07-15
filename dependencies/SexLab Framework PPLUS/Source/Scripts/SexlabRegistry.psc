@@ -98,10 +98,15 @@ bool Function IsSceneTagA(String asID, String[] asTags) native global
 ; Check if some given tag is part of a given stage
 bool Function IsStageTag(String asID, String asStage, String asTag) native global
 bool Function IsStageTagA(String asID, String asStage, String[] asTags) native global
+; Check if some given tag is part of a given position
+bool Function IsPositionTag(String asID, String asStage, int n, String asTag) native global
+bool Function IsPositionTagA(String asID, String asStage, int n, String[] asTags) native global
 ; Get all tags of this Scene. Scene tags are a merged representation of all stage tags
 String[] Function GetSceneTags(String asID) native global
-; Get all of this stages tags
+; Get all of this stage's tags
 String[] Function GetStageTags(String asID, String asStage) native global
+; Get all of this position's tags
+String[] Function GetPositionTags(String asID, String asStage, int n) native global
 ; From a list of scenes, get the tags which are shared among all of them
 String[] Function GetCommonTags(String[] asIDs) native global
 
@@ -118,7 +123,7 @@ String[] Function GetAnimationEventA(String asID, String asStage) native global
 String Function GetStartAnimation(String asID) native global
 ; Get the total amount of stages for this scene
 int Function GetNumStages(String asID) native global
-String[] Function GetAllstages(String asID) native global
+String[] Function GetAllStages(String asID) native global
 
 ; Get the n'th outgoing edge from the given Stage
 String Function BranchTo(String asID, String asStage, int n) native global
@@ -202,9 +207,11 @@ Function SetSceneOffset(String asID, float afValue, int aiOffsetID) native globa
 Function SetSceneOffsetA(String asID, float[] afNewOffset) native global
 Function ResetSceneOffset(String asID) native global
 ; Offsets for the specified position in the given stage, 'raw' ignores unedited (SLSB) offsets
+; Note: Offset for Rotation is returned in radians, use Math.RadiansToDegrees() if needed.
 float[] Function GetStageOffset(String asID, String asStage, int n) native global
 float[] Function GetStageOffsetRaw(String asID, String asStage, int n) native global
 ; Update  Offsets for the specified position and stage. Pass an empty stage to edit the offset of all stages at once
+; Note: Offset for Rotation is expected in degrees, and will be transformed interanlly to radians.
 Function SetStageOffset(String asID, String asStage, int n, float afValue, int aiOffsetID) native global
 Function SetStageOffsetA(String asID, String asStage, int n, float[] afNewOffset) native global
 Function ResetStageOffset(String asID, String asStage, int n) native global

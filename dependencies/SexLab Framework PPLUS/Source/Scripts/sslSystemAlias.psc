@@ -37,7 +37,7 @@ Event OnInit()
 		return
 	EndIf
 	Quest UnboundQ = Quest.GetQuest("MQ101")
-	While (!UnboundQ.GetStageDone(250) && UnboundQ.GetStage() > 0)
+	While (UnboundQ.GetStage() < 1000 && !UnboundQ.GetStageDone(250) && UnboundQ.GetStage() > 0)
 		Utility.Wait(30.0)
 	EndWhile
 	InstallSystem()

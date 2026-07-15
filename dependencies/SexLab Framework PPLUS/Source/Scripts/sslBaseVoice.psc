@@ -245,7 +245,8 @@ function Moan(Actor ActorRef, int Strength = 30, bool IsVictim = false) ;DEPRECA
 	ActorBase BaseRef = ActorRef.GetLeveledActorBase()
 	bool UseLipSync = Config.UseLipSync && BaseRef && !sslCreatureAnimationSlots.HasRaceType(BaseRef.GetRace())
 	; Use the values of the version 1.62 for compatibility reasons
-	PlayMoanEx(ActorRef, Strength, IsVictim, UseLipSync, 0, 0.2, 1, 20, 50, false, Config.HasMFGFix)
+	bool HasMFG = SexLabUtil.GetConfig().CheckSystemPart("MfgFixNG")
+	PlayMoanEx(ActorRef, Strength, IsVictim, UseLipSync, 0, 0.2, 1, 20, 50, false, HasMFG)
 endFunction
 
 function MoanNoWait(Actor ActorRef, int Strength = 30, bool IsVictim = false, float Volume = 1.0) ;DEPRECATED
@@ -287,7 +288,7 @@ function TransitUp(Actor ActorRef, int from, int to) global
 	endIf
 
 	int value = from
-	bool HasMFG = SexLabUtil.GetConfig().HasMFGFix
+	bool HasMFG = SexLabUtil.GetConfig().CheckSystemPart("MfgFixNG")
 	if HasMFG
 		sslExpressionUtil.SmoothSetPhoneme(ActorRef, 1, from) ; OLDRIM
 		Utility.Wait(0.5)
@@ -310,7 +311,7 @@ function TransitDown(Actor ActorRef, int from, int to) global
 	endIf
 
 	int value = from
-	bool HasMFG = SexLabUtil.GetConfig().HasMFGFix
+	bool HasMFG = SexLabUtil.GetConfig().CheckSystemPart("MfgFixNG")
 	if HasMFG
 		sslExpressionUtil.SmoothSetPhoneme(ActorRef, 1, from) ; OLDRIM
 		Utility.Wait(0.5)

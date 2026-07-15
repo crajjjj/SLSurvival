@@ -41,7 +41,7 @@ Event OnGameReload()
 EndEvent
 
 Event OnConfigInit()
-	Pages = new string[10]
+	Pages = new string[11]
 	Pages[0] = "$SSL_SexDiary"
 	Pages[1] = "$SSL_AnimationSettings"
 	Pages[2] = "$SSL_MatchMaker"
@@ -50,8 +50,9 @@ Event OnConfigInit()
 	Pages[5] = "$SSL_StripEditor"
 	Pages[6] = "$SSL_ToggleAnimations"
 	Pages[7] = "$SSL_ExpressionEditor"
-	Pages[8] = "$SSL_PlayerHotkeys"
-	Pages[9] = "$SSL_RebuildClean"
+	Pages[8] = "$SSL_EnjoymentSettings"
+	Pages[9] = "$SSL_PlayerHotkeys"
+	Pages[10] = "$SSL_RebuildClean"
 
 	; Animation Settings
 	_PlFurnOpt = new String[5]
@@ -71,15 +72,10 @@ Event OnConfigInit()
 	_FadeOpt[1] = "$SSL_UseBlack"
 	_FadeOpt[2] = "$SSL_UseBlur"
 
-	_FilterOpt = new String[3]
-	_FilterOpt[0] = "$SSL_Filter_0"		; Loose
-	_FilterOpt[1] = "$SSL_Filter_1"		; Standard
-	_FilterOpt[2] = "$SSL_Filter_2"		; Strict
-
 	_ClimaxTypes = new String[3]
 	_ClimaxTypes[0] = "$SSL_Climax_0"	; Default
 	_ClimaxTypes[1] = "$SSL_Climax_1"	; Legacy
-	_ClimaxTypes[2] = "$SSL_Climax_2"	; Extern
+	_ClimaxTypes[2] = "$SSL_Climax_2"	; SLSO
 
 	_Sexes = new String[3]
 	_Sexes[0] = "$SSL_Male"
@@ -191,6 +187,8 @@ Event OnPageReset(string page)
 			ToggleAnimations()
 		ElseIf (page == "$SSL_ExpressionEditor")
 			ExpressionEditor()
+		ElseIf (page == "$SSL_EnjoymentSettings")
+			EnjoymentSettings()
 		ElseIf (page == "$SSL_PlayerHotkeys")
 			PlayerHotkeys()
 		ElseIf (page == "$SSL_RebuildClean")
@@ -327,17 +325,16 @@ EndState
 String[] _PlFurnOpt
 String[] _NPCFurnOpt
 string[] _FadeOpt
-String[] _FilterOpt
 String[] _ClimaxTypes
 String[] _Sexes
 
 Function AnimationSettings()
 	SetCursorFillMode(TOP_TO_BOTTOM)
 	AddHeaderOption("$SSL_PlayerSettings")
-	AddToggleOptionST("AutoAdvance","$SSL_AutoAdvanceStages", Config.AutoAdvance)
-	AddToggleOptionST("DisableSub","$SSL_DisableSubControls", Config.DisablePlayer)
-	AddToggleOptionST("AutomaticTFC","$SSL_AutomaticTFC", Config.AutoTFC)
-	AddSliderOptionST("AutomaticSUCSM","$SSL_AutomaticSUCSM", Config.AutoSUCSM, "{0}")
+	AddStateOptionBool("bAutoAdvance", "$SSL_bAutoAdvance")
+	AddStateOptionBool("bDisablePlayer", "$SSL_bDisablePlayer")
+	AddStateOptionBool("bAutoTFC", "$SSL_bAutoTFC")
+	AddStateOptionSlider("fAutoSUCSM", "$SSL_fAutoSUCSM", 5, 1, 20, 1, "{0}")
 	AddMenuOptionST("SexSelect_0", "$SSL_PlayerSex", _Sexes[SexLabRegistry.GetSex(PlayerRef, false) % 3])
 	If (Config.TargetRef)
 		String name = Config.TargetRef.GetLeveledActorBase().GetName()
@@ -347,50 +344,37 @@ Function AnimationSettings()
 	EndIf
 	AddHeaderOption("$SSL_ExtraEffects")
 	AddMenuOptionST("ClimaxType", "$SSL_ClimaxType", _ClimaxTypes[sslSystemConfig.GetSettingInt("iClimaxType")])
-	AddToggleOptionST("OrgasmEffects","$SSL_OrgasmEffects", Config.OrgasmEffects)
-	AddSliderOptionST("ShakeStrength","$SSL_ShakeStrength", (Config.ShakeStrength * 100), "{0}%")
-	AddToggleOptionST("UseCum","$SSL_ApplyCumEffects", Config.UseCum)
-	AddSliderOptionST("CumEffectTimer","$SSL_CumEffectTimer", Config.CumTimer, "$SSL_Seconds")
-	AddToggleOptionST("UseExpressions","$SSL_UseExpressions", Config.UseExpressions)
-	AddToggleOptionST("UseLipSync", "$SSL_UseLipSync", Config.UseLipSync)
+	AddStateOptionBool("bOrgasmEffects", "$SSL_bOrgasmEffects")
+	AddStateOptionSlider("fShakeStrength", "$SSL_fShakeStrength", 0.7, 0, 1, 0.05, "{2}%")
+	AddStateOptionBool("bUseCum", "$SSL_bUseCum")
+	AddStateOptionSlider("fCumTimer", "$SSL_fCumTimer", 120, 0, 1800, 10, "$SSL_Seconds")
+	AddStateOptionBool("bUseExpressions", "$SSL_bUseExpressions")
+	AddStateOptionBool("bUseLipSync", "$SSL_bUseLipSync")
 	AddHeaderOption("$SSL_Lovense")
-	int lovenseFlag = DoDisable(!sslLovense.IsLovenseInstalled())
-	AddSliderOptionST("LovenseStrength", "$SSL_LovenseStrength", sslSystemConfig.GetSettingInt("iLovenseStrength"), "{0}", lovenseFlag)
-	AddSliderOptionST("LovenseStrengthOrgasm", "$SSL_LovenseStrengthOrgasm", sslSystemConfig.GetSettingInt("iLovenseStrengthOrgasm"), "{0}", lovenseFlag)
-	AddSliderOptionST("LovenseDurationOrgasm", "$SSL_LovenseDurationOrgasm", sslSystemConfig.GetSettingInt("fLovenseDurationOrgasm"), "{0}", lovenseFlag)
+	bool lovenseFlag = !sslLovense.IsLovenseInstalled()
+	AddStateOptionSlider("iLovenseStrength", "$SSL_iLovenseStrength", 10, 0, 20, 1, "{0}", lovenseFlag)
+	AddStateOptionSlider("iLovenseStrengthOrgasm", "$SSL_iLovenseStrengthOrgasm", 20, 0, 20, 1, "{0}", lovenseFlag)
+	AddStateOptionSlider("fLovenseDurationOrgasm", "$SSL_iLovenseDurationOrgasm", 8, 5, 30, 0.5, "{1}", lovenseFlag)
 
 	SetCursorPosition(1)
 	AddHeaderOption("$SSL_Creatures")
-	AddToggleOptionST("AllowCreatures","$SSL_AllowCreatures", Config.AllowCreatures)
-	AddToggleOptionST("UseCreatureGender","$SSL_UseCreatureGender", Config.UseCreatureGender)
+	AddStateOptionBool("bAllowCreatures", "$SSL_bAllowCreatures")
+	AddStateOptionBool("bCreatureGender", "$SSL_bCreatureGender")
 	AddHeaderOption("$SSL_AnimationHandling")
-	AddToggleOptionST("DisableScale","$SSL_DisableScale", Config.DisableScale)
-	; AddMenuOptionST("FilterStrictness", "$SSL_FilterStrictness", _FilterOpt[sslSystemConfig.GetSettingInt("iFilterStrictness")])
+	; COMEBACK: Should prbly delete this entirely as this should always be disabled for 1.5 and always enabled for 1.6
+	AddStateOptionBool("bDisableScale", "$SSL_bDisableScale")
 	AddMenuOptionST("UseFade","$SSL_UseFade", _FadeOpt[sslSystemConfig.GetSettingInt("iUseFade")])
-	AddToggleOptionST("UndressAnimation","$SSL_UndressAnimation", Config.UndressAnimation)
-	AddToggleOptionST("RedressVictim","$SSL_VictimsRedress", Config.RedressVictim)
-	AddToggleOptionST("DisableTeleport","$SSL_DisableTeleport", Config.DisableTeleport)
-	AddToggleOptionST("ShowInMap","$SSL_ShowInMap", Config.ShowInMap)
-	AddToggleOptionST("SetAnimSpeedByEnjoyment", "$SSL_SetAnimSpeedByEnjoyment", Config.SetAnimSpeedByEnjoyment, DoDisable(!sslSystemConfig.HasAnimSpeedSE()))
+	AddStateOptionBool("bUndressAnimation", "$SSL_bUndressAnimation")
+	AddStateOptionBool("bRedressVictim", "$SSL_bRedressVictim")
+	AddStateOptionBool("bDisableTeleport", "$SSL_bDisableTeleport")
+	AddStateOptionBool("bShowInMap", "$SSL_bShowInMap")
+	AddStateOptionBool("bHideHUD", "$SSL_bHideHUD")
+	AddStateOptionBool("bSetAnimSpeedByEnjoyment", "$SSL_bSetAnimSpeedByEnjoyment")
+	AddStateOptionBool("bAdjustStage", "$SSL_AdjustStage")
+	AddStateOptionSlider("fAdjustStepSize", "$SSL_fAdjustStepSize", 0.5, 0, 5, 0.1, "{1}")
 	AddMenuOptionST("FurnitureNPC", "$SSL_FurnitureNPC", _NPCFurnOpt[sslSystemConfig.GetSettingInt("iNPCBed")])
 	AddMenuOptionST("FurniturePlayer", "$SSL_FurniturePlayer", _PlFurnOpt[sslSystemConfig.GetSettingInt("iAskBed")])
 EndFunction
-
-state DisableScale
-	; COMEBACK: Might want to delete this for good since scaling is essential and works relaibly for latest
-	event OnSelectST()
-		Config.DisableScale = !Config.DisableScale
-		SetToggleOptionValueST(Config.DisableScale)
-		ForcePageReset()
-	endEvent
-	event OnDefaultST()
-		Config.DisableScale = false
-		SetToggleOptionValueST(Config.DisableScale)
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$SSL_InfoDisableScale")
-	endEvent
-endState
 
 ; ------------------------------------------------------- ;
 ; --- Matchmaker	                                  --- ;
@@ -398,8 +382,9 @@ endState
 
 Function MatchMaker()
 	SetCursorFillMode(TOP_TO_BOTTOM)
-	int flag = DoDisable(!Config.MatchMaker)
 	AddToggleOptionST("ToggleMatchMaker", "$SSL_ToggleMatchMaker", Config.MatchMaker)
+	bool matchMakerDisabled = !sslSystemConfig.GetSettingBool("bMatchMakerActive")
+	int flag = DoDisable(matchMakerDisabled)
 	AddHeaderOption("$SSL_MatchMakerTagsSettings", flag)
 	AddTextOptionST("matchmakerInputTags", "$SSL_InputTags", sslSystemConfig.ParseMMTagString(), flag)
 	AddInputOptionST("matchmakerInputRequiredTags", "$SSL_InputRequiredTags", Config.RequiredTags, flag)
@@ -409,8 +394,8 @@ Function MatchMaker()
 	SetCursorPosition(1)
 	AddEmptyOption()
 	AddHeaderOption("$SSL_MatchMakerActorSettings", flag)
-	AddToggleOptionST("matchmakerToggleSubPlayer", "$SSL_ToggleSubmissivePlayer", Config.SubmissivePlayer, flag)
-	AddToggleOptionST("matchmakerToggleSubTarget", "$SSL_ToggleSubmissiveTarget", Config.SubmissiveTarget, flag)
+	AddStateOptionBool("bSubmissivePlayer", "$SSL_bSubmissivePlayer", matchMakerDisabled)
+	AddStateOptionBool("bSubmissiveTarget", "$SSL_bSubmissiveTarget", matchMakerDisabled)
 EndFunction
 
 State ToggleMatchMaker
@@ -425,7 +410,7 @@ State ToggleMatchMaker
 		ForcePageReset()
 	EndEvent
 	Event OnHighlightST()
-		SetInfoText("$SSL_InfoMatchMaker")
+		SetInfoText("$SSL_ToggleMatchMakerHighlight")
 	EndEvent
 EndState
 
@@ -453,11 +438,11 @@ Function SoundSettings()
 		_voiceCacheIndex = 0
 	EndIf
 	; Voices & SFX
-	AddSliderOptionST("VoiceVolume","$SSL_VoiceVolume", Config.VoiceVolume * 100, "{0}%")
-	AddSliderOptionST("SFXVolume","$SSL_SFXVolume", Config.SFXVolume * 100, "{0}%")
-	AddSliderOptionST("MaleVoiceDelay","$SSL_MaleVoiceDelay", Config.MaleVoiceDelay, "$SSL_Seconds")
-	AddSliderOptionST("FemaleVoiceDelay","$SSL_FemaleVoiceDelay", Config.FemaleVoiceDelay, "$SSL_Seconds")
-	AddSliderOptionST("SFXDelay","$SSL_SFXDelay", Config.SFXDelay, "$SSL_Seconds")
+	AddStateOptionSlider("fVoiceVolume", "$SSL_fVoiceVolume", 1, 0, 1, 0.01, "{2}%")
+	AddStateOptionSlider("fSFXVolume", "$SSL_fSFXVolume", 1, 0, 1, 0.01, "{2}%")
+	AddStateOptionSlider("fMaleVoiceDelay", "$SSL_fMaleVoiceDelay", 5, 1, 45, 1, "$SSL_Seconds")
+	AddStateOptionSlider("fFemaleVoiceDelay", "$SSL_fFemaleVoiceDelay", 4, 1, 45, 1, "$SSL_Seconds")
+	AddStateOptionSlider("fSFXDelay", "$SSL_fSFXDelay", 3, 1, 30, 1, "$SSL_Seconds")
 	; Cached Voices
 	SetCursorPosition(1)
 	AddHeaderOption("$SSL_CachedVoices")
@@ -469,7 +454,7 @@ Function SoundSettings()
 	SetCursorPosition(10)
 	SetCursorFillMode(LEFT_TO_RIGHT)
 	AddHeaderOption("$SSL_ToggleVoices")
-	AddMenuOptionST("activeVoices", "$SSL_ActiveVoices", "$SSL_Race_" + SexLabRegistry.MapRaceKeyToID(_voiceActiveRaceKey))
+	AddMenuOptionST("ActiveVoices", "$SSL_ActiveVoices", "$SSL_Race_" + SexLabRegistry.MapRaceKeyToID(_voiceActiveRaceKey))
 	int i = 0
 	While (i < _voices.Length)
 		AddToggleOptionST("Voice_" + i, sslBaseVoice.GetDisplayName(_voices[i]), sslBaseVoice.GetEnabled(_voices[i]))
@@ -492,7 +477,7 @@ State SelectVoiceCache
 		ForcePageReset()
 	EndEvent
 	Event OnHighlightST()
-		SetInfoText("$SSL_SelectVoiceCacheInfo")
+		SetInfoText("$SSL_SelectVoiceCacheHighlight")
 	EndEvent
 EndState
 
@@ -511,7 +496,7 @@ State SelectVoiceCacheV
 		SetMenuOptionValueST(_voices[aiIndex])
 	EndEvent
 	Event OnHighlightST()
-		SetInfoText("$SSL_SelectVoiceCacheVInfo")
+		SetInfoText("$SSL_SelectVoiceCacheVHighlight")
 	EndEvent
 EndState
 
@@ -534,7 +519,9 @@ Function TimersStripping()
 	EndWhile
 	; Stripping
 	AddHeaderOption("$SSL_Stripping")
-	AddMenuOptionST("TSModeSelect", "$SSL_View", _stripView[_stripViewIdx])
+	AddEmptyOption()
+	AddEmptyOption()
+	AddMenuOptionST("TSModeSelect", "$SSL_TSModeSelect", _stripView[_stripViewIdx])
 	AddTextOption("", "$SSL_StrippingFst_" + _stripViewIdx, OPTION_FLAG_DISABLED)
 	AddTextOption("", "$SSL_StrippingSnd_" + _stripViewIdx, OPTION_FLAG_DISABLED)
 	; iStripForms: 0b[Weapon][Female | Submissive][Aggressive]
@@ -713,9 +700,8 @@ Function ExpressionEditor()
 	String[] tags = sslBaseExpression.GetExpressionTags(_expression[_expressionIdx])
 	AddHeaderOption("$SSL_ExpressionEditor")
 	AddMenuOptionST("selectexpression", "$SSL_ModifyingExpression", _expression[_expressionIdx])
-	; AddInputOptionST("createexpression", "$SSL_CreateExpression", "")
 	AddToggleOptionST("enableexpression", "$SSL_Enabled", sslBaseExpression.GetEnabled(_expression[_expressionIdx]))
-	AddMenuOptionST("setexprscaling", "$SSL_ExpressionScaling", _expressionScales[scalemode], DoDisable(v < 1))
+	AddMenuOptionST("ExpressionScaling", "$SSL_ExpressionScaling", _expressionScales[scalemode], DoDisable(v < 1))
 	AddToggleOptionST("expredittag_Normal", "$SSL_ExpressionsNormal", tags.Find("Normal") > -1)
 	AddToggleOptionST("expredittag_Victim", "$SSL_ExpressionsVictim", tags.Find("Victim") > -1)
 	AddToggleOptionST("expredittag_Aggressor", "$SSL_ExpressionsAggressor", tags.Find("Aggressor") > -1)
@@ -723,7 +709,7 @@ Function ExpressionEditor()
 	SetCursorPosition(1)
 	AddHeaderOption("$SSL_SyncLipsConfig")
 	AddTextOptionST("LipsSoundTime", "$SSL_LipsSoundTime", _soundmethod[Config.LipsSoundTime])
-	AddToggleOptionST("LipsFixedValue", "$SSL_LipsFixedValue", Config.LipsFixedValue)
+	AddStateOptionBool("bLipsFixedValue", "$SSL_bLipsFixedValue")
 	AddEmptyOption()
 	AddEmptyOption()
 	AddToggleOptionST("expressioneditfemale", "$SSL_EditFemale", _editFemale)
@@ -793,7 +779,7 @@ Function TestApply(Actor ActorRef)
 	sslLog.Log("Testing Expression: " + _expression[_expressionIdx] + ". Low? " + testlow +", OpenMouth? " + testOpenMouth)
 	Utility.Wait(0.1)
 	If (ActorRef == PlayerRef)
-		Game.ForceThirdPerson()
+		SexLabUtil.ForceThirdPerson()
 	EndIf
 	If (testOpenMouth)
 		sslBaseExpression.OpenMouth(ActorRef)
@@ -812,21 +798,102 @@ Function TestApply(Actor ActorRef)
 EndFunction
 
 ; ------------------------------------------------------- ;
+; --- Enjoyment Settings                              --- ;
+; ------------------------------------------------------- ;
+
+Function EnjoymentSettings()
+	SetCursorFillMode(TOP_TO_BOTTOM)
+	bool enj_flag = !Config.InternalEnjoymentEnabled
+	int enj_header = DoDisable(enj_flag)
+	bool game_flag = !Config.GameEnabled || !Config.InternalEnjoymentEnabled
+	int game_header = DoDisable(game_flag)
+
+	AddHeaderOption("$SSL_EnjPrimarySettings")
+	AddToggleOptionST("InternalEnjoymentEnabled", "$SSL_bInternalEnjoymentEnabled", Config.InternalEnjoymentEnabled)
+
+	AddHeaderOption("$SSL_EnjGeneralConfigs", enj_header)
+	AddStateOptionSlider("fEnjRaiseMultInter", "$SSL_fEnjRaiseMultInter", 1.2, 0, 3, 0.1, "{1}", enj_flag)	
+	AddStateOptionBool("bFallbackToTagsForDetection", "$SSL_bFallbackToTagsForDetection", enj_flag)
+	AddStateOptionBool("bNoStaminaEndsScene", "$SSL_bNoStaminaEndsScene", enj_flag)
+	AddStateOptionBool("bMaleOrgasmEndsScene", "$SSL_bMaleOrgasmEndsScene", enj_flag)
+	AddStateOptionBool("bDomMustOrgasm", "$SSL_bDomMustOrgasm", enj_flag)
+	AddStateOptionBool("bPlayerMustOrgasm", "$SSL_bPlayerMustOrgasm", enj_flag)
+	AddStateOptionBool("bHighEnjOrgasmWait", "$SSL_bHighEnjOrgasmWait", enj_flag)
+
+	AddHeaderOption("$SSL_EnjPainConfigs", enj_header)
+	AddStateOptionSlider("iMaxNoPainOrgasmMale", "$SSL_iMaxNoPainOrgasmMale", 1, 1, 4, 1, "{0}", enj_flag)
+	AddStateOptionSlider("iMaxNoPainOrgasmFemale", "$SSL_iMaxNoPainOrgasmFemale", 2, 1, 5, 1, "{0}", enj_flag)
+	AddStateOptionSlider("iNoPainRequiredTime", "$SSL_iNoPainRequiredTime", 50, 0, 180, 10, "{0}", enj_flag)
+	AddStateOptionSlider("iNoPainRequiredXP", "$SSL_iNoPainRequiredXP", 50, 0, 100, 5, "{0}", enj_flag)
+	AddStateOptionSlider("fPainHugePPMult", "$SSL_fPainHugePPMult", 0.5, 0, 2, 0.1, "{1}", enj_flag)
+
+	SetCursorPosition(1)
+	AddEmptyOption()
+	AddToggleOptionST("GameEnabled", "$SSL_bGameEnabled", Config.GameEnabled, enj_header)
+
+	AddHeaderOption("$SSL_EnjGameConfigs", game_header)
+	AddStateOptionSlider("iEnjGameStaminaCost", "$SSL_iEnjGameStaminaCost", 10, 0, 50, 1, "{0}", game_flag)
+	AddStateOptionSlider("iEnjGameMagickaCost", "$SSL_iEnjGameMagickaCost", 10, 0, 50, 1, "{0}", game_flag)
+	AddStateOptionSlider("iGameEnjAdjAmount", "$SSL_iGameEnjAdjAmount", 1, 0, 10, 1, "{0}", game_flag)
+	AddStateOptionBool("bGameRequiredOnHighEnj", "$SSL_bGameRequiredOnHighEnj", game_flag)
+	AddStateOptionBool("bGameSpamDelayPenalty", "$SSL_bGameSpamDelayPenalty", game_flag)
+
+	AddHeaderOption("$SSL_EnjGameHotkeys", game_header)
+	AddStateOptionKey("iGameRaiseEnjKey", "$SSL_iGameRaiseEnjKey", true, true, abDisable=game_flag)
+	AddStateOptionKey("iGameHoldbackKey", "$SSL_iGameHoldbackKey", true, true, abDisable=game_flag)
+
+	AddHeaderOption("$SSL_EnjMiscRateMult", enj_header)
+	AddStateOptionSlider("fEnjMultVictim", "$SSL_fEnjMultVictim", 0.8, 0, 2, 0.1, "{1}", enj_flag)
+	AddStateOptionSlider("fEnjMultSub", "$SSL_fEnjMultSub", 0.8, 0, 2, 0.1, "{1}", enj_flag)
+	AddStateOptionSlider("fEnjMultAggressor", "$SSL_fEnjMultAggressor", 1.2, 0, 2, 0.1, "{1}", enj_flag)
+	AddStateOptionSlider("fEnjMultDom", "$SSL_fEnjMultDom", 1.2, 0, 2, 0.1, "{1}", enj_flag)
+EndFunction
+
+State InternalEnjoymentEnabled
+	Event OnSelectST()
+		Config.InternalEnjoymentEnabled = !Config.InternalEnjoymentEnabled
+		SetToggleOptionValueST(Config.InternalEnjoymentEnabled)
+		ForcePageReset()
+	EndEvent
+	Event OnDefaultST()
+		Config.InternalEnjoymentEnabled = True
+		SetToggleOptionValueST(Config.InternalEnjoymentEnabled)
+		ForcePageReset()
+	EndEvent
+	Event OnHighlightST()
+		SetInfoText("$SSL_bInternalEnjoymentEnabledHighlight")
+	EndEvent
+EndState
+
+State GameEnabled
+	Event OnSelectST()
+		Config.GameEnabled = !Config.GameEnabled
+		SetToggleOptionValueST(Config.GameEnabled)
+		ForcePageReset()
+	EndEvent
+	Event OnDefaultST()
+		Config.GameEnabled = True
+		SetToggleOptionValueST(Config.GameEnabled)
+		ForcePageReset()
+	EndEvent
+	Event OnHighlightST()
+		SetInfoText("$SSL_bGameEnabledHighlight")
+	EndEvent
+EndState
+
+; ------------------------------------------------------- ;
 ; --- Debug & installation							              --- ;
 ; ------------------------------------------------------- ;
 
 Function RebuildClean()
 	SetCursorFillMode(TOP_TO_BOTTOM)
 	AddHeaderOption("SexLab v" + GetStringVer() + " by Ashal@LoversLab.com")
-	AddToggleOptionST("DebugMode","$SSL_DebugMode", Config.DebugMode)
+	AddStateOptionBool("bDebugMode", "$SSL_bDebugMode")
 	AddTextOptionST("StopCurrentAnimations","$SSL_StopCurrentAnimations", "$SSL_ClickHere")
 	AddTextOptionST("ResetStripOverrides","$SSL_ResetStripOverrides", "$SSL_ClickHere")
 	AddTextOptionST("CleanSystem","$SSL_CleanSystem", "$SSL_ClickHere")
 	AddTextOptionST("ForceRegisterVoices", "$SSL_ForceRegisterVoices", "$SSL_ClickHere")
-	AddHeaderOption("System Requirements")
-	SystemCheckOptions()
-
-	SetCursorPosition(1)
+	
 	AddHeaderOption("Registry Info")
 	; IDEA: Allow clicking on this for more info, custom swf mayhaps?
 	AddTextOption("$SSL_Animations", sslSystemConfig.GetAnimationCount(), OPTION_FLAG_DISABLED)
@@ -840,6 +907,10 @@ Function RebuildClean()
 		String Name = Config.Strapons[i].GetName()
 		AddTextOptionST("toggleStrapon_" + i, Name, "$SSL_Remove")
 	EndWhile
+
+	SetCursorPosition(1)
+	AddHeaderOption("System Requirements")
+	SystemCheckOptions()
 EndFunction
 
 Function InstallMenu()
@@ -863,10 +934,16 @@ Function SystemCheckOptions()
 	okOrFail[1] = "<font color='#00FF00'>ok</font>"
 
 	AddTextOption("Skyrim Script Extender", okOrFail[Config.CheckSystemPart("SKSE") as int], OPTION_FLAG_DISABLED)
-	AddTextOption("SexLab.dll", okOrFail[Config.CheckSystemPart("SexLabP+") as int], OPTION_FLAG_DISABLED)
+	AddTextOption("SexLabUtil.dll", okOrFail[Config.CheckSystemPart("SexLabUtil") as int], OPTION_FLAG_DISABLED)
 	AddTextOption("PapyrusUtil.dll", okOrFail[Config.CheckSystemPart("PapyrusUtil") as int], OPTION_FLAG_DISABLED)
-	AddTextOption("RaceMenu", okOrFail[Config.CheckSystemPart("NiOverride") as int], OPTION_FLAG_DISABLED)
-	AddTextOption("MfgFix NG", okOrFail[Config.CheckSystemPart("MfgFix") as int], OPTION_FLAG_DISABLED)
+	AddTextOption("RaceMenu", okOrFail[Config.CheckSystemPart("RaceMenu") as int], OPTION_FLAG_DISABLED)
+	AddTextOption("MfgFix NG", okOrFail[Config.CheckSystemPart("MfgFixNG") as int], OPTION_FLAG_DISABLED)
+	AddTextOption("Prisma UI", okOrFail[Config.CheckSystemPart("PrismaUI") as int], OPTION_FLAG_DISABLED)
+	AddTextOption("CrosshairRefEvents HangFix", okOrFail[Config.CheckSystemPart("CrossHairRef") as int], OPTION_FLAG_DISABLED)
+	AddTextOption("Procedural Penis Animations", okOrFail[Config.CheckSystemPart("PPA") as int], OPTION_FLAG_DISABLED)
+	If (sslSystemConfig.CheckForSkyrimVR())
+		AddTextOption("VRIK Player Avatar", okOrFail[Config.CheckSystemPart("VRIK") as int], OPTION_FLAG_DISABLED)
+	EndIf
 EndFunction
 
 State ResetStripOverrides
@@ -891,6 +968,17 @@ State CleanSystem
 	EndEvent
 EndState
 
+State ForceRegisterVoices
+  Event OnSelectST()
+    ModEvent.Send(ModEvent.Create("SexLabSlotVoices"))
+		ModEvent.Send(ModEvent.Create("SexLabSlotExpressions"))
+		SetOptionFlagsST(OPTION_FLAG_DISABLED)
+  EndEvent
+	Event OnHighlightST()
+		SetInfoText("$SSL_ForceRegisterVoicesHighlight")
+	EndEvent
+EndState
+
 State RebuildStraponList
 	Event OnSelectST()
 		Config.LoadStrapons()
@@ -907,51 +995,38 @@ EndState
 ; --- Mapped State Option Events                      --- ;
 ; ------------------------------------------------------- ;
 
+Function AddStateOptionBool(String asOption, String asOptionText, bool abDisable = false)
+	AddToggleOptionST(asOption, asOptionText, sslSystemConfig.GetSettingBool(asOption), DoDisable(abDisable))
+EndFunction
+
+Function AddStateOptionSlider(String asOption, String asOptionText, float afDefault, float afLow, float afHigh, float afInterval, String asFormat = "{0}", bool abDisable = false)
+    float val
+    If (StringUtil.GetNthChar(asOption, 0) == "i")
+        val = sslSystemConfig.GetSettingInt(asOption) as float
+    Else
+        val = sslSystemConfig.GetSettingFlt(asOption)
+    EndIf
+    asOption = asOption + "_" + afDefault + "_" + afLow + "_" + afHigh + "_" + afInterval + "_" + asFormat
+    AddSliderOptionST(asOption, asOptionText, val, asFormat, DoDisable(abDisable))
+EndFunction
+
+Function AddStateOptionKey(String asOption, String asOptionText, bool abMandatory = false, bool abSkipConflictResolution = false, bool needsRegister = false, bool abDisable = false)
+    String asState = asOption
+    If (abSkipConflictResolution)
+        asState = "S_" + asState
+    EndIf
+    If (abMandatory)
+        asState = "M_" + asState
+    EndIf
+    If (needsRegister)
+        asState = "R_" + asState
+    EndIf
+	AddKeyMapOptionST(asState, asOptionText, sslSystemConfig.GetSettingInt(asOption), DoDisable(abDisable))
+EndFunction
+
 Event OnSelectST()
 	string[] s = PapyrusUtil.StringSplit(GetState(), "_")
-	If (s[0] == "AutoAdvance")
-		Config.AutoAdvance = !Config.AutoAdvance
-		SetToggleOptionValueST(Config.AutoAdvance)
-	ElseIf (s[0] == "DisableSub")
-		Config.DisablePlayer = !Config.DisablePlayer
-		SetToggleOptionValueST(Config.DisablePlayer)
-	ElseIf (s[0] == "AutomaticTFC")
-		Config.AutoTFC = !Config.AutoTFC
-		SetToggleOptionValueST(Config.AutoTFC)
-	ElseIf (s[0] == "OrgasmEffects")
-		Config.OrgasmEffects = !Config.OrgasmEffects
-		SetToggleOptionValueST(Config.OrgasmEffects)
-	ElseIf (s[0] == "UseCum")
-		Config.UseCum = !Config.UseCum
-		SetToggleOptionValueST(Config.UseCum)
-	ElseIf (s[0] == "UseExpressions")
-		Config.UseExpressions = !Config.UseExpressions
-		SetToggleOptionValueST(Config.UseExpressions)
-	ElseIf (s[0] == "UseLipSync")
-		Config.UseLipSync = !Config.UseLipSync
-		SetToggleOptionValueST(Config.UseLipSync)
-	ElseIf (s[0] == "AllowCreatures")
-		Config.AllowCreatures = !Config.AllowCreatures
-		SetToggleOptionValueST(Config.AllowCreatures)
-	ElseIf (s[0] == "UseCreatureGender")
-		Config.UseCreatureGender = !Config.UseCreatureGender
-		SetToggleOptionValueST(Config.UseCreatureGender)
-	ElseIf (s[0] == "UndressAnimation")
-		Config.UndressAnimation = !Config.UndressAnimation
-		SetToggleOptionValueST(Config.UndressAnimation)
-	ElseIf (s[0] == "RedressVictim")
-		Config.RedressVictim = !Config.RedressVictim
-		SetToggleOptionValueST(Config.RedressVictim)
-	ElseIf (s[0] == "DisableTeleport")
-		Config.DisableTeleport = !Config.DisableTeleport
-		SetToggleOptionValueST(Config.DisableTeleport)
-	ElseIf (s[0] == "ShowInMap")
-		Config.ShowInMap = !Config.ShowInMap
-		SetToggleOptionValueST(Config.ShowInMap)
-	ElseIf (s[0] == "SetAnimSpeedByEnjoyment")
-		Config.SetAnimSpeedByEnjoyment = !Config.SetAnimSpeedByEnjoyment
-		SetToggleOptionValueST(Config.SetAnimSpeedByEnjoyment)
-	ElseIf (s[0] == "Voice")
+	If (s[0] == "Voice")
 		int idx = s[1] as int
 		bool e = sslBaseVoice.GetEnabled(_voices[idx])
 		sslBaseVoice.SetEnabled(_voices[idx], !e)
@@ -985,9 +1060,9 @@ Event OnSelectST()
 			item = _targetItems[i]
 		EndIf
 		int j = sslActorLibrary.CheckStrip(item)
-		If(j == -1)			; Never 			-> Always
+		If(j == -1)		; Never			-> Always
 			sslActorLibrary.WriteStrip(item, false)
-		ElseIf(j == 1)	; Always			-> Unspecified
+		ElseIf(j == 1)	; Always		-> Unspecified
 			sslActorLibrary.EraseStrip(item)
 		ElseIf(j == 0)	; Unspecified	-> Never
 			sslActorLibrary.WriteStrip(item, true)
@@ -1030,9 +1105,6 @@ Event OnSelectST()
 	ElseIf (s[0] == "LipsSoundTime")
 		Config.LipsSoundTime = 1 - Config.LipsSoundTime
 		SetTextOptionValueST(_soundmethod[Config.LipsSoundTime])
-	ElseIf (s[0] == "LipsFixedValue")
-		Config.LipsFixedValue = !Config.LipsFixedValue
-		SetToggleOptionValueST(Config.LipsFixedValue)
 	ElseIf (s[0] == "expressioneditfemale")
 		_editfemale = !_editfemale
 		ForcePageReset()
@@ -1061,90 +1133,32 @@ Event OnSelectST()
 		sslSystemConfig.SetSettingStr("sOptionalTags", "")
 		sslSystemConfig.SetSettingStr("sExcludedTags", "")
 		ForcePageReset()
-	ElseIf (s[0] == "matchmakerToggleSubPlayer")
-		Config.SubmissivePlayer = !Config.SubmissivePlayer
-		SetToggleOptionValueST(Config.SubmissivePlayer)
-	ElseIf (s[0] == "matchmakerToggleSubTarget")
-		Config.SubmissiveTarget = !Config.SubmissiveTarget
-		SetToggleOptionValueST(Config.SubmissiveTarget)
 	ElseIf (s[0] == "expressionprev")
 		_phaseIdx -= 2
 		ForcePageReset()
 	ElseIf (s[0] == "expressionnext")
 		_phaseIdx += 2
 		ForcePageReset()
-	ElseIf (s[0] == "DebugMode")
-		Config.DebugMode = !Config.DebugMode
-		SetToggleOptionValueST(Config.DebugMode)
 	ElseIf (s[0] == "StopCurrentAnimations")
 		ShowMessage("$SSL_StopRunningAnimations", false)
 		ThreadSlots.StopAll()
+	ElseIf (StringUtil.GetNthChar(s[0], 0) == "b")
+		bool newValue = !sslSystemConfig.GetSettingBool(s[0])
+		sslSystemConfig.SetSettingBool(s[0], newValue)
+		SetToggleOptionValueST(newValue)
+	Else
+		Log("Unrecognized toggle-setting: " + s[0])
 	EndIf
 EndEvent
 
 Event OnSliderOpenST()
 	string[] s = PapyrusUtil.StringSplit(GetState(), "_")
-	If (s[0] == "AutomaticSUCSM")
-		SetSliderDialogStartValue(Config.AutoSUCSM)
-		SetSliderDialogDefaultValue(5)
-		SetSliderDialogRange(1, 20)
-		SetSliderDialogInterval(1)
-	ElseIf (s[0] == "ShakeStrength")
-		SetSliderDialogStartValue(Config.ShakeStrength * 100)
-		SetSliderDialogDefaultValue(70)
-		SetSliderDialogRange(0, 100)
-		SetSliderDialogInterval(5)
-	ElseIf (s[0] == "LovenseStrength")
-		SetSliderDialogStartValue(sslSystemConfig.GetSettingInt("iLovenseStrength"))
-		SetSliderDialogDefaultValue(10)
-		SetSliderDialogRange(0, 20)
-		SetSliderDialogInterval(1)
-	ElseIf (s[0] == "LovenseStrengthOrgasm")
-		SetSliderDialogStartValue(sslSystemConfig.GetSettingInt("iLovenseStrengthOrgasm"))
-		SetSliderDialogDefaultValue(20)
-		SetSliderDialogRange(0, 20)
-		SetSliderDialogInterval(1)
-	ElseIf (s[0] == "LovenseDurationOrgasm")
-		SetSliderDialogStartValue(sslSystemConfig.GetSettingFlt("fLovenseDurationOrgasm"))
-		SetSliderDialogDefaultValue(8)
-		SetSliderDialogRange(5, 30)
-		SetSliderDialogInterval(0.5)
-	ElseIf (s[0] == "CumEffectTimer")
-		SetSliderDialogStartValue(Config.CumTimer)
-		SetSliderDialogDefaultValue(120)
-		SetSliderDialogRange(0, 43200)
-		SetSliderDialogInterval(10)
-	ElseIf (s[0] == "VoiceVolume")
-		SetSliderDialogStartValue(Config.VoiceVolume * 100)
-		SetSliderDialogDefaultValue(100)
-		SetSliderDialogRange(1, 100)
-		SetSliderDialogInterval(1)
-	ElseIf (s[0] == "SFXVolume")
-		SetSliderDialogStartValue(Config.SFXVolume * 100)
-		SetSliderDialogDefaultValue(100)
-		SetSliderDialogRange(1, 100)
-		SetSliderDialogInterval(1)
-	ElseIf (s[0] == "MaleVoiceDelay")
-		SetSliderDialogStartValue(Config.MaleVoiceDelay)
-		SetSliderDialogDefaultValue(5)
-		SetSliderDialogRange(1, 45)
-		SetSliderDialogInterval(1)
-	ElseIf (s[0] == "FemaleVoiceDelay")
-		SetSliderDialogStartValue(Config.FemaleVoiceDelay)
-		SetSliderDialogDefaultValue(4)
-		SetSliderDialogRange(1, 45)
-		SetSliderDialogInterval(1)
-	ElseIf (s[0] == "SFXDelay")
-		SetSliderDialogStartValue(Config.SFXDelay)
-		SetSliderDialogDefaultValue(3)
-		SetSliderDialogRange(1, 30)
-		SetSliderDialogInterval(1)
-	ElseIf (s[0] == "StageTimers")
+    If (s[0] == "StageTimers")
 		int i = s[1] as int
 		SetSliderDialogStartValue(sslSystemConfig.GetSettingFltA("fTimers", i))
+		SetSliderDialogDefaultValue(15)
 		SetSliderDialogRange(3, 180)
 		SetSliderDialogInterval(1)
-		SetSliderDialogDefaultValue(15)
 	ElseIf (s[0] == "expredit")
 		int i = s[1] as int
 		float[] values
@@ -1154,50 +1168,27 @@ Event OnSliderOpenST()
 			values = _high
 		EndIf
 		SetSliderDialogStartValue(values[i])
+		SetSliderDialogDefaultValue(0)
 		SetSliderDialogRange(0, 1)
 		SetSliderDialogInterval(0.05)
-		SetSliderDialogDefaultValue(0)
+    ElseIf (StringUtil.GetNthChar(s[0], 0) == "i")
+        SetSliderDialogStartValue(sslSystemConfig.GetSettingInt(s[0]))
+        SetSliderDialogDefaultValue(s[1] as int)
+        SetSliderDialogRange(s[2] as int, s[3] as int)
+        SetSliderDialogInterval(s[4] as int)
+    ElseIf (StringUtil.GetNthChar(s[0], 0) == "f")
+        SetSliderDialogStartValue(sslSystemConfig.GetSettingFlt(s[0]))
+        SetSliderDialogDefaultValue(s[1] as float)
+        SetSliderDialogRange(s[2] as float, s[3] as float)
+        SetSliderDialogInterval(s[4] as float)
+    Else
+        Log("Unknown slider setting: " + s[0])
 	EndIf
 EndEvent
 
 Event OnSliderAcceptST(float value)
 	string[] s = PapyrusUtil.StringSplit(GetState(), "_")
-	If (s[0] == "AutomaticSUCSM")
-		Config.AutoSUCSM = value
-		SetSliderOptionValueST(Config.AutoSUCSM, "{0}")
-	ElseIf (s[0] == "ShakeStrength")
-		Config.ShakeStrength = (value / 100.0)
-		SetSliderOptionValueST(value, "{0}%")
-	ElseIf (s[0] == "LovenseStrength")
-		sslSystemConfig.SetSettingInt("iLovenseStrength", value as int)
-		SetSliderOptionValueST(value, "{0}")
-	ElseIf (s[0] == "LovenseStrengthOrgasm")
-		sslSystemConfig.SetSettingInt("iLovenseStrengthOrgasm", value as int)
-		SetSliderOptionValueST(value, "{0}")
-	ElseIf (s[0] == "LovenseDurationOrgasm")
-		sslSystemConfig.SetSettingFlt("fLovenseDurationOrgasm", value)
-		SetSliderOptionValueST(value, "{1}s")
-	ElseIf (s[0] == "CumEffectTimer")
-		Config.CumTimer = value
-		SetSliderOptionValueST(Config.CumTimer, "$SSL_Seconds")
-	ElseIf (s[0] == "VoiceVolume")
-		Config.VoiceVolume = (value / 100.0)
-		Config.AudioVoice.SetVolume(Config.VoiceVolume)
-		SetSliderOptionValueST(value, "{0}%")
-	ElseIf (s[0] == "SFXVolume")
-		Config.SFXVolume = (value / 100.0)
-		Config.AudioSFX.SetVolume(Config.SFXVolume)
-		SetSliderOptionValueST(value, "{0}%")
-	ElseIf (s[0] == "MaleVoiceDelay")
-		Config.MaleVoiceDelay = value
-		SetSliderOptionValueST(Config.MaleVoiceDelay, "$SSL_Seconds")
-	ElseIf (s[0] == "FemaleVoiceDelay")
-		Config.FemaleVoiceDelay = value
-		SetSliderOptionValueST(Config.FemaleVoiceDelay, "$SSL_Seconds")
-	ElseIf (s[0] == "SFXDelay")
-		Config.SFXDelay = value
-		SetSliderOptionValueST(Config.SFXDelay, "$SSL_Seconds")
-	ElseIf (s[0] == "StageTimers")
+	If (s[0] == "StageTimers")
 		int i = s[1] as int
 		sslSystemConfig.SetSettingFltA("fTimers", value, i)
 		SetSliderOptionValueST(value, "$SSL_Seconds")
@@ -1213,6 +1204,14 @@ Event OnSliderAcceptST(float value)
 		values[i] = value
 		sslBaseExpression.SetValues(_expression[_expressionIdx], _editFemale, _phaseidx + n, values)
 		SetSliderOptionValueST(value, "{2}")
+    ElseIf (StringUtil.GetNthChar(s[0], 0) == "i")
+        sslSystemConfig.SetSettingInt(s[0], value as int)
+		SetSliderOptionValueST(value, s[5])
+    ElseIf (StringUtil.GetNthChar(s[0], 0) == "f")
+        sslSystemConfig.SetSettingFlt(s[0], value)
+		SetSliderOptionValueST(value, s[5])
+    Else
+        Log("Unknown slider setting: " + s[0])
 	EndIf
 EndEvent
 
@@ -1220,12 +1219,8 @@ Event OnMenuOpenST()
 	String[] s = PapyrusUtil.StringSplit(GetState(), "_")
 	If (s[0] == "ClimaxType")
 		SetMenuDialogStartIndex(sslSystemConfig.GetSettingInt("iClimaxType"))
-		SetMenuDialogDefaultIndex(0)
+		SetMenuDialogDefaultIndex(2)
 		SetMenuDialogOptions(_ClimaxTypes)
-	ElseIf (s[0] == "FilterStrictness")
-		SetMenuDialogStartIndex(sslSystemConfig.GetSettingInt("iFilterStrictness"))
-		SetMenuDialogDefaultIndex(1)
-		SetMenuDialogOptions(_FilterOpt)
 	ElseIf (s[0] == "SexSelect")
 		int sex
 		If (s[1] == "0")
@@ -1264,7 +1259,7 @@ Event OnMenuOpenST()
 		SetMenuDialogStartIndex(_expressionIdx)
 		SetMenuDialogDefaultIndex(0)
 		SetMenuDialogOptions(_expression)
-	ElseIf (s[0] == "setexprscaling")
+	ElseIf (s[0] == "ExpressionScaling")
 		int scalemode = sslBaseExpression.GetExpressionScaleMode(_expression[_expressionIdx])
 		SetMenuDialogStartIndex(scalemode)
 		SetMenuDialogDefaultIndex(0)
@@ -1281,7 +1276,7 @@ Event OnMenuOpenST()
 		SetMenuDialogStartIndex(values[i] as int)
 		SetMenuDialogDefaultIndex(0)
 		SetMenuDialogOptions(_moods)
-	ElseIf (s[0] == "activeVoices")
+	ElseIf (s[0] == "ActiveVoices")
 		SetMenuDialogStartIndex(SexLabRegistry.MapRaceKeyToId(_voiceActiveRaceKey))
 		SetMenuDialogDefaultIndex(0)
 		SetMenuDialogOptions(SexLabRegistry.GetAllRaceKeys(false))
@@ -1304,9 +1299,6 @@ Event OnMenuAcceptST(int aiIndex)
 	If (s[0] == "ClimaxType")
 		sslSystemConfig.SetSettingInt("iClimaxType", aiIndex)
 		SetMenuOptionValueST(_ClimaxTypes[aiIndex])
-	ElseIf (s[0] == "FilterStrictness")
-		sslSystemConfig.SetSettingInt("iFilterStrictness", aiIndex)
-		SetMenuOptionValueST(_FilterOpt[aiIndex])
 	ElseIf (s[0] == "SexSelect")
 		If (s[1] == "0")
 			ActorLib.TreatAsSex(PlayerRef, aiIndex)
@@ -1329,7 +1321,7 @@ Event OnMenuAcceptST(int aiIndex)
 	ElseIf (s[0] == "selectexpression")
 		_expressionIdx = aiIndex
 		ForcePageReset()
-	ElseIf (s[0] == "setexprscaling")
+	ElseIf (s[0] == "ExpressionScaling")
 		sslBaseExpression.SetExpressionScaleMode(_expression[_expressionIdx], aiIndex)
 		SetMenuOptionValueST(_expressionScales[aiIndex])
 	ElseIf (s[0] == "expredit")
@@ -1344,7 +1336,7 @@ Event OnMenuAcceptST(int aiIndex)
 		values[i] = aiIndex
 		sslBaseExpression.SetValues(_expression[_expressionIdx], _editFemale, _phaseidx + n, values)
 		SetMenuOptionValueST(_moods[aiIndex])
-	ElseIf (s[0] == "activeVoices")
+	ElseIf (s[0] == "ActiveVoices")
 		_voiceActiveRaceKey = SexLabRegistry.MapRaceIDToRaceKey(aiIndex)
 		_voices = sslVoiceSlots.GetAllVoices(_voiceActiveRaceKey)
 		ForcePageReset()
@@ -1352,7 +1344,7 @@ Event OnMenuAcceptST(int aiIndex)
 		sslSystemConfig.SetSettingInt("iAskBed", aiIndex)
 		SetMenuOptionValueST(_PlFurnOpt[aiIndex])
 	ElseIf (s[0] == "FurnitureNPC")
-		sslSystemConfig.SetSettingInt("iAskBedNPC", aiIndex)
+		sslSystemConfig.SetSettingInt("iNPCBed", aiIndex)
 		SetMenuOptionValueST(_NpcFurnOpt[aiIndex])
 	EndIf
 EndEvent
@@ -1367,8 +1359,6 @@ Event OnInputOpenST()
 		SetInputDialogStartText(Config.OptionalTags)
 	ElseIf (s[0] == "toggletags")
 		SetInputDialogStartText(_toggleTags)
-	ElseIf (s[0] == "createexpression")
-		SetInputDialogStartText("")
 	EndIf
 EndEvent
 
@@ -1386,77 +1376,61 @@ Event OnInputAcceptST(String inputString)
 	ElseIf (s[0] == "toggletags")
 		_toggleTags = inputString
 		ForcePageReset()
-	ElseIf (s[0] == "createexpression")
-		If (!sslBaseExpression.CreateEmptyProfile(inputString))
-			ShowMessage("$SSL_CreateProfileError", false, "$Ok")
+	EndIf
+EndEvent
+
+Event OnKeyMapChangeST(int newKeyCode, string conflictControl, string conflictName)
+  String[] s = StringUtil.Split(GetState(), "_")
+	int i = 0
+	bool mandatory = false
+	bool skipConflict = false
+    bool needsRegister = false
+	If (s[i] == "M")
+		i += 1
+		mandatory = true
+	EndIf
+	If (s[i] == "S")
+		i += 1
+		skipConflict = true
+	EndIf
+    If (s[i] == "R")
+        i += 1
+        needsRegister = true
+    EndIf
+  If(newKeyCode == 1 || newKeyCode == 277)
+		If (mandatory)
+			ShowMessage("$SSL_KeyCannotBeDisabled", false, "$Ok")
 			return
 		EndIf
-		_expression = sslExpressionSlots.GetAllProfileIDs()
-		ForcePageReset()
-	EndIf
+    newKeyCode = -1
+  EndIf
+  If(newKeyCode != -1 && conflictControl != "" && !skipConflict)
+    string msg
+    If(conflictName != "")
+      msg = "$SSL_ConflictControl{" + conflictControl + "}{" + conflictName + "}"
+    Else
+      msg = "$SSL_ConflictControl{" + conflictControl + "}"
+    EndIf
+    If(!ShowMessage(msg, true, "$Yes", "$No"))
+      return
+    EndIf
+  EndIf
+  If (needsRegister)
+    int oldKeyCode = sslSystemConfig.GetSettingInt(s[i])
+    If (oldKeyCode != -1)
+      Config.UnregisterForKey(oldKeyCode)
+    EndIf
+    If (newKeyCode != -1)
+      Config.RegisterForKey(newKeyCode)
+    EndIf
+  EndIf
+	sslSystemConfig.SetSettingInt(s[i], newKeyCode)
+  SetKeyMapOptionValueST(newKeyCode)
 EndEvent
 
 Event OnHighlightST()
 	string[] s = PapyrusUtil.StringSplit(GetState(), "_")
-	If (s[0] == "AutoAdvance")
-		SetInfoText("$SSL_InfoAutoAdvance")
-	ElseIf (s[0] == "ClimaxType") 
-		SetInfoText("$SSL_ClimaxInfo")
-	ElseIf (s[0] == "SexSelect")
-		SetInfoText("$SSL_SexSelectInfo")
-	ElseIf (s[0] == "UseFade")
-		SetInfoText("$SSL_UseFadeInfo")
-	ElseIf (s[0] == "FilterStrictness")
-		SetInfoText("$SSL_FilterStrictnessInfo")
-	ElseIf (s[0] == "DisableSub")
-		SetInfoText("$SSL_DisableSubControlsInfo")
-	ElseIf (s[0] == "AutomaticTFC")
-		SetInfoText("$SSL_InfoAutomaticTFC")
-	ElseIf (s[0] == "AutomaticSUCSM")
-		SetInfoText("$SSL_InfoAutomaticSUCSM")
-	ElseIf (s[0] == "OrgasmEffects")
-		SetInfoText("$SSL_InfoOrgasmEffects")
-	ElseIf (s[0] == "ShakeStrength")
-		SetInfoText("$SSL_InfoShakeStrength")
-	ElseIf (s[0] == "UseCum")
-		SetInfoText("$SSL_InfoUseCum")
-	ElseIf (s[0] == "CumEffectTimer")
-		SetInfoText("$SSL_InfoCumTimer")
-	ElseIf (s[0] == "UseExpressions")
-		SetInfoText("$SSL_InfoUseExpressions")
-	ElseIf (s[0] == "UseLipSync")
-		SetInfoText("$SSL_InfoUseLipSync")
-	ElseIf (s[0] == "LovenseStrength")
-		SetInfoText("$SSL_LovenseStrengthHighlight")
-	ElseIf (s[0] == "LovenseStrengthOrgasm")
-		SetInfoText("$SSL_LovenseStrengthOrgasmHighlight")
-	ElseIf (s[0] == "LovenseDurationOrgasm")
-		SetInfoText("$SSL_LovenseDurationOrgasmHighlight")
-	ElseIf (s[0] == "AllowCreatures")
-		SetInfoText("$SSL_InfoAllowCreatures")
-	ElseIf (s[0] == "UseCreatureGender")
-		SetInfoText("$SSL_InfoUseCreatureGender")
-	ElseIf (s[0] == "UndressAnimation")
-		SetInfoText("$SSL_InfoUndressAnimation")
-	ElseIf (s[0] == "RedressVictim")
-		SetInfoText("$SSL_InfoReDressVictim")
-	ElseIf (s[0] == "DisableTeleport")
-		SetInfoText("$SSL_InfoDisableTeleport")
-	ElseIf (s[0] == "ShowInMap")
-		SetInfoText("$SSL_InfoShowInMap")
-	ElseIf (s[0] == "SetAnimSpeedByEnjoyment")
-		SetInfoText("$SSL_InfoSetAnimSpeedByEnjoyment")
-	ElseIf (s[0] == "VoiceVolume")
-		SetInfoText("$SSL_InfoVoiceVolume")
-	ElseIf (s[0] == "SFXVolume")
-		SetInfoText("$SSL_InfoSFXVolume")
-	ElseIf (s[0] == "MaleVoiceDelay")
-		SetInfoText("$SSL_InfoMaleVoiceDelay")
-	ElseIf (s[0] == "FemaleVoiceDelay")
-		SetInfoText("$SSL_InfoFemaleVoiceDelay")
-	ElseIf (s[0] == "SFXDelay")
-		SetInfoText("$SSL_InfoSFXDelay")
-	ElseIf (s[0] == "Voice")
+	If (s[0] == "Voice")
 		int idx = s[1] as int
 		String[] tags = sslBaseVoice.GetVoiceTags(_voices[idx])
 		SetInfoText("Tags: " + PapyrusUtil.StringJoin(tags, ", "))
@@ -1467,6 +1441,14 @@ Event OnHighlightST()
 		If (Config.TargetRef)
 			info += "\n" + Config.TargetRef.GetLeveledActorBase().GetName() + " Slot " + (i + 30) + ": "
 			info += GetItemName(Config.TargetRef.GetWornForm(Armor.GetMaskForSlot(i + 30)), "?")
+		EndIf
+		SetInfoText(info)
+	ElseIf(s[0] == "StrippingW")
+		String info = PlayerRef.GetLeveledActorBase().GetName() + " Weapons: "
+		info += GetItemName(PlayerRef.GetEquippedWeapon(true), "?") + "(LH), " + GetItemName(PlayerRef.GetEquippedWeapon(false), "?") + "(RH)"
+		If (Config.TargetRef)
+			info += "\n" + Config.TargetRef.GetLeveledActorBase().GetName() + " Weapons: "
+			info += GetItemName(Config.TargetRef.GetEquippedWeapon(true), "?") + "(LH), " + GetItemName(Config.TargetRef.GetEquippedWeapon(false), "?") + "(RH)"
 		EndIf
 		SetInfoText(info)
 	ElseIf(s[0] == "StripFlag")
@@ -1492,20 +1474,11 @@ Event OnHighlightST()
 	ElseIf(s[0] == "selectexpression")
 		String[] tags = sslBaseExpression.GetExpressionTags(_expression[_expressionIdx])
 		SetInfoText("Tags: " + PapyrusUtil.StringJoin(tags, ", "))
-	ElseIf (s[0] == "createexpression")
-		SetInfoText("$SSL_CreateExpressionInfo")
-	ElseIf (s[0] == "LipsSoundTime")
-		SetInfoText("$SSL_InfoLipsSoundTime")
-	ElseIf (s[0] == "LipsFixedValue")
-		SetInfoText("$SSL_InfoLipsFixedValue")
-	ElseIf (s[0] == "DebugMode")
-		SetInfoText("$SSL_InfoDebugMode")
-	ElseIf (s[0] == "setexprscaling")
-		SetInfoText("$SSL_ExpressionScalingInfo")
-	ElseIf (s[0] == "activeVoices")
-		SetInfoText("$SSL_ActiveVoicesHighlight")
 	Else
-		SetInfoText("$SSL_" + s[0] + "Highlight")
+		String tlKey = "$SSL_" + s[0] + "Highlight"
+		If SexLabUtil.GetTranslation(tlKey) != ""
+			SetInfoText(tlKey)
+		EndIf
 	EndIf
 EndEvent
 
@@ -1514,432 +1487,53 @@ EndEvent
 ; ------------------------------------------------------- ;
 
 function PlayerHotkeys()
-	SetCursorFillMode(LEFT_TO_RIGHT)
+	SetCursorFillMode(TOP_TO_BOTTOM)
 
 	AddHeaderOption("$SSL_GlobalHotkeys")
-	AddEmptyOption()
-	AddKeyMapOptionST("TargetActor", "$SSL_TargetActor", Config.TargetActor)
-	AddKeyMapOptionST("ToggleFreeCamera", "$SSL_ToggleFreeCamera", Config.ToggleFreeCamera)
+	AddStateOptionKey("iTargetActor", "$SSL_iTargetActor", needsRegister = true)
+	AddStateOptionKey("iToggleThreadControl", "$SSL_iToggleThreadControl", needsRegister = true)
 
 	AddHeaderOption("$SSL_SceneManipulation")
+	AddStateOptionKey("iKeyUp", "$SSL_iKeyUp", true, true)
+	AddStateOptionKey("iKeyDown", "$SSL_iKeyDown", true, true)
+	AddStateOptionKey("iKeyLeft", "$SSL_iKeyLeft", true, true)
+	AddStateOptionKey("iKeyRight", "$SSL_iKeyRight", true, true)
+	AddStateOptionKey("iKeyAdvance", "$SSL_iKeyAdvance", true, true)
+	AddStateOptionKey("iKeyEnd", "$SSL_iKeyEnd", true, true)
+	AddStateOptionKey("iKeyExtra2", "$SSL_iKeyExtra2", true, true) ;open SL menu
+	AddStateOptionKey("iKeyMod", "$SSL_iKeyMod", true, true) ;modifier
+	AddStateOptionKey("iKeyReset", "$SSL_iKeyReset", true, true) ;inverse action
+
+	SetCursorPosition(1)
+
 	AddEmptyOption()
-	AddKeyMapOptionST("M_S_iKeyUp", "$SSL_KeyUp", sslSystemConfig.GetSettingInt("iKeyUp"))
-	AddKeyMapOptionST("M_S_iKeyExtra2", "$SSL_KeyExtra2", sslSystemConfig.GetSettingInt("iKeyExtra2"))
-	AddKeyMapOptionST("M_S_iKeyDown", "$SSL_KeyDown", sslSystemConfig.GetSettingInt("iKeyDown"))
-	AddKeyMapOptionST("M_S_iKeyMod", "$SSL_KeyMod", sslSystemConfig.GetSettingInt("iKeyMod"))
-	AddKeyMapOptionST("M_S_iKeyLeft", "$SSL_KeyLeft", sslSystemConfig.GetSettingInt("iKeyLeft"))
-	AddKeyMapOptionST("M_S_iKeyReset", "$SSL_KeyReset", sslSystemConfig.GetSettingInt("iKeyReset"))
-	AddKeyMapOptionST("M_S_iKeyRight", "$SSL_KeyRight", sslSystemConfig.GetSettingInt("iKeyRight"))
-	AddKeyMapOptionST("M_S_iKeyEnd", "$SSL_KeyEnd", sslSystemConfig.GetSettingInt("iKeyEnd"))
-	AddKeyMapOptionST("M_S_iKeyAdvance", "$SSL_KeyAdvance", sslSystemConfig.GetSettingInt("iKeyAdvance"))
-	; AddKeyMapOptionST("RealignActors","$SSL_RealignActors", Config.RealignActors)
-	; AddKeyMapOptionST("EndAnimation", "$SSL_EndAnimation", Config.EndAnimation)
-	; AddKeyMapOptionST("AdvanceAnimation", "$SSL_AdvanceAnimationStage", Config.AdvanceAnimation)
-	; AddKeyMapOptionST("ChangeAnimation", "$SSL_ChangeAnimationSet", Config.ChangeAnimation)
-	; AddKeyMapOptionST("ChangePositions", "$SSL_SwapActorPositions", Config.ChangePositions)
-	; AddKeyMapOptionST("MoveSceneLocation", "$SSL_MoveSceneLocation", Config.MoveScene)
+	AddStateOptionKey("iToggleFreeCamera", "$SSL_iToggleFreeCamera", needsRegister = true)
+	AddToggleOptionST("UseSceneMenu", "$SSL_bUseSceneMenu", Config.UseSceneMenu)
+	bool menu_flag = Config.UseSceneMenu
+	
+	AddHeaderOption("$SSL_LegacyHotkeys")
+	AddStateOptionKey("iChangeAnimation", "$SSL_iChangeAnimation", true, true)
+	AddStateOptionKey("iMoveScene", "$SSL_iMoveScene", true, true)
+	AddStateOptionKey("iSceneSelectorMenu", "$SSL_iSceneSelectorMenu", true, true, abDisable=menu_flag)
+	AddStateOptionKey("iChangePositions", "$SSL_iChangePositions", true, true, abDisable=menu_flag)
+	AddStateOptionKey("iOffsetAdjustMode", "$SSL_iOffsetAdjustMode", true, true, abDisable=menu_flag)
+	AddStateOptionKey("iToggleAdjustStage", "$SSL_iToggleAdjustStage", true, true, abDisable=menu_flag)
+	AddStateOptionKey("iRestoreOffsets", "$SSL_iRestoreOffsets", true, true, abDisable=menu_flag)
+EndFunction
 
-	; SetCursorPosition(1)
-	; AddHeaderOption("$SSL_AlignmentAdjustments")
-	; AddTextOptionST("AdjustTargetStage", "$SSL_AdjustTargetStage", SexLabUtil.StringIfElse(Config.AdjustTargetStage, "$SSL_CurrentStage", "$SSL_AllStages"))
-	; AddKeyMapOptionST("AdjustStage", SexLabUtil.StringIfElse(Config.AdjustTargetStage, "$SSL_AdjustAllStages", "$SSL_AdjustStage"), Config.AdjustStage)
-	; AddKeyMapOptionST("BackwardsModifier", "$SSL_ReverseDirectionModifier", Config.Backwards)
-	; AddKeyMapOptionST("AdjustChange","$SSL_ChangeActorBeingMoved", Config.AdjustChange)
-	; AddKeyMapOptionST("AdjustForward","$SSL_MoveActorForwardBackward", Config.AdjustForward)
-	; AddKeyMapOptionST("AdjustUpward","$SSL_AdjustPositionUpwardDownward", Config.AdjustUpward)
-	; AddKeyMapOptionST("AdjustSideways","$SSL_MoveActorLeftRight", Config.AdjustSideways)
-	; AddKeyMapOptionST("AdjustSchlong","$SSL_AdjustSchlong", Config.AdjustSchlong)
-	; AddKeyMapOptionST("RotateScene", "$SSL_RotateScene", Config.RotateScene)
-	; AddKeyMapOptionST("RestoreOffsets","$SSL_DeleteSavedAdjustments", Config.RestoreOffsets)
-endFunction
-
-
-Event OnKeyMapChangeST(int newKeyCode, string conflictControl, string conflictName)
-  String[] s = StringUtil.Split(GetState(), "_")
-	int i = 0
-	bool mandatory = false
-	bool skipConflict = false
-	If (s[i] == "M")
-		i += 1
-		mandatory = true
-	EndIf
-	If (s[i] == "S")
-		i += 1
-		skipConflict = true
-	EndIf
-  If(newKeyCode == 1 || newKeyCode == 277)
-		If (mandatory)
-			ShowMessage("$SSL_KeyCannotBeDisabled", false, "$Ok")
-			return
-		EndIf
-    newKeyCode = -1
-  EndIf
-  If(newKeyCode != -1 && conflictControl != "" && !skipConflict)
-    string msg
-    If(conflictName != "")
-      msg = "$SSL_ConflictControl{" + conflictControl + "}{" + conflictName + "}"
-    Else
-      msg = "$SSL_ConflictControl{" + conflictControl + "}"
-    EndIf
-    If(!ShowMessage(msg, true, "$Yes", "$No"))
-      return
-    EndIf
-  EndIf
-	sslSystemConfig.SetSettingInt(s[i], newKeyCode)
-  SetKeyMapOptionValueST(newKeyCode)
-EndEvent
-
-bool function KeyConflict(int newKeyCode, string conflictControl, string conflictName)
-	bool continue = true
-	if (conflictControl != "")
-		string msg
-		if (conflictName != "")
-			msg = "This key is already mapped to: \n'" + conflictControl + "'\n(" + conflictName + ")\n\nAre you sure you want to continue?"
-		else
-			msg = "This key is already mapped to: \n'" + conflictControl + "'\n\nAre you sure you want to continue?"
-		endIf
-		continue = ShowMessage(msg, true, "$Yes", "$No")
-	endIf
-	return !continue
-endFunction
-
-state AdjustStage
-	event OnKeyMapChangeST(int newKeyCode, string conflictControl, string conflictName)
-		if newKeyCode == 1 || !KeyConflict(newKeyCode, conflictControl, conflictName)
-			if newKeyCode == 1
-				newKeyCode = -1
-			endIf
-			Config.AdjustStage = newKeyCode
-			SetKeyMapOptionValueST(Config.AdjustStage)
-		endIf
-	endEvent
-	event OnDefaultST()
-		Config.AdjustStage = 157
-		SetKeyMapOptionValueST(Config.AdjustStage)
-	endEvent
-	event OnHighlightST()
-		SetInfoText(SexLabUtil.StringIfElse(Config.AdjustTargetStage, "$SSL_InfoAdjustAllStages", "$SSL_InfoAdjustStage"))
-	endEvent
-endState
-state AdjustChange
-	event OnKeyMapChangeST(int newKeyCode, string conflictControl, string conflictName)
-		if newKeyCode == 1 || !KeyConflict(newKeyCode, conflictControl, conflictName)
-			if newKeyCode == 1
-				newKeyCode = -1
-			endIf
-			Config.AdjustChange = newKeyCode
-			SetKeyMapOptionValueST(Config.AdjustChange)
-		endIf
-	endEvent
-	event OnDefaultST()
-		Config.AdjustChange = 37
-		SetKeyMapOptionValueST(Config.AdjustChange)
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$SSL_InfoAdjustChange")
-	endEvent
-endState
-state AdjustForward
-	event OnKeyMapChangeST(int newKeyCode, string conflictControl, string conflictName)
-		if newKeyCode == 1 || !KeyConflict(newKeyCode, conflictControl, conflictName)
-			if newKeyCode == 1
-				newKeyCode = -1
-			endIf
-			Config.AdjustForward = newKeyCode
-			SetKeyMapOptionValueST(Config.AdjustForward)
-		endIf
-	endEvent
-	event OnDefaultST()
-		Config.AdjustForward = 38
-		SetKeyMapOptionValueST(Config.AdjustForward)
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$SSL_InfoAdjustForward")
-	endEvent
-endState
-state AdjustUpward
-	event OnKeyMapChangeST(int newKeyCode, string conflictControl, string conflictName)
-		if newKeyCode == 1 || !KeyConflict(newKeyCode, conflictControl, conflictName)
-			if newKeyCode == 1
-				newKeyCode = -1
-			endIf
-			Config.AdjustUpward = newKeyCode
-			SetKeyMapOptionValueST(Config.AdjustUpward)
-		endIf
-	endEvent
-	event OnDefaultST()
-		Config.AdjustUpward = 39
-		SetKeyMapOptionValueST(Config.AdjustUpward)
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$SSL_InfoAdjustUpward")
-	endEvent
-endState
-state AdjustSideways
-	event OnKeyMapChangeST(int newKeyCode, string conflictControl, string conflictName)
-		if newKeyCode == 1 || !KeyConflict(newKeyCode, conflictControl, conflictName)
-			if newKeyCode == 1
-				newKeyCode = -1
-			endIf
-			Config.AdjustSideways = newKeyCode
-			SetKeyMapOptionValueST(Config.AdjustSideways)
-		endIf
-	endEvent
-	event OnDefaultST()
-		Config.AdjustSideways = 40
-		SetKeyMapOptionValueST(Config.AdjustSideways)
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$SSL_InfoAdjustSideways")
-	endEvent
-endState
-state AdjustSchlong
-	event OnKeyMapChangeST(int newKeyCode, string conflictControl, string conflictName)
-		if newKeyCode == 1 || !KeyConflict(newKeyCode, conflictControl, conflictName)
-			if newKeyCode == 1
-				newKeyCode = -1
-			endIf
-			Config.AdjustSchlong = newKeyCode
-			SetKeyMapOptionValueST(Config.AdjustSchlong)
-		endIf
-	endEvent
-	event OnDefaultST()
-		Config.AdjustSchlong = 46
-		SetKeyMapOptionValueST(Config.AdjustSchlong)
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$SSL_InfoAdjustSchlong")
-	endEvent
-endState
-state RotateScene
-	event OnKeyMapChangeST(int newKeyCode, string conflictControl, string conflictName)
-		if newKeyCode == 1 || !KeyConflict(newKeyCode, conflictControl, conflictName)
-			if newKeyCode == 1
-				newKeyCode = -1
-			endIf
-			Config.RotateScene = newKeyCode
-			SetKeyMapOptionValueST(Config.RotateScene)
-		endIf
-	endEvent
-	event OnDefaultST()
-		Config.RotateScene = 22
-		SetKeyMapOptionValueST(Config.RotateScene)
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$SSL_InfoRotateScene")
-	endEvent
-endState
-state RestoreOffsets
-	event OnKeyMapChangeST(int newKeyCode, string conflictControl, string conflictName)
-		if newKeyCode == 1 || !KeyConflict(newKeyCode, conflictControl, conflictName)
-			if newKeyCode == 1
-				newKeyCode = -1
-			endIf
-			Config.RestoreOffsets = newKeyCode
-			SetKeyMapOptionValueST(Config.RestoreOffsets)
-		endIf
-	endEvent
-	event OnDefaultST()
-		Config.RestoreOffsets = 12
-		SetKeyMapOptionValueST(Config.RestoreOffsets)
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$SSL_InfoRestoreOffsets")
-	endEvent
-endState
-
-state RealignActors
-	event OnKeyMapChangeST(int newKeyCode, string conflictControl, string conflictName)
-		if newKeyCode == 1 || !KeyConflict(newKeyCode, conflictControl, conflictName)
-			if newKeyCode == 1
-				newKeyCode = -1
-			endIf
-			Config.RealignActors = newKeyCode
-			SetKeyMapOptionValueST(Config.RealignActors)
-		endIf
-	endEvent
-	event OnDefaultST()
-		Config.RealignActors = 26
-		SetKeyMapOptionValueST(Config.RealignActors)
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$SSL_InfoRealignActors")
-	endEvent
-endState
-state AdvanceAnimation
-	event OnKeyMapChangeST(int newKeyCode, string conflictControl, string conflictName)
-		if newKeyCode == 1 || !KeyConflict(newKeyCode, conflictControl, conflictName)
-			if newKeyCode == 1
-				newKeyCode = -1
-			endIf
-			Config.AdvanceAnimation = newKeyCode
-			SetKeyMapOptionValueST(Config.AdvanceAnimation)
-		endIf
-	endEvent
-	event OnDefaultST()
-		Config.AdvanceAnimation = 57
-		SetKeyMapOptionValueST(Config.AdvanceAnimation)
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$SSL_InfoAdvanceAnimation")
-	endEvent
-endState
-state ChangeAnimation
-	event OnKeyMapChangeST(int newKeyCode, string conflictControl, string conflictName)
-		if newKeyCode == 1 || !KeyConflict(newKeyCode, conflictControl, conflictName)
-			if newKeyCode == 1
-				newKeyCode = -1
-			endIf
-			Config.ChangeAnimation = newKeyCode
-			SetKeyMapOptionValueST(Config.ChangeAnimation)
-		endIf
-	endEvent
-	event OnDefaultST()
-		Config.ChangeAnimation = 24
-		SetKeyMapOptionValueST(Config.ChangeAnimation)
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$SSL_InfoChangeAnimation")
-	endEvent
-endState
-state ChangePositions
-	event OnKeyMapChangeST(int newKeyCode, string conflictControl, string conflictName)
-		if newKeyCode == 1 || !KeyConflict(newKeyCode, conflictControl, conflictName)
-			if newKeyCode == 1
-				newKeyCode = -1
-			endIf
-			Config.ChangePositions = newKeyCode
-			SetKeyMapOptionValueST(Config.ChangePositions)
-		endIf
-	endEvent
-	event OnDefaultST()
-		Config.ChangePositions = 13
-		SetKeyMapOptionValueST(Config.ChangePositions)
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$SSL_InfoChangePositions")
-	endEvent
-endState
-state MoveSceneLocation
-	event OnKeyMapChangeST(int newKeyCode, string conflictControl, string conflictName)
-		if newKeyCode == 1 || !KeyConflict(newKeyCode, conflictControl, conflictName)
-			if newKeyCode == 1
-				newKeyCode = -1
-			endIf
-			Config.MoveScene = newKeyCode
-			SetKeyMapOptionValueST(Config.MoveScene)
-		endIf
-	endEvent
-	event OnDefaultST()
-		Config.MoveScene = 27
-		SetKeyMapOptionValueST(Config.MoveScene)
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$SSL_InfoMoveScene")
-	endEvent
-endState
-state BackwardsModifier
-	event OnKeyMapChangeST(int newKeyCode, string conflictControl, string conflictName)
-		if newKeyCode == 1 || !KeyConflict(newKeyCode, conflictControl, conflictName)
-			if newKeyCode == 1
-				newKeyCode = -1
-			endIf
-			Config.Backwards = newKeyCode
-			SetKeyMapOptionValueST(Config.Backwards)
-		endIf
-	endEvent
-	event OnDefaultST()
-		Config.Backwards = 54
-		SetKeyMapOptionValueST(Config.Backwards)
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$SSL_InfoBackwards")
-	endEvent
-endState
-state EndAnimation
-	event OnKeyMapChangeST(int newKeyCode, string conflictControl, string conflictName)
-		if newKeyCode == 1 || !KeyConflict(newKeyCode, conflictControl, conflictName)
-			if newKeyCode == 1
-				newKeyCode = -1
-			endIf
-			Config.EndAnimation = newKeyCode
-			SetKeyMapOptionValueST(Config.EndAnimation)
-		endIf
-	endEvent
-	event OnDefaultST()
-		Config.EndAnimation = 207
-		SetKeyMapOptionValueST(Config.EndAnimation)
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$SSL_InfoEndAnimation")
-	endEvent
-endState
-state TargetActor
-	event OnKeyMapChangeST(int newKeyCode, string conflictControl, string conflictName)
-		if newKeyCode == 1 || !KeyConflict(newKeyCode, conflictControl, conflictName)
-			if newKeyCode == 1
-				newKeyCode = -1
-			endIf
-			Config.UnregisterForKey(Config.TargetActor)
-			Config.TargetActor = newKeyCode
-			Config.RegisterForKey(Config.TargetActor)
-			SetKeyMapOptionValueST(Config.TargetActor)
-		endIf
-	endEvent
-	event OnDefaultST()
-		Config.UnregisterForKey(Config.TargetActor)
-		Config.TargetActor = 49
-		Config.RegisterForKey(Config.TargetActor)
-		SetKeyMapOptionValueST(Config.TargetActor)
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$SSL_InfoTargetActor")
-	endEvent
-endState
-state ToggleFreeCamera
-	event OnKeyMapChangeST(int newKeyCode, string conflictControl, string conflictName)
-		if newKeyCode == 1 || !KeyConflict(newKeyCode, conflictControl, conflictName)
-			if newKeyCode == 1
-				newKeyCode = -1
-			endIf
-			Config.UnregisterForKey(Config.ToggleFreeCamera)
-			Config.ToggleFreeCamera = newKeyCode
-			Config.RegisterForKey(Config.ToggleFreeCamera)
-			SetKeyMapOptionValueST(Config.ToggleFreeCamera)
-		endIf
-	endEvent
-	event OnDefaultST()
-		Config.UnregisterForKey(Config.ToggleFreeCamera)
-		Config.ToggleFreeCamera = 81
-		Config.RegisterForKey(Config.ToggleFreeCamera)
-		SetKeyMapOptionValueST(Config.ToggleFreeCamera)
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$SSL_InfoToggleFreeCamera")
-	endEvent
-endState
-state AdjustTargetStage
-	event OnSelectST()
-		Config.AdjustTargetStage = !Config.AdjustTargetStage
+State UseSceneMenu
+	Event OnSelectST()
+		Config.UseSceneMenu = !Config.UseSceneMenu
+		SetToggleOptionValueST(Config.UseSceneMenu)
 		ForcePageReset()
-	endEvent
-	event OnDefaultST()
-		Config.AdjustTargetStage = false
-		SetTextOptionValueST("$SSL_AllStages")
-	endEvent
-	event OnHighlightST()
-		SetInfoText("$SSL_InfoAdjustTargetStage")
-	endEvent
-endState
-
-State ForceRegisterVoices
-  Event OnSelectST()
-    ModEvent.Send(ModEvent.Create("SexLabSlotVoices"))
-		ModEvent.Send(ModEvent.Create("SexLabSlotExpressions"))
-		SetOptionFlagsST(OPTION_FLAG_DISABLED)
-  EndEvent
+	EndEvent
+	Event OnDefaultST()
+		Config.UseSceneMenu = True
+		SetToggleOptionValueST(Config.UseSceneMenu)
+		ForcePageReset()
+	EndEvent
 	Event OnHighlightST()
-		SetInfoText("$SSL_ForceRegisterVoicesHighlight")
+		SetInfoText("$SSL_bUseSceneMenuHighlight")
 	EndEvent
 EndState
 

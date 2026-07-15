@@ -212,7 +212,7 @@ state FNIS
 		Tell("Attempting to play test animation on player, pay attention to your characters animation...")
 		Debug.SendAnimationEvent(PlayerRef, "IdleForceDefaultState")
 		Utility.Wait(0.5)
-		Game.ForceThirdPerson()
+		SexLabUtil.ForceThirdPerson()
 		Debug.SendAnimationEvent(PlayerRef, "SexLab_Test_"+SexLabUtil.GetVersion())
 		Utility.Wait(8.0)
 		if !Ask("Did the animation play on your character?")
@@ -329,20 +329,15 @@ bool function Ask(string msg)
 endFunction
 
 function LockPlayer()
-	Game.SetPlayerAIDriven()
-	Game.ForceThirdPerson()
-	Game.DisablePlayerControls(true, true, true, false, true, true, true, true)
-	Game.ForceThirdPerson()
+	SexLabUtil.SetActorMovement(PlayerRef, 2) ;MOVEMENT_LOCK
 	Debug.SendAnimationEvent(PlayerRef, "IdleForceDefaultState")
 	PlayerRef.StopCombat()
 	PlayerRef.SheatheWeapon()
 	Utility.Wait(1.0)
-	Game.ForceThirdPerson()
 endFunction
 
 function UnlockPlayer()
-	Game.EnablePlayerControls()
-	Game.SetPlayerAIDriven(false)
+	SexLabUtil.SetActorMovement(PlayerRef, 0) ;MOVEMENT_RELEASE
 	Debug.SendAnimationEvent(PlayerRef, "IdleForceDefaultState")
 	Utility.Wait(1.0)
 endFunction
