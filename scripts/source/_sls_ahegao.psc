@@ -7,7 +7,12 @@ Event OnInit()
 EndEvent
 
 Function RegForEvents()
-	If Game.GetModByName("Slso.esp") != 255
+	; P+ counts as a separate-orgasm provider: it sends SexLabOrgasmSeparate natively and the
+	; Slso interface routes GetEnjoyment to it. Probe P+ directly rather than via
+	; Slso.GetIsInterfaceActive() - _SLS_InterfaceSlso calls this BEFORE flipping its state,
+	; so the interface reads stale here. Without this, P+ setups self-disabled ahegao (forced
+	; AhegaoEnable off and stopped the quest) on every load.
+	If _SLS_IntSlpp.GetIsInstalled() || Game.GetModByName("Slso.esp") != 255
 		RegisterForModEvent("HookAnimationStart", "OnAnimationStart")
 		;RegisterForModEvent("HookStageStart", "OnStageStart")
 		RegisterForModEvent("HookAnimationEnd", "OnAnimationEnd")

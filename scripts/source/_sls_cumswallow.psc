@@ -391,7 +391,9 @@ Bool Function IsCumAddictReflexSwallow()
 EndFunction
 
 Function DoCumInsideBonusEnjoyment(sslBaseAnimation Anim, Int tid, Float LoadSize)
-	If CumInsideBonusEnjMult > 0.0
+	; tid < 0 = teardown race from the P+ event path (FindPlayerController missed) - the
+	; thread is gone, and enjoyment calls on it would just log None errors
+	If tid >= 0 && CumInsideBonusEnjMult > 0.0
 		Float BonusEnj = (LoadSize) * ((1.0 + CumAddict.GetAddictionState() as Float)) * CumInsideBonusEnjMult
 		Slso.ModEnjoyment(tid, PlayerRef, BonusEnj as Int)
 		;Debug.Messagebox("Cum inside bonus enjoyment: " + BonusEnj + "\nTotal: " + Slso.GetEnjoyment(tid, PlayerRef))
@@ -399,17 +401,25 @@ Function DoCumInsideBonusEnjoyment(sslBaseAnimation Anim, Int tid, Float LoadSiz
 EndFunction
 
 Bool Function DoSwallowCumBonusEnjoyment(sslBaseAnimation Anim, Int tid, Float LoadSize)
-	Float EnjBefore = Slso.GetEnjoyment(tid, PlayerRef)
+	If tid < 0 ; teardown race from the P+ event path - no thread left to buff or poll
+		Return false
+	EndIf
+	Int EnjBefore = Slso.GetEnjoyment(tid, PlayerRef)
 	DoCumInsideBonusEnjoyment(Anim, tid, LoadSize)
-	; Without SLSO, GetEnjoyment() is a hardcoded-0 no-op, so the wait loop below would never
-	; see a change and would spin until the player leaves the scene - blocking the swallow
-	; notification and DoCumSwallow that follow. The >=100 bonus can't fire without SLSO either,
-	; so bail out early. This path is now the common one under P+ (typically no SLSO).
+	; No enjoyment provider active (neither P+ nor SLSO): the bonus is a hardcoded-0 no-op and the
+	; wait below would spin until the player leaves the scene, blocking the swallow notification and
+	; DoCumSwallow. The >=100 orgasm can't fire either, so bail. Slso fronts P+ too - the provider
+	; routing lives in _SLS_InterfaceSlso, so this stays a plain Slso.* caller.
 	If !Slso.GetIsInterfaceActive()
 		Return false
 	EndIf
-	While Sexlab.IsActorActive(PlayerRef) && Slso.GetEnjoyment(tid, PlayerRef) == EnjBefore ; Wait for bonus enjoyment to apply
+	; Cap the wait (~5s): even with a provider the delta can be 0 - BonusEnj rounds down on tiny/small
+	; loads or 0% mult, and P+ only tracks enjoyment when separate orgasms / internal enjoyment are on -
+	; a 0 delta never moves the value, so an uncapped loop would spin to scene end.
+	Int Waits = 0
+	While Sexlab.IsActorActive(PlayerRef) && Slso.GetEnjoyment(tid, PlayerRef) == EnjBefore && Waits < 25
 		Utility.Wait(0.2)
+		Waits += 1
 	EndWhile
 	;Debug.Messagebox("Before Enj: " + EnjBefore + "\nAfter Enj: " + Slso.GetEnjoyment(tid, PlayerRef))
 	If Slso.GetEnjoyment(tid, PlayerRef) >= 100

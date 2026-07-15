@@ -9,17 +9,19 @@ Event On_SLS_Int_PlayerLoadsGame(string eventName, string strArg, float numArg, 
 EndEvent
 
 Function PlayerLoadsGame()
-	If Game.GetModByName("SLSO.esp") != 255
-		If GetState() != "Installed"
-			Ahegao.RegForEvents()
-			GoToState("Installed")
-		EndIf
-	
-	Else
-		If GetState() != ""
-			Ahegao.RegForEvents()
-			GoToState("")
-		EndIf
+	; Pick the separate-orgasm/enjoyment provider. P+ is checked FIRST and wins over SLSO.esp:
+	; P+ does ship SLSO-compat shims on sslActorAlias (GetFullEnjoyment/BonusEnjoyment/
+	; OrgasmEffect), but the PPlus state talks to the native SexLabThread API directly - no
+	; shim layer, and it works in the common case where SLSO.esp isn't in the load order at all.
+	String Target = ""
+	If _SLS_IntSlpp.GetIsInstalled()
+		Target = "PPlus"
+	ElseIf Game.GetModByName("SLSO.esp") != 255
+		Target = "Installed"
+	EndIf
+	If GetState() != Target
+		Ahegao.RegForEvents()
+		GoToState(Target)
 	EndIf
 EndFunction
 
@@ -28,10 +30,8 @@ Event OnEndState()
 EndEvent
 
 Bool Function GetIsInterfaceActive()
-	If GetState() == "Installed"
-		Return true
-	EndIf
-	Return false
+	String s = GetState()
+	Return s == "Installed" || s == "PPlus"
 EndFunction
 
 State Installed
@@ -45,6 +45,24 @@ State Installed
 	
 	Function Orgasm(Int tid, Actor akTarget, bool Force = true)
 		_SLS_IntSlso.Orgasm(Sexlab, tid, akTarget, Force)
+	EndFunction
+EndState
+
+; P+ folded SexLab Separate Orgasm into its core, exposing the same 0-100 enjoyment on the P+-only
+; SexLabThread type (via _SLS_IntSlpp) under different names. Selected when P+ is present (see
+; PlayerLoadsGame), so every Slso.* caller - ahegao, sensitivity, cocksize, experience, cumswallow,
+; bodyinflation - works under P+ with no per-caller branching.
+State PPlus
+	Int Function GetEnjoyment(Int tid, Actor akTarget)
+		Return _SLS_IntSlpp.GetEnjoyment(Sexlab, tid, akTarget)
+	EndFunction
+
+	Function ModEnjoyment(Int tid, Actor akTarget, Int Enjoyment)
+		_SLS_IntSlpp.ModEnjoyment(Sexlab, tid, akTarget, Enjoyment)
+	EndFunction
+
+	Function Orgasm(Int tid, Actor akTarget, bool Force = true)
+		_SLS_IntSlpp.Orgasm(Sexlab, tid, akTarget) ; P+ ForceOrgasm always forces; Force arg unused
 	EndFunction
 EndState
 

@@ -51,3 +51,32 @@ Actor Function GetOralPartner(SexlabFramework Sexlab, Int tid, Actor akSucker) G
 	EndIf
 	Return None
 EndFunction
+
+; --- P+ native enjoyment. P+ folded SexLab Separate Orgasm into its core and exposes enjoyment
+; --- on SexLabThread under different names than SLSO's sslActorAlias (GetEnjoyment/AdjustEnjoyment/
+; --- ForceOrgasm vs GetFullEnjoyment/BonusEnjoyment/OrgasmEffect). These mirror _SLS_IntSlso so
+; --- _sls_cumswallow can route its bonus-enjoyment/forced-orgasm feature to whichever framework is
+; --- loaded; without them the feature no-ops under P+ (Slso interface inactive, no SLSO.esp). Same
+; --- 0-100 scale as SLSO (100 = orgasm-ready), so the caller's >=100 gate carries over unchanged.
+; --- Enjoyment only tracks when the P+ user has separate orgasms / internal enjoyment enabled.
+Int Function GetEnjoyment(SexlabFramework Sexlab, Int tid, Actor akTarget) Global
+	SexLabThread t = GetThread(Sexlab, tid)
+	If t
+		Return t.GetEnjoyment(akTarget)
+	EndIf
+	Return 0
+EndFunction
+
+Function ModEnjoyment(SexlabFramework Sexlab, Int tid, Actor akTarget, Int Enjoyment) Global
+	SexLabThread t = GetThread(Sexlab, tid)
+	If t
+		t.AdjustEnjoyment(akTarget, Enjoyment)
+	EndIf
+EndFunction
+
+Function Orgasm(SexlabFramework Sexlab, Int tid, Actor akTarget) Global
+	SexLabThread t = GetThread(Sexlab, tid)
+	If t
+		t.ForceOrgasm(akTarget)
+	EndIf
+EndFunction
