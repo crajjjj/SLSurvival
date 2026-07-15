@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.704
+	Version = 0.705
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -718,6 +718,11 @@ Function VersionCheck()
 	; 0.704 is a script-only fix to the SexLab P+ animation filtering, with no save migration.
 	If Version < 0.704
 		UpdateVersion(0.704)
+	EndIf
+
+	; 0.705 reworks P+ swallowing onto SexLabApplyCumFX, script-only, no save migration.
+	If Version < 0.705
+		UpdateVersion(0.705)
 	EndIf
 EndFunction
 
