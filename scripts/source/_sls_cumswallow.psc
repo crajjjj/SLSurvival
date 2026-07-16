@@ -238,8 +238,18 @@ Event OnSexLabApplyCumFX(Form TargetForm, Form SourceForm, int aiType)
 	Actor Male = SourceForm as Actor
 	Int tid = Sexlab.FindPlayerController()
 	Float LoadSize = Util.GetLoadSize(Male)
-	If aiType == 2 ; oral: P+'s collision already established the player's mouth is on the source
-		DoPlayerOralLoad(Male, tid, LoadSize, 1, MouthOnCock = true)
+	If aiType == 2 ; oral
+		; P+ picks the orifice per actor PAIR, falling back to the scene tags when that pair has no
+		; detected collision at all (sslThreadModel.ApplyCumFX) - so an Oral-tagged scene reports an
+		; oral load even for a male she isn't actually sucking. Re-check the registry for this pair:
+		;  0 = registered and she is NOT on him -> the load lands on her face, not in her mouth
+		;  1 = confirmed on him
+		; -1 = no registry, so the event's own answer is the best signal there is - trust it
+		; Manual mouth-open still overrides, as it does on the legacy gate: an explicit "open wide"
+		; is player intent, not a stage guess.
+		Int OralState = _SLS_IntSlpp.GetOralState(Sexlab, tid, PlayerRef, Male)
+		Bool MouthIsManualOpen = StorageUtil.GetIntValue(PlayerRef, "Sexlab.ManualMouthOpen", Missing = 0) == 1
+		DoPlayerOralLoad(Male, tid, LoadSize, 1, MouthOnCock = MouthIsManualOpen || OralState != 0)
 	Else
 		DoPlayerInsideLoad(tid, LoadSize, 1, IsVaginal = aiType == 0, IsAnal = aiType == 1)
 	EndIf

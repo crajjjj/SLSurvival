@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.705
+	Version = 0.706
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -723,6 +723,12 @@ Function VersionCheck()
 	; 0.705 reworks P+ swallowing onto SexLabApplyCumFX, script-only, no save migration.
 	If Version < 0.705
 		UpdateVersion(0.705)
+	EndIf
+
+	; 0.706 routes the SLSO enjoyment features to P+ natively and verifies the P+ swallow against
+	; the collision registry, script-only, no save migration.
+	If Version < 0.706
+		UpdateVersion(0.706)
 	EndIf
 EndFunction
 

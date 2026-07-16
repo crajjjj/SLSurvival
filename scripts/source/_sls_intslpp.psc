@@ -14,10 +14,10 @@ Bool Function GetIsInstalled() Global
 	Return SKSE.GetPluginVersion("SexLabUtil") >= 34668560
 EndFunction
 
-; --- Reserved API below: no SLS callers since 0.705 moved swallowing onto the
-; --- SexLabApplyCumFX event, kept as the building blocks for future pair-precise
-; --- P+ queries (e.g. CumAddict auto-suck). Delete if a P+ signature change ever
-; --- makes them a maintenance burden.
+; --- Pair-precise P+ queries. GetThread backs the enjoyment wrappers below; GetOralState
+; --- verifies the orifice SexLabApplyCumFX reports (P+ falls back to scene tags when a scene
+; --- registered no collision data). GetOralPartner has no caller yet - kept as a building block
+; --- for future pair-precise queries (e.g. CumAddict auto-suck).
 
 ; The P+ public thread API for a thread id. The compile-time type must widen to Quest first
 ; because the legacy sslThreadController this compiles against doesn't extend SexLabThread;
@@ -36,7 +36,11 @@ Int Function GetOralState(SexlabFramework Sexlab, Int tid, Actor akSucker, Actor
 	If !t || !t.IsInteractionRegistered()
 		Return -1
 	EndIf
-	If t.HasInteractionType(t.CTYPE_Oral, akSucker, akPartner)
+	; Mirror P+'s own oral test in sslThreadModel.ApplyCumFX - "any_oral = pOral || pDeepthroat ||
+	; pLickingShaft". These are independent collision flags, so CTYPE_Oral alone would report 0 for a
+	; deepthroat/shaft-licking load that P+ reports as oral, and the caller would downgrade a real
+	; swallow to a facial.
+	If t.HasInteractionType(t.CTYPE_Oral, akSucker, akPartner) || t.HasInteractionType(t.CTYPE_Deepthroat, akSucker, akPartner) || t.HasInteractionType(t.CTYPE_LickingShaft, akSucker, akPartner)
 		Return 1
 	EndIf
 	Return 0
