@@ -19,7 +19,7 @@ Function RegForEvents()
 	; Slso.GetIsInterfaceActive() - _SLS_InterfaceSlso calls this BEFORE flipping its state,
 	; so the interface reads stale here. Without this, P+ setups self-disabled ahegao (forced
 	; AhegaoEnable off and stopped the quest) on every load.
-	If _SLS_IntSlpp.GetIsInstalled() || Game.GetModByName("Slso.esp") != 255
+	If _SLS_IntSlpp.GetIsInstalled() || Game.GetModByName("SLSO.esp") != 255
 		RegisterForModEvent("HookAnimationStart", "OnAnimationStart")
 		;RegisterForModEvent("HookStageStart", "OnStageStart")
 		RegisterForModEvent("HookAnimationEnd", "OnAnimationEnd")
@@ -40,29 +40,44 @@ EndFunction
 
 Event OnVibrateStop(string eventName, string argString, float argNum, form sender)
 	If argString == PlayerRef.GetLeveledActorBase().GetName()
-		BeginAhegaoPeriod(6.0 + (OrgFatOrgasms * DurPerOrgasm))
+		; Orgasm COUNT - BeginAhegaoPeriod applies the 6 + N*DurPerOrgasm formula itself. Passing a
+		; precomputed duration here ran the formula twice (78s instead of 12s for one orgasm) and
+		; left OrgasmCount holding a duration, inflating the post-scene fallback deadline too.
+		BeginAhegaoPeriod(OrgFatOrgasms)
 		UnRegisterForModEvent("DeviceVibrateEffectStop")
 	EndIf
 EndEvent
 
 Function OnUpdate()
+	; Deadline first, and in EVERY state: Timer's single update is easy to lose (dropped across a
+	; save/load, or the quest stopping) and was the only way out of the 0.1s loop below - the
+	; "updates that never stopped" the 0.642 gate in sls_main had to clean up once. Checking it only
+	; in the post-scene branch was not enough: a new scene sets CurrentTid while a period is still
+	; running, and the in-scene branch would then never evaluate it, handing the job back to Timer.
+	If IsAhegaoing && AhegaoDeadline > 0.0 && Utility.GetCurrentRealTime() >= AhegaoDeadline
+		EndAhegao()
+		Return
+	EndIf
 	If CurrentTid == -1 ; After scene
 		If !IsAhegaoing ; nothing to maintain - a stray leftover update must not force the mouth open
 			Return
 		EndIf
-		; Self-terminating: Timer's single update is easy to lose (dropped across a save/load, or the
-		; quest stopping) and it was the only way out of this 0.1s re-apply loop - exactly the
-		; "updates that never stopped" the 0.642 gate in sls_main had to clean up once. The deadline
-		; ends the period on its own, leaving Timer as the prompt path rather than the only one.
-		If AhegaoDeadline > 0.0 && Utility.GetCurrentRealTime() >= AhegaoDeadline
-			EndAhegao()
-			Return
+		; This loop re-applies the face every 0.1s, so it MUST always have a bound. The in-scene face
+		; arms no deadline (it is meant to last the scene), so whenever that state reaches this branch
+		; - via the scene-end watchdog, or the window inside OnAnimationEnd before BeginAhegaoPeriod
+		; arms one - the check above sees 0.0 and the loop runs with only Timer to stop it. That is
+		; the stuck face: the period never expires and re-applies faster than anything can clear it.
+		If AhegaoDeadline <= 0.0
+			AhegaoDeadline = Utility.GetCurrentRealTime() + 6.0 + (OrgasmCount * DurPerOrgasm)
 		EndIf
 		If !sslBaseExpression.IsMouthOpen(PlayerRef)
+			; Only ever re-apply a face we actually stored. This used to fall back to
+			; SexLab.OpenMouth when the list was empty, which on a 0.1s loop forces the mouth open
+			; ~10x a second - and AhegaoFace empties the list for the 0.5s AhegaoClear waits, so
+			; every face change landed in here. Nothing stored means nothing to maintain; the
+			; deadline above ends the period either way.
 			If StorageUtil.CountObjIntListPrefix(PlayerRef, "_SLS_AhegaoExpression") > 0
 				Aio.DoAhegaoExpression(PlayerRef, StorageUtil.IntListToArray(PlayerRef, "_SLS_AhegaoExpression"))
-			Else
-				SexLab.OpenMouth(PlayerRef)
 			EndIf
 		EndIf
 		RegisterForSingleUpdate(0.1)
@@ -153,6 +168,13 @@ Function EndAhegao()
 	Aio.AhegaoClear(PlayerRef)
 	IsAhegaoing = false
 	AhegaoDeadline = 0.0
+	; Both callers can land mid-scene (the deadline check, when a period carries into a new scene;
+	; Timer, at any moment) - the UnRegisterForUpdate above then kills the 1.5s in-scene poll,
+	; taking the enjoyment trigger and the scene-end watchdog with it for the rest of the scene.
+	; Re-arm it; if CurrentTid is stale the watchdog sees no active scene and resets it.
+	If CurrentTid != -1
+		RegisterForSingleUpdate(1.5)
+	EndIf
 EndFunction
 
 Bool CameDuringSex = false

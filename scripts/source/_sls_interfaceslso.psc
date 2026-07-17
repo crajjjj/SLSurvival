@@ -19,8 +19,12 @@ Function PlayerLoadsGame()
 	ElseIf Game.GetModByName("SLSO.esp") != 255
 		Target = "Installed"
 	EndIf
+	; Outside the state-change guard: RegForEvents is also the ahegao load-heal (a period stranded
+	; by a save/load keeps its 0.1s update chain and a real-time deadline from the OLD session,
+	; which the new session's restarted clock may not reach for hours). Gating it on a provider
+	; change skipped that heal on every ordinary load.
+	Ahegao.RegForEvents()
 	If GetState() != Target
-		Ahegao.RegForEvents()
 		GoToState(Target)
 	EndIf
 EndFunction

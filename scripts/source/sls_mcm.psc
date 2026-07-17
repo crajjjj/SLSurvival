@@ -439,7 +439,7 @@ Event OnConfigClose()
 		Trauma.ToggleDynamicTrauma()
 	EndIf
 	If StorageUtil.GetIntValue(Self, "DoToggleAhegaoEnable", Missing = 0) == 1
-		StorageUtil.UnSetIntValue(Self, "DoToggleDynamicTrauma")
+		StorageUtil.UnSetIntValue(Self, "DoToggleAhegaoEnable")
 		ToggleAhegao()
 	EndIf
 	If StorageUtil.GetIntValue(Self, "DoToggleDropStealing", Missing = 0) == 1
@@ -3674,7 +3674,9 @@ Event OnOptionSelect(int option)
 		ToggleHalfNakedStrips()
 		
 	ElseIf Option == StorageUtil.GetIntValue(Self, "AhegaoEnableOID")
-		If Game.GetModByName("SLSO.esp") != 255
+		; Same provider probe as _SLS_Ahegao.RegForEvents: P+ supplies enjoyment/separate orgasms
+		; natively, so gating on SLSO.esp alone locked P+-only users out of re-enabling ahegao.
+		If _SLS_IntSlpp.GetIsInstalled() || Game.GetModByName("SLSO.esp") != 255
 			;If StorageUtil.GetIntValue(Self, "AhegaoEnable", Missing = 1) == 0 && Game.GetModByName("SLSO.esp") != 255
 				StorageUtil.SetIntValue(Self, "AhegaoEnable", (!StorageUtil.GetIntValue(Self, "AhegaoEnable", Missing = 1) as Bool) as Int)
 				StorageUtil.SetIntValue(Self, "DoToggleAhegaoEnable", 1)
@@ -3682,7 +3684,7 @@ Event OnOptionSelect(int option)
 			;EndIf
 		
 		Else
-			Debug.Messagebox("SLSO is needed for ahegao face")
+			Debug.Messagebox("SLSO or SexLab P+ is needed for ahegao face")
 			StorageUtil.SetIntValue(Self, "AhegaoEnable", 0)
 			StorageUtil.SetIntValue(Self, "DoToggleAhegaoEnable", 1)
 			SetToggleOptionValue(StorageUtil.GetIntValue(Self, "AhegaoEnableOID"), 0)
