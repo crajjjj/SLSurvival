@@ -896,6 +896,11 @@ Function AhegaoClear(Actor akActor)
 	Utility.Wait(0.5)
 	sslBaseExpression.ClearPhoneme(akActor)
 	MfgConsoleFunc.ResetPhonemeModifier(akActor)
+	; DoAhegaoExpression sets an expression override on top of the phoneme/modifier, and nothing
+	; else ever cleared it - the ahegao mood outlived every clear and stuck until some other mod
+	; happened to overwrite it. ClearExpressionOverride is the exact counterpart to that SetExpressionOverride
+	; (ResetExpressionOverrides would also wipe the phoneme/modifier handled above).
+	akActor.ClearExpressionOverride()
 
 	StorageUtil.SetIntValue(PlayerRef, "Sexlab.ManualMouthOpen", 0)
 	StorageUtil.IntListClear(akActor, "_SLS_AhegaoExpression")

@@ -7,6 +7,13 @@ Event OnInit()
 EndEvent
 
 Function RegForEvents()
+	; A 6-30s cosmetic period must never outlive a save/load. Both cleanup paths can be missed -
+	; the timer quest's single update can be dropped across a load, and the in-scene face arms no
+	; timer at all - which strands IsAhegaoing true and leaves the face re-applied on a loop. Heal
+	; on every load rather than needing another one-shot migration (see sls_main's 0.642 gate).
+	If IsAhegaoing
+		EndAhegao()
+	EndIf
 	; P+ counts as a separate-orgasm provider: it sends SexLabOrgasmSeparate natively and the
 	; Slso interface routes GetEnjoyment to it. Probe P+ directly rather than via
 	; Slso.GetIsInterfaceActive() - _SLS_InterfaceSlso calls this BEFORE flipping its state,
@@ -40,6 +47,17 @@ EndEvent
 
 Function OnUpdate()
 	If CurrentTid == -1 ; After scene
+		If !IsAhegaoing ; nothing to maintain - a stray leftover update must not force the mouth open
+			Return
+		EndIf
+		; Self-terminating: Timer's single update is easy to lose (dropped across a save/load, or the
+		; quest stopping) and it was the only way out of this 0.1s re-apply loop - exactly the
+		; "updates that never stopped" the 0.642 gate in sls_main had to clean up once. The deadline
+		; ends the period on its own, leaving Timer as the prompt path rather than the only one.
+		If AhegaoDeadline > 0.0 && Utility.GetCurrentRealTime() >= AhegaoDeadline
+			EndAhegao()
+			Return
+		EndIf
 		If !sslBaseExpression.IsMouthOpen(PlayerRef)
 			If StorageUtil.CountObjIntListPrefix(PlayerRef, "_SLS_AhegaoExpression") > 0
 				Aio.DoAhegaoExpression(PlayerRef, StorageUtil.IntListToArray(PlayerRef, "_SLS_AhegaoExpression"))
@@ -47,19 +65,27 @@ Function OnUpdate()
 				SexLab.OpenMouth(PlayerRef)
 			EndIf
 		EndIf
-		If IsAhegaoing
-			RegisterForSingleUpdate(0.1)
-		EndIf
-	
+		RegisterForSingleUpdate(0.1)
+
 	Else ; Is in scene
+		; Watchdog: the in-scene face is cleared only by OnAnimationEnd and arms no timer, so if that
+		; event never reaches us (aborted scene, lost registration) it would stay on for the rest of
+		; the save. Treat "player is no longer in a scene" as the end. Keep polling after the face is
+		; applied too - otherwise this check stops running exactly when it is needed.
+		If !Sexlab.IsActorActive(PlayerRef)
+			CurrentTid = -1
+			If IsAhegaoing
+				EndAhegao()
+			EndIf
+			Return
+		EndIf
 		If CanAhegao && !IsAhegaoing && (CameDuringSex || Slso.GetEnjoyment(CurrentTid, PlayerRef) >= 70)
 			;Debug.Messagebox("DO AHEGAO")
 			IsAhegaoing = true
 			Aio.AhegaoFaceRandom(PlayerRef)
-		Else
-			RegisterForSingleUpdate(1.5)
 		EndIf
-	EndIf		
+		RegisterForSingleUpdate(1.5)
+	EndIf
 EndFunction
 
 Event OnAnimationStart(int tid, bool HasPlayer)
@@ -113,7 +139,9 @@ Function BeginAhegaoPeriod(Float Orgasms)
 	If Self.IsRunning()
 		IsAhegaoing = true
 		OrgasmCount = Orgasms
-		Timer.BeginAhegao(6.0 + (OrgasmCount * DurPerOrgasm))
+		Float Dur = 6.0 + (OrgasmCount * DurPerOrgasm)
+		AhegaoDeadline = Utility.GetCurrentRealTime() + Dur ; backstop if Timer's update never lands
+		Timer.BeginAhegao(Dur)
 		Aio.AhegaoFaceRandom(PlayerRef)
 		RegisterForSingleUpdate(0.1)
 	EndIf
@@ -124,6 +152,7 @@ Function EndAhegao()
 	UnRegisterForUpdate()
 	Aio.AhegaoClear(PlayerRef)
 	IsAhegaoing = false
+	AhegaoDeadline = 0.0
 EndFunction
 
 Bool CameDuringSex = false
@@ -134,6 +163,11 @@ Int CurrentTid = -1
 
 Float OrgasmCount
 Float OrgFatOrgasms
+
+; Real-time stamp the current ahegao period expires at, 0.0 when idle. GetCurrentRealTime restarts
+; with the process, so a deadline saved in one session is meaningless in the next - RegForEvents
+; ends any in-progress period on load, which clears this before it can be compared.
+Float AhegaoDeadline
 
 Float Property DurPerOrgasm = 6.0 Auto Hidden
 
