@@ -92,7 +92,7 @@ EndEvent
 Function OrgasmEvent(Actor ActorRef = None, Int tid, Bool HasPlayer)
 	;Debug.Messagebox("Orgasm\nActorRef: " + ActorRef)
 	If HasPlayer && ActorRef != PlayerRef
-		If !Init.SlsoInstalled ; SLSO not installed
+		If !ActorRef ; Legacy HookOrgasmStart carries no actor (SexlabOrgasmSeparate - SLSO or P+ - always does)
 			ReferenceAlias AliasSelect
 			Actor[] SexActors = SexLab.HookActors(tid as string)
 			Int i = 0
@@ -184,7 +184,9 @@ Endfunction
 Function RegForEvents()
 	RegisterForModEvent("HookAnimationEnd", "OnAnimationEnd")
 	RegisterForModEvent("_SLS_PlayerSwallowedCum", "On_SLS_PlayerSwallowedCum")
-	If Game.GetModByName("SLSO.esp") != 255
+	; P+ folds SLSO in: it always sends SexlabOrgasmSeparate but skips HookOrgasmStart in its
+	; per-actor climax mode, so P+ must take the separate-event path even without SLSO.esp
+	If Game.GetModByName("SLSO.esp") != 255 || _SLS_IntSlpp.GetIsInstalled()
 		RegisterForModEvent("SexLabOrgasmSeparate", "OnSexLabOrgasmSeparate")
 	Else
 		RegisterForModEvent("HookOrgasmStart", "OnOrgasmStart")
