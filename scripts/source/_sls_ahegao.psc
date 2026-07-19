@@ -14,6 +14,10 @@ Function RegForEvents()
 	If IsAhegaoing
 		EndAhegao()
 	EndIf
+	; The API mirror persists in the co-save while ahegao itself never survives a load (the heal
+	; above just ended any period). Force it to 0 so a save from before the key existed, or one
+	; stranded by a mid-period quest stop, can't advertise a stale "running" to other mods.
+	StorageUtil.SetIntValue(None, "_SLS_IsAhegaoing", 0)
 	; P+ counts as a separate-orgasm provider: it sends SexLabOrgasmSeparate natively and the
 	; Slso interface routes GetEnjoyment to it. Probe P+ directly rather than via
 	; Slso.GetIsInterfaceActive() - _SLS_InterfaceSlso calls this BEFORE flipping its state,
@@ -96,7 +100,7 @@ Function OnUpdate()
 		EndIf
 		If CanAhegao && !IsAhegaoing && (CameDuringSex || Slso.GetEnjoyment(CurrentTid, PlayerRef) >= 70)
 			;Debug.Messagebox("DO AHEGAO")
-			IsAhegaoing = true
+			SetIsAhegaoing(true)
 			Aio.AhegaoFaceRandom(PlayerRef)
 		EndIf
 		RegisterForSingleUpdate(1.5)
@@ -138,7 +142,7 @@ Event OnAnimationEnd(int tid, bool HasPlayer)
 			RegisterForSingleUpdate(0.1)
 		Else
 			Aio.AhegaoClear(PlayerRef)
-			IsAhegaoing = false
+			SetIsAhegaoing(false)
 		EndIf
 	EndIf
 EndEvent
@@ -152,7 +156,7 @@ EndEvent
 
 Function BeginAhegaoPeriod(Float Orgasms)
 	If Self.IsRunning()
-		IsAhegaoing = true
+		SetIsAhegaoing(true)
 		OrgasmCount = Orgasms
 		Float Dur = 6.0 + (OrgasmCount * DurPerOrgasm)
 		AhegaoDeadline = Utility.GetCurrentRealTime() + Dur ; backstop if Timer's update never lands
@@ -166,7 +170,7 @@ Function EndAhegao()
 	;Debug.Messagebox("END")
 	UnRegisterForUpdate()
 	Aio.AhegaoClear(PlayerRef)
-	IsAhegaoing = false
+	SetIsAhegaoing(false)
 	AhegaoDeadline = 0.0
 	; Both callers can land mid-scene (the deadline check, when a period carries into a new scene;
 	; Timer, at any moment) - the UnRegisterForUpdate above then kills the 1.5s in-scene poll,
@@ -174,6 +178,16 @@ Function EndAhegao()
 	; Re-arm it; if CurrentTid is stale the watchdog sees no active scene and resets it.
 	If CurrentTid != -1
 		RegisterForSingleUpdate(1.5)
+	EndIf
+EndFunction
+
+Function SetIsAhegaoing(Bool AhegaoActive)
+	; Sole writer of IsAhegaoing, so the API mirror can't drift from it. Only an actual change
+	; reaches the API - the in-scene trigger and BeginAhegaoPeriod overlap when a period carries
+	; out of a scene, and firing "started" twice would confuse listeners.
+	If IsAhegaoing != AhegaoActive
+		IsAhegaoing = AhegaoActive
+		Aio.Api.SendAhegaoStateEvent(AhegaoActive)
 	EndIf
 EndFunction
 

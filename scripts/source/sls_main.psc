@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.706
+	Version = 0.707
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -729,6 +729,12 @@ Function VersionCheck()
 	; the collision registry, script-only, no save migration.
 	If Version < 0.706
 		UpdateVersion(0.706)
+	EndIf
+
+	; 0.707 exposes the ahegao state to other mods (_SLS_IsAhegaoing / _SLS_AhegaoStateChange),
+	; script-only, no save migration.
+	If Version < 0.707
+		UpdateVersion(0.707)
 	EndIf
 EndFunction
 

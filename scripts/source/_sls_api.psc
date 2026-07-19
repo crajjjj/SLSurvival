@@ -29,6 +29,7 @@ Scriptname _SLS_Api extends Quest
 ; _SLS_AuthorativeConvoEnd - Sent after getting a dressing down from a toll guard or enforcer.
 ; _SLS_LicenceStateUpdateEvent - Sent when a licence changes state or a licence type is toggled on/off.
 ; _SLS_PlayerSwallowedCum - Sent when the player is involved in a cum swallowing event. See SendCumSwallowEvent
+; _SLS_AhegaoStateChange - numArg: 1 - The player's ahegao face started, 0 - It ended. See SendAhegaoStateEvent
 
 ; =================== StorageUtil Variables ===========================================================================
 ; _SLS_SurvivalVersion - SLS version. See SetVersion() for notes. 
@@ -59,6 +60,8 @@ Scriptname _SLS_Api extends Quest
 ; 1: Cursed but not collared
 ; 2: Cursed and collared
 ; Eg: StorageUtil.GetIntValue(None, "_SLS_PlayerIsMagicCursed") == 2 ; Player is cursed and collared
+
+; _SLS_IsAhegaoing - Whether the player currently has an ahegao face on. See SendAhegaoStateEvent for details.
 
 Event OnInit()
 	If Self.IsRunning()
@@ -515,6 +518,20 @@ EndFunction
 Function SendCumHungerChangeEvent(Int HungerState)
 	; numArg: -1 - Cum addiction off, 0 - Satisfied, 1 - Peckish, 2 - Hungry, 3 - Starving, 4 - Ravenous
 	SendModEvent("_SLS_CumHungerChange", strArg = "", numArg = HungerState)
+EndFunction
+
+Function SendAhegaoStateEvent(Bool AhegaoActive)
+	; Sent when the player's ahegao face starts or ends - both the in-scene face and the
+	; post-scene afterglow period count as "on"; the event only fires on actual transitions.
+	; numArg: 1 - Started, 0 - Ended
+
+	; To poll instead of listening: StorageUtil.GetIntValue(None, "_SLS_IsAhegaoing", Missing = -2)
+	; 1: Ahegao face is on the player
+	; 0: No ahegao face (or the ahegao feature is disabled)
+	; -2: SLS is probably not installed or is < v0.707
+	; The value is 'read-only' - changing it won't end the face, just mislead other mods. So don't.
+	StorageUtil.SetIntValue(None, "_SLS_IsAhegaoing", AhegaoActive as Int)
+	SendModEvent("_SLS_AhegaoStateChange", strArg = "", numArg = AhegaoActive as Float)
 EndFunction
 
 Function SendAuthorativeConvoEndEvent(Actor akSpeaker)
