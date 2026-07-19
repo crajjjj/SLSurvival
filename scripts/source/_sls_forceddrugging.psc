@@ -9,7 +9,8 @@ Event OnInit()
 		TollDrugInflate = Game.GetModByName("SexLab Inflation Framework.esp") != 255
 		TollDrugFmFertility = Game.GetModByName("Fertility Mode.esm") != 255 || Game.GetModByName("BeeingFemale.esm") != 255
 		TollDrugSlenAphrodisiac = Game.GetModByName("SexLab Eager NPCs.esp") != 255
-		TollDrugSensitivity = Game.GetModByName("SLSO.esp") != 255
+		; Sensitivity needs an enjoyment provider: SLSO, or P+ which folded SLSO in
+		TollDrugSensitivity = Game.GetModByName("SLSO.esp") != 255 || _SLS_IntSlpp.GetIsInstalled()
 		
 		RapeDrugLactacid = TollDrugLactacid
 		RapeDrugSkooma = TollDrugSkooma
