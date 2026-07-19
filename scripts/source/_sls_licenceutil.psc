@@ -2645,9 +2645,38 @@ Function BeginThaneTracking()
 	CheckAllThaneQuests()
 EndFunction
 
+Function CheckThaneStatusOnLoad()
+	; The tracking aliases re-check only when a dialogue closes near the granting Jarl, and their
+	; single 2s update can be dropped across a save/load - a thaneship earned right before saving
+	; then goes undetected until the player happens to talk near that Jarl again. Catch up on
+	; every load instead; CheckThaneStatus skips holds already credited, so this cannot re-award.
+	If _SLS_ThaneStatusTrackQuest.IsRunning()
+		CheckThaneStatus(0)
+		CheckThaneStatus(1)
+		CheckThaneStatus(2)
+		CheckThaneStatus(3)
+		CheckThaneStatus(4)
+	EndIf
+EndFunction
+
 Bool Function CheckThaneStatus(Int WhichHold)
 	; WhichHold: 0 - Whiterun, 1 - Solitude, 2 - Markarth, 3 - Windhelm, 4 - Riften
-	
+
+	; Already-credited holds must return true WITHOUT re-awarding: every hold has TWO Jarl
+	; aliases (pre/post civil war) sharing one WhichHold, and the load-time catch-up calls in
+	; here too - without this guard each extra call handed out another free licence unlock.
+	If WhichHold == 0 && IsThaneWhiterun
+		Return true
+	ElseIf WhichHold == 1 && IsThaneSolitude
+		Return true
+	ElseIf WhichHold == 2 && IsThaneMarkarth
+		Return true
+	ElseIf WhichHold == 3 && IsThaneWindhelm
+		Return true
+	ElseIf WhichHold == 4 && IsThaneRiften
+		Return true
+	EndIf
+
 	If WhichHold == 0 ; Whiterun
 		If MQ104.GetCurrentStageID() >= 160 || Favor253.GetCurrentStageID() >= 25
 			;Debug.Messagebox("I'm now Thane of Whiterun")
@@ -2714,11 +2743,11 @@ Function DoLicAwardedMessage(Int WhichHold)
 			Hold = "Whiterun "
 		ElseIf WhichHold == 1
 			Hold = "Solitude "
-		ElseIf WhichHold == 1
+		ElseIf WhichHold == 2
 			Hold = "Markarth "
-		ElseIf WhichHold == 1
+		ElseIf WhichHold == 3
 			Hold = "Windhelm "
-		ElseIf WhichHold == 1
+		ElseIf WhichHold == 4
 			Hold = "Riften "
 		EndIf
 		Debug.Messagebox("Upon gaining the title of Thane of " + Hold + "you have gained the privilege of access to one licence type. Talk to a quartermaster to decide the licence type")

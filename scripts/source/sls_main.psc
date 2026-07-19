@@ -142,6 +142,9 @@ Function LoadGameMaintenance()
 	/;
 	SendModEvent("_SLS_Int_PlayerLoadsGame")
 
+	; The thane aliases' one-shot update can be lost across a save/load; catch up here.
+	; No-op unless a Thaneship licence style has the tracking quest running.
+	LicUtil.CheckThaneStatusOnLoad()
 
 	_SLS_LicInspLostSightSpell.SetNthEffectDuration(0, _SLS_LicInspPersistence.GetValueInt())
 	If Menu.GoldWeight > 0.0
