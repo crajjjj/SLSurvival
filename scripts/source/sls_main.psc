@@ -118,7 +118,11 @@ Function RegForEvents()
 		RegisterForModEvent("Frostfall_OnPlayerStopSwimming", "Frostfall_OnPlayerStopSwimming")
 	EndIf
 	
+	; P+ only sends HookOrgasmEnd in its legacy climax mode; its per-actor SexlabOrgasmSeparate
+	; fires in every mode. Both are registered and the handlers gate on bSexLabPP, since SLSO
+	; also sends the separate event and would double up with HookOrgasmEnd on legacy SexLab.
 	RegisterForModEvent("HookOrgasmEnd", "OnOrgasmEnd")
+	RegisterForModEvent("SexLabOrgasmSeparate", "OnSexLabOrgasmSeparate")
 EndFunction
 
 Function LoadGameMaintenance()
@@ -1064,14 +1068,26 @@ Event OnAnimationEnding(int tid, bool HasPlayer)
 EndEvent
 
 Event OnOrgasmEnd(int tid, bool HasPlayer)
-	If HasPlayer && Init.MmeInstalled
+	If !bSexLabPP ; under P+ OnSexLabOrgasmSeparate covers every climax mode; this hook only its legacy one
+		DoPostOrgasmMilkLeak(HasPlayer)
+	EndIf
+EndEvent
+
+Event OnSexLabOrgasmSeparate(Form ActorRef, Int tid)
+	If bSexLabPP ; the player's own orgasm rather than a scene-wide climax stage - see RegForEvents
+		DoPostOrgasmMilkLeak(ActorRef == PlayerRef)
+	EndIf
+EndEvent
+
+Function DoPostOrgasmMilkLeak(Bool IsPlayer)
+	If IsPlayer && Init.MmeInstalled
 		If PlayerRef.HasMagicEffect(Init.MME_LeakingMilk)
 			If Init.FrostfallInstalled
 				_SLS_MilkLeakWet.Cast(PlayerRef, PlayerRef)
 			EndIf
 		EndIf
 	EndIf
-EndEvent
+EndFunction
 
 Event OnDeviceVibrateEffectStart(string eventName, string strArg, float numArg, Form sender)
 	If strArg == PlayerRef.GetLeveledActorBase().GetName()
