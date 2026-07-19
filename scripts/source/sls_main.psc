@@ -731,9 +731,17 @@ Function VersionCheck()
 		UpdateVersion(0.706)
 	EndIf
 
-	; 0.707 exposes the ahegao state to other mods (_SLS_IsAhegaoing / _SLS_AhegaoStateChange),
-	; script-only, no save migration.
+	; 0.707 exposes the ahegao state to other mods (_SLS_IsAhegaoing / _SLS_AhegaoStateChange)
+	; and routes the orgasm-event consumers (begging, toll/kennel scenes, fatigue, cum addict,
+	; wildling, animal friend) plus the Sex Experience gate to P+ when SLSO.esp is absent.
 	If Version < 0.707
+		; Pre-0.707 ToggleSexExp force-disabled Sex Experience without SLSO.esp even under P+
+		; (which provides the same per-actor orgasm events). Only a forced disable is undone
+		; here: without SLSO the toggle could never have been on by user choice.
+		If !Menu.SexExpEn && Game.GetModByName("SLSO.esp") == 255 && _SLS_IntSlpp.GetIsInstalled()
+			Menu.SexExpEn = true
+			Menu.ToggleSexExp()
+		EndIf
 		UpdateVersion(0.707)
 	EndIf
 EndFunction

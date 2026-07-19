@@ -11,7 +11,13 @@ EndEvent
 Function RegForEvents()
 	RegisterForModEvent("_SLS_PlayerSwallowedCum", "On_SLS_PlayerSwallowedCum")
 	RegisterForModEvent("HookAnimationEnd", "OnAnimationEnd")
-	If Game.GetModByName("SLSO.esp") != 255
+	; Clear both orgasm paths first - registrations persist in the save, so switching
+	; frameworks mid-save must not leave the stale path double-triggering
+	UnregisterForModEvent("SexLabOrgasmSeparate")
+	UnregisterForModEvent("HookOrgasmStart")
+	; P+ folds SLSO in: it always sends SexlabOrgasmSeparate but skips HookOrgasmStart in its
+	; per-actor climax mode, so waiting on the legacy hook marks every sex deal as failed there
+	If Game.GetModByName("SLSO.esp") != 255 || _SLS_IntSlpp.GetIsInstalled()
 		RegisterForModEvent("SexLabOrgasmSeparate", "OnSexLabOrgasmSeparate")
 	Else
 		RegisterForModEvent("HookOrgasmStart", "OnOrgasmStart")

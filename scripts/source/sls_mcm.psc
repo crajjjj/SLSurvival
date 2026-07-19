@@ -3693,8 +3693,8 @@ Event OnOptionSelect(int option)
 	ElseIf (option == SexExpEnableOID)
 		SexExpEn = !SexExpEn
 		If SexExpEn
-			If !Init.SlsoInstalled
-				Debug.Messagebox("Sexlab Separate Orgasms needs to be installed to enable Sex Experience")
+			If !Init.SlsoInstalled && !_SLS_IntSlpp.GetIsInstalled()
+				Debug.Messagebox("Sexlab Separate Orgasms or SexLab P+ needs to be installed to enable Sex Experience")
 				SexExpEn = false
 			EndIf
 		EndIf
@@ -8543,7 +8543,9 @@ EndFunction
 
 Function ToggleSexExp()
 	If SexExpEn
-		If Game.GetModByName("SLSO.esp") != 255
+		; The tracker needs a per-actor enjoyment/orgasm provider: SLSO, or P+ which folded
+		; SLSO in (the Slso interface routes to it natively since 0.705)
+		If Game.GetModByName("SLSO.esp") != 255 || _SLS_IntSlpp.GetIsInstalled()
 			_SLS_SexExperienceQuest.Start()
 		Else
 			SexExpEn = false

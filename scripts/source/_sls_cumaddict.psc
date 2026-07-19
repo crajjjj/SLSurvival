@@ -61,7 +61,9 @@ Function RegForEvents()
 	;RegisterForModEvent("HookAnimationStart", "OnAnimationStart")
 	RegisterForModEvent("HookAnimationEnd", "OnAnimationEnd")
 	
-	If Game.GetModByName("SLSO.esp") != 255
+	; P+ folds SLSO in: it always sends SexlabOrgasmSeparate but skips HookOrgasmStart in its
+	; per-actor climax mode, so P+ must take the separate-event path even without SLSO.esp
+	If Game.GetModByName("SLSO.esp") != 255 || _SLS_IntSlpp.GetIsInstalled()
 		RegisterForModEvent("SexLabOrgasmSeparate", "OnSexLabOrgasmSeparate")
 	Else
 		RegisterForModEvent("HookOrgasmStart", "OnOrgasmStart")

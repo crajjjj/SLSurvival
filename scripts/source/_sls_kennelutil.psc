@@ -94,7 +94,9 @@ Function KennelTrollEnterTrigger()
 		PlayerRef.Moveto(Game.GetFormFromFile(0x0D40A1, "SL Survival.esp") as ObjectReference)
 		Self.SetStage(30) ; Enters cage
 		
-		If Game.GetModByName("SLSO.esp") != 255
+		; P+ folds SLSO in: it always sends SexlabOrgasmSeparate but skips HookOrgasmStart in its
+		; per-actor climax mode, so P+ must take the separate-event path even without SLSO.esp
+		If Game.GetModByName("SLSO.esp") != 255 || _SLS_IntSlpp.GetIsInstalled()
 			RegisterForModEvent("SexLabOrgasmSeparate", "OnSexLabOrgasmSeparate")
 		Else
 			RegisterForModEvent("HookOrgasmStart", "OnOrgasmStart")
