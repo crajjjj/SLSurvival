@@ -67,6 +67,16 @@
                             </typeDescriptor>
                         </plugin>
 
+                        <plugin name="Bikini Armor Recognition (KID)">
+                            <description>Tags a large curated list of third-party bikini/revealing armor mods with SL Survival's _SLS_BikiniArmor keyword (via a _KID.ini), so the Bikini Licence recognises them and the bikini curse / confiscation logic treats them as bikini. The list mirrors the OSL "Licenses" bikini curation. REQUIRES po3's Keyword Item Distributor (KID); entries for armor mods you don't have are skipped automatically. Purely a recognition list - safe to leave off if you don't run bikini armor mods.</description>
+                            <files>
+                                <file source="optional\BikiniArmorKID\zzz_SLS_BikiniArmor_KID.ini" destination="zzz_SLS_BikiniArmor_KID.ini" priority="1" />
+                            </files>
+                            <typeDescriptor>
+                                <type name="Optional" />
+                            </typeDescriptor>
+                        </plugin>
+
                         <plugin name="SMP Physics Tongue Meshes">
                             <description>Replaces SL Survival's stock (static) tongue meshes with HDT-SMP rigged versions (tongue bones tong1 1-5 + tong.xml physics config), so the tongue used by the ahegao / cum-desperate features has jiggle physics. REQUIRES an HDT-SMP setup (Faster HDT-SMP). Overrides the original SexLab Survival's tongue meshes under meshes\0halofarm\tongues. Purely cosmetic - the expression features work without it. Default: off.</description>
                             <files>
