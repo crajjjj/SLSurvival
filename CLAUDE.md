@@ -29,6 +29,10 @@ $compiler = "C:\SteamLibrary\steamapps\common\Skyrim Special Edition\Papyrus Com
 - `TESV_Papyrus_Flags.flg` is resolved via the vanilla `@SkyrimScripts` import path, not the project root.
 - Compiling the whole project / packaging is done via the `.ppj` in the user's normal toolchain — only do that when asked. The patch build uses `Package="false"` (no BSA; loose scripts) + `Zip="true"`; a standalone build sets `Package="true"` to pack `SL Survival.bsa`.
 
+### Release zip
+
+Build the patch zip from the **`<ZipFiles>` manifest in `skyrimse.ppj`** — read the `<Match In="...">pattern</Match>` and `<Include>` entries from the ppj rather than hardcoding a file list, so manifest changes flow into the build automatically. Pyro isn't installed; build the archive directly (PowerShell `System.IO.Compression`, entry paths relative to the project root with forward slashes). Notes on the current manifest semantics: `Match In="scripts"` with `*.pex` means top-level `.pex` only (no `scripts/source`), the other `Match` folders are recursive, and `fomod/info.xml` inside the zip must report the version being released. Output: `Build/SLSurvival patch X.YYY.zip` (`@ModName` + space + version; GitHub dot-normalizes the name on upload — expected). Sanity-check against the previous release: entry count should only change when files were actually added/removed (0.707–0.709 are all 1099 entries).
+
 ## Versioning (bumping the release)
 
 Only bump when the **current** version is git-tagged (released); if it's untagged, fold new changes into the existing version and just commit (see the global "don't double-bump" rule). Bumping to `X.YYY` means updating **four** places — the first three are the release marker, the fourth is the *in-game* version:
