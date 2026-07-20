@@ -31,7 +31,11 @@ $compiler = "C:\SteamLibrary\steamapps\common\Skyrim Special Edition\Papyrus Com
 
 ### Release zip
 
-Build the patch zip from the **`<ZipFiles>` manifest in `skyrimse.ppj`** — read the `<Match In="...">pattern</Match>` and `<Include>` entries from the ppj rather than hardcoding a file list, so manifest changes flow into the build automatically. Pyro isn't installed; build the archive directly (PowerShell `System.IO.Compression`, entry paths relative to the project root with forward slashes). Notes on the current manifest semantics: `Match In="scripts"` with `*.pex` means top-level `.pex` only (no `scripts/source`), the other `Match` folders are recursive, and `fomod/info.xml` inside the zip must report the version being released. Output: `Build/SLSurvival patch X.YYY.zip` (`@ModName` + space + version; GitHub dot-normalizes the name on upload — expected). Sanity-check against the previous release: entry count should only change when files were actually added/removed (0.707–0.709 are all 1099 entries).
+**Preferred path:** the user's toolchain runs Pyro on the `.ppj`, which drops `Build/SLSurvival patch.zip` (unversioned `@ModName`). If that file exists and is *current* — newer than the latest shipped-file change, correct entry count, `fomod/info.xml` inside reports the version being released — just copy/rename it to the versioned name. Pyro's zlib deflate is ~2% tighter than .NET's; the archives are otherwise interchangeable.
+
+**Fallback (Pyro output absent or stale):** build from the **`<ZipFiles>` manifest in `skyrimse.ppj`** — read the `<Match In="...">pattern</Match>` and `<Include>` entries from the ppj rather than hardcoding a file list, so manifest changes flow into the build automatically. Pyro isn't on PATH for Claude; build the archive directly (PowerShell `System.IO.Compression`, entry paths relative to the project root with forward slashes, `CompressionLevel.SmallestSize`). Manifest semantics: `Match In="scripts"` with `*.pex` catches top-level `.pex` only (`scripts/source` has no pex), the other `Match` folders are recursive.
+
+Either way the output is `Build/SLSurvival patch X.YYY.zip` (GitHub dot-normalizes the name on upload — expected). Sanity-check: `fomod/info.xml` inside the zip must report the released version, and the entry count should only change when files were actually added/removed (0.707–0.709 are all 1099 entries).
 
 ## Versioning (bumping the release)
 
