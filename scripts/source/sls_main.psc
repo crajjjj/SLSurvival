@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.709
+	Version = 0.710
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -762,6 +762,13 @@ Function VersionCheck()
 	; script-only, no save migration - the heal itself runs from PlayerLoadsGame/OnConfigOpen.
 	If Version < 0.709
 		UpdateVersion(0.709)
+	EndIf
+
+	; 0.710 stops the ahegao face/tongue firing in scenes while the feature is toggled off (stale
+	; mod-event registrations on the stopped quest), script-only, no save migration - the
+	; registration strip runs from the every-load RegForEvents heal.
+	If Version < 0.710
+		UpdateVersion(0.710)
 	EndIf
 EndFunction
 

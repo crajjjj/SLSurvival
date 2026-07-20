@@ -18,6 +18,15 @@ Function RegForEvents()
 	; above just ended any period). Force it to 0 so a save from before the key existed, or one
 	; stranded by a mid-period quest stop, can't advertise a stale "running" to other mods.
 	StorageUtil.SetIntValue(None, "_SLS_IsAhegaoing", 0)
+	; Mod-event registrations belong to the SCRIPT and survive Quest.Stop() - the MCM toggle-off
+	; stops the quest but cannot unregister from there. Since this runs on every load regardless
+	; of quest state, re-registering below while stopped armed the whole in-scene chain with the
+	; feature off (random ahegao face + tongue applied mid-scene under P+/SLSO). When disabled,
+	; use the same every-load call to strip stale registrations instead.
+	If !Self.IsRunning()
+		UnRegisterForAllModEvents()
+		Return
+	EndIf
 	; P+ counts as a separate-orgasm provider: it sends SexLabOrgasmSeparate natively and the
 	; Slso interface routes GetEnjoyment to it. Probe P+ directly rather than via
 	; Slso.GetIsInterfaceActive() - _SLS_InterfaceSlso calls this BEFORE flipping its state,
@@ -98,7 +107,7 @@ Function OnUpdate()
 			EndIf
 			Return
 		EndIf
-		If CanAhegao && !IsAhegaoing && (CameDuringSex || Slso.GetEnjoyment(CurrentTid, PlayerRef) >= 70)
+		If Self.IsRunning() && CanAhegao && !IsAhegaoing && (CameDuringSex || Slso.GetEnjoyment(CurrentTid, PlayerRef) >= 70) ; IsRunning: a mid-scene toggle-off must not re-trigger
 			;Debug.Messagebox("DO AHEGAO")
 			SetIsAhegaoing(true)
 			Aio.AhegaoFaceRandom(PlayerRef)
@@ -108,7 +117,7 @@ Function OnUpdate()
 EndFunction
 
 Event OnAnimationStart(int tid, bool HasPlayer)
-	If HasPlayer
+	If HasPlayer && Self.IsRunning() ; stale registrations can outlive a toggle-off until the next load strips them
 		CurrentTid = tid
 		CameDuringSex = false
 		sslBaseAnimation Anim = sexlab.HookAnimation(tid)
