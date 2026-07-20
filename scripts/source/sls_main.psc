@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.708
+	Version = 0.709
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -756,6 +756,12 @@ Function VersionCheck()
 	; script-only, no save migration.
 	If Version < 0.708
 		UpdateVersion(0.708)
+	EndIf
+
+	; 0.709 self-heals a dropped MCM OnConfigInit (blank MCM pages on overloaded new-game starts),
+	; script-only, no save migration - the heal itself runs from PlayerLoadsGame/OnConfigOpen.
+	If Version < 0.709
+		UpdateVersion(0.709)
 	EndIf
 EndFunction
 

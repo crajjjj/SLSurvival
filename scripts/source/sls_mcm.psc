@@ -57,6 +57,11 @@ Event OnConfigInit()
 EndEvent
 
 Function PlayerLoadsGame()
+	; See OnConfigOpen: a dropped OnConfigInit leaves this save's MCM permanently blank and the
+	; mod's defaults unset - re-run it on load if that state is detected. No-op on healthy saves.
+	If Pages.Length == 0
+		OnConfigInit()
+	EndIf
 	If Game.GetModByName(JsonUtil.GetStringValue("SL Survival/BikiniArmors.json", "bikinimodname", missing = "TheAmazingWorldOfBikiniArmor.esp")) != 255
 		_SLS_BikiniArmorsEntryPointVendorCity.SetNthCount(0, BikiniDropsVendorCity)
 		_SLS_BikiniArmorsEntryPointVendorTown.SetNthCount(0, BikiniDropsVendorTown)
@@ -246,6 +251,14 @@ Function SetupMenuArrays()
 EndFunction
 
 Event OnConfigOpen()
+	; On a heavily-modded new game the engine can drop OnConfigInit entirely: the menu still
+	; registers (its name shows in the MCM list) but Pages - and every default, perk, import and
+	; menu array this script sets up - never build, leaving the entry blank on that save forever.
+	; Pages is only ever assigned by BuildPages, so an empty Pages IS the never-initialized state:
+	; run the full init now. Same guard on PlayerLoadsGame heals saves without opening the menu.
+	If Pages.Length == 0
+		OnConfigInit()
+	EndIf
 	IsInMcm = true
 	
 	StorageUtil.SetIntValue(Self, "SteepFallEnabled", SteepFall.GetOwningQuest().IsRunning() as Int)
