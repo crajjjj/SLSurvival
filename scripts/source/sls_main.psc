@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.707
+	Version = 0.708
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -750,6 +750,12 @@ Function VersionCheck()
 			Menu.ToggleSexExp()
 		EndIf
 		UpdateVersion(0.707)
+	EndIf
+
+	; 0.708 clears the town-violation global on a won escort persuade (enforcer force-greet loop),
+	; script-only, no save migration.
+	If Version < 0.708
+		UpdateVersion(0.708)
 	EndIf
 EndFunction
 

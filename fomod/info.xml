@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <fomod>
     <Name>SexLab Survival</Name>
-    <Version>0.707</Version>
+    <Version>0.708</Version>
     <Website>https://github.com/crajjjj/SLSurvival</Website>
     <Description>SexLab Survival - survival/gameplay overhaul. PATCH over Monoman1's original SexLab Survival (install the original first, below this in priority; it supplies textures/meshes/sound). The installer always installs this patch's base files (SL Survival.esp + loose scripts/interface/SKSE) and offers optional patches on the Patches page.</Description>
     <Groups>
