@@ -4555,7 +4555,7 @@ Event OnOptionSelect(int option)
 	ElseIf option == StorageUtil.GetIntValue(Self, "IntStaOID")
 		RestartInterfacePrompt("Spank That Ass.esp")
 	ElseIf option == StorageUtil.GetIntValue(Self, "IntBisOID")
-		RestartInterfacePrompt("Bathing in Skyrim - Main.esp")
+		RestartInterfacePrompt("Bathing in Skyrim.esp")
 	ElseIf option == StorageUtil.GetIntValue(Self, "IntSexyMoveOID")
 		RestartInterfacePrompt("FNISSexyMove.esp")
 		
@@ -6875,7 +6875,7 @@ Function RestartInterfacePrompt(String IntSelect)
 			RestartIntErrorMsg(IntSelect)
 		EndIf
 		
-	ElseIf IntSelect == "Bathing in Skyrim - Main.esp"
+	ElseIf IntSelect == "Bathing in Skyrim.esp"
 		If Game.GetModByName(IntSelect) != 255
 			RestartInterface(Game.GetFormFromFile(0x0BC03D, "SL Survival.esp") as Quest)
 		Else

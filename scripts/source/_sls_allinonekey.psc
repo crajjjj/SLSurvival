@@ -1659,7 +1659,10 @@ Int Function ShowSurvivalMenu()
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 0, value = true)
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 1, value = true)
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 2, value = true)
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 3, value = Game.GetModByName("Bathing in Skyrim - Main.esp") != 255)
+	; Gate on the adapter's state, not a hardcoded plugin name - the BiS fork was renamed
+	; ("Bathing in Skyrim - Main.esp" -> Renewed's "Bathing in Skyrim.esp") and a stale name
+	; here left the Bathe option permanently greyed out while the interface itself worked.
+	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 3, value = Bis.GetIsInterfaceActive())
 	If WildlingEn
 		wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 4, value = WildlingEn)
 	EndIf
