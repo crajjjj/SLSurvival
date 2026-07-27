@@ -166,14 +166,14 @@ Function DoCumSwallowEffects(Float LoadSize)
 		Int tid = Sexlab.FindPlayerController()
 		ForcedSwallow = tid >= 0 && Sexlab.IsVictim(tid, PlayerRef)
 	EndIf
-	; AudioUtil first, via the SLS_* names in SKSE\Plugins\AudioUtil\config\SLS_voices.toml
-	; (full folder scans - the Sound forms' explicit file lists skip pack files beyond the
-	; stock set, e.g. Satisfied only lists 4 of 5). 0 = AudioUtil absent - legacy Sound form.
+	; Swallow sounds are SFX, not lipsynced voice: the mouth is occupied swallowing, so there's
+	; no phoneme for the DLL to drive - PlaySFX (sls_sfx bucket), never PlayVoice. Voice packs
+	; can still re-record the pools by folder. 0 = AudioUtil absent - legacy Sound form.
 	If ForcedSwallow
-		If _SLS_IntAudioUtil.PlaySFX("SLS_CumSwallowForced", PlayerRef, 1.0, "sls_voice") == 0
+		If _SLS_IntAudioUtil.PlaySFX("SLS_CumSwallowForced", PlayerRef, 1.0, "sls_sfx") == 0
 			_SLS_CumSwallowForcedMarker.Play(PlayerRef)
 		EndIf
-	ElseIf _SLS_IntAudioUtil.PlaySFX("SLS_CumSwallowSatisfied", PlayerRef, 1.0, "sls_voice") == 0
+	ElseIf _SLS_IntAudioUtil.PlaySFX("SLS_CumSwallowSatisfied", PlayerRef, 1.0, "sls_sfx") == 0
 		_SLS_CumSwallowSatisfiedMarker.Play(PlayerRef)
 	EndIf
 
@@ -1939,10 +1939,11 @@ Function DoTraumaHitSound(Actor akActor, Bool PlayerSqueaks)
 	Float Volume = (1.0 - (0.1 * (PlayerRef.GetDistance(akActor) / 128.0))) ; Reduce volume by 10% for every 128 units away from the player
 	DoHitSound(akActor, Volume)
 	If PlayerSqueaks && akActor == PlayerRef ;akActor.GetLeveledActorBase().GetSex() == 1
-		; A masochist PC (STA attitude Likes/Loves pain) moans into the voice packs'
-		; Slapping\Moans pool (SLS_SlapMoans in SLS_voices.toml) instead of squeaking.
-		; STA absent (-2) or the pool not shipped (PlaySFX 0) keeps the pain squeak.
-		If Menu.Sta.GetPlayerMasochismAttitude() >= 1 && _SLS_IntAudioUtil.PlaySFX("SLS_SlapMoans", akActor, Volume, "sls_voice") > 0
+		; A masochist PC (STA attitude Likes/Loves pain) moans instead of squeaking. Route
+		; through the voice pack via PlayVoice "NearOrgasmNoises" (the non-verbal moan) so it
+		; lipsyncs and gag-muffles; >0 = handled, skip the pain squeak. STA absent (-2) or no
+		; pack (PlayVoice 0) falls through to the pain sound.
+		If Menu.Sta.GetPlayerMasochismAttitude() >= 1 && _SLS_IntAudioUtil.PlayVoice(akActor, "NearOrgasmNoises", Volume, "sls_voice") > 0
 			Return
 		EndIf
 		DoFemalePainSound(akActor, Volume)

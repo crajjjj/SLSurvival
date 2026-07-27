@@ -14,12 +14,18 @@
 # Key/name matching is case- and space-insensitive. Reload in-game: au reload.
 
 [sfx]
-# Pools SLS itself plays through AudioUtil (fallback: the legacy Sound forms).
+# Foley SLS plays through AudioUtil via PlaySFX, all in the sls_sfx bucket (fallback: legacy
+# Sound forms). Swallow sounds are here, not treated as voice: the mouth is busy swallowing,
+# so there is no phoneme to lipsync. Voice packs can still re-record any pool by folder.
 SLS_CumSwallow = 'Sound\fx\SL Survival\CumSwallow'                     # per-gulp swallow
 SLS_CumSwallowForced = 'Sound\fx\SL Survival\CumSwallowForced'         # forced-swallow reaction (scene victim)
 SLS_CumSwallowSatisfied = 'Sound\fx\SL Survival\CumSwallowSatisfied'   # willing/greedy swallow reaction
-SLS_SlapMoans = 'Sound\fx\SL Survival\Slapping\Moans'                  # masochist moan on a trauma slap (shipped by voice packs, not stock)
 SLS_TraumaHits = 'Sound\fx\SL Survival\TraumaHits'                     # slap/hit impacts
+
+# Masochist slap moan: the mouth IS free, so SLS plays it through PlayVoice "NearOrgasmNoises"
+# (voice-pack category, lipsynced) - NOT this name. Folder kept for console tests / voice-pack
+# override; it is the no-pack fallback (legacy Sound form).
+SLS_SlapMoans = 'Sound\fx\SL Survival\Slapping\Moans'                  # masochist moan on a trauma slap (shipped by voice packs, not stock)
 
 # Stock pools registered for completeness - played via legacy Sound forms today,
 # resolvable by name for console tests, voice packs and other consumer mods.
