@@ -14,8 +14,9 @@ EndEvent
 
 Event OnUpdate()
 	If StorageUtil.GetFloatValue(Menu, "BarefootStaggerChance", Missing = 20.0) > Utility.RandomFloat(0.0, 100.0) && PlayerRef.IsRunning() && !PlayerRef.IsOnMount() && !PlayerRef.IsSwimming() && PlayerRef.GetSitState() == 0
-		; Voice-pack "KneeJerk" pain grunt (lipsynced) first; 0 = no pack, stock barefoot pain.
-		If _SLS_IntAudioUtil.PlayVoice(PlayerRef, "KneeJerk", 0.5, "sls_voice") == 0
+		; Pain grunt through the bundled SLS1 "Pain" voice slot (lipsynced); 0 = AudioUtil
+		; absent - stock barefoot pain.
+		If _SLS_IntAudioUtil.PlayPain(PlayerRef, 0.5) == 0
 			If PlayerRef.GetLeveledActorBase().GetSex() == 1
 				Int Pain = _SLS_BarefootPainFemaleSM.Play(PlayerRef)
 				Sound.SetInstanceVolume(Pain, 0.5)

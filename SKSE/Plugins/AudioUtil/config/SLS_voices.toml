@@ -16,14 +16,16 @@
 # SLS-bundled voice lines, played only via PlayVoiceFromSlot("SLS1", ...) - never resolved
 # from an actor (sex "All" keeps it out of the blind default-by-sex fallback). These get
 # lipsync like any voice slot; the wavs ship with the original SexLab Survival, so the slot
-# always resolves. Used for: scream for help, NPC catcalls, the clothes-strip gasp.
+# always resolves. Used for: scream for help, NPC catcalls, the clothes-strip gasp, and the
+# trauma/amputation/barefoot/trip pain grunt.
 [[slot]]
 id = "SLS1"
-sex = "All"
+sex = "all"
 [slot.categories]
 Help = 'Sound\fx\SL Survival\Help'
 CatCall = 'Sound\fx\SL Survival\Cat Calls'
 Gasp = 'Sound\fx\SL Survival\FemaleGasp'
+Pain = 'Sound\fx\SL Survival\Pain'
 
 [sfx]
 # Foley SLS plays through AudioUtil via PlaySFX, all in the sls_sfx bucket (fallback: legacy

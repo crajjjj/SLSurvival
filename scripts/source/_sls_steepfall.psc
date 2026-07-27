@@ -105,9 +105,10 @@ Function Trip(Bool IsDrop = false)
 EndFunction
 
 Function DoTripSound()
-	; Voice-pack pain grunt when available (same KneeJerk-or-legacy routing as
-	; Util.DoFemalePainSound); either way the trip still makes detection noise below.
-	If _SLS_IntAudioUtil.PlayVoice(PlayerRef, "KneeJerk", 0.5, "sls_voice") == 0
+	; Pain grunt via the bundled SLS1 "Pain" voice slot (same PlayPain routing as
+	; Util.DoFemalePainSound, lipsynced); either way the trip still makes detection noise
+	; below. 0 = AudioUtil absent - legacy Sound form.
+	If _SLS_IntAudioUtil.PlayPain(PlayerRef, 0.5) == 0
 		Int Pain = _SLS_PainSM.Play(PlayerRef)
 		Sound.SetInstanceVolume(Pain , 0.5)
 	EndIf

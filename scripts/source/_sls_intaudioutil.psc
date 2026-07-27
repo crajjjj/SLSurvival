@@ -91,6 +91,17 @@ Int Function PlayGasp(Actor akActor) Global
 	Return Handle
 EndFunction
 
+; Pain grunt through the bundled SLS1 "Pain" slot (SLS's own stock squeaks), played as a
+; voice so it lipsyncs and gag-muffles - always resolves, no dependence on the actor's voice
+; pack shipping a pain category. sls_voice bucket. Returns the handle; 0 = AudioUtil absent,
+; so the caller plays its legacy Sound form.
+Int Function PlayPain(Actor akActor, Float Volume = 1.0) Global
+	If !GetIsInstalled()
+		Return 0
+	EndIf
+	Return AudioUtil.PlayVoiceFromSlot("SLS1", "Pain", akActor, Volume, "sls_voice")
+EndFunction
+
 ; Named SFX at the actor's position. Returns an instance handle, 0 if not resolved.
 Int Function PlaySFX(String SfxName, Actor akFollow, Float Volume = 1.0, String Group = "sfx", String Channel = "") Global
 	If GetIsInstalled()

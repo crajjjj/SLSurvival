@@ -1919,11 +1919,9 @@ Bool Function IsAnimating(Actor akTarget, Bool CheckCombat)
 EndFunction
 
 Function DoFemalePainSound(Actor akActor, Float Volume)
-	; Voice-pack pain grunt first: "KneeJerk" is the packs' short pain-reaction category
-	; (gagged actors come out muffled via the DLL's gag slot). Packs without it resolve to
-	; 0 - the stock F0 slot ships no KneeJerk, so no unrelated moan substitutes for pain -
-	; and 0 falls through to the legacy Sound form.
-	If _SLS_IntAudioUtil.PlayVoice(akActor, "KneeJerk", Volume * PainSoundVol, "sls_voice") == 0
+	; Pain grunt through the bundled SLS1 "Pain" voice slot so it lipsyncs (and gag-muffles);
+	; always resolves when AudioUtil is present. 0 = AudioUtil absent - legacy Sound form.
+	If _SLS_IntAudioUtil.PlayPain(akActor, Volume * PainSoundVol) == 0
 		Int TraumaSound = _SLS_PainSM.Play(akActor)
 		Sound.SetInstanceVolume(TraumaSound, Volume * PainSoundVol)
 	EndIf
