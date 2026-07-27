@@ -105,8 +105,12 @@ Function Trip(Bool IsDrop = false)
 EndFunction
 
 Function DoTripSound()
-	Int Pain = _SLS_PainSM.Play(PlayerRef)
-	Sound.SetInstanceVolume(Pain , 0.5)
+	; Voice-pack pain grunt when available (same KneeJerk-or-legacy routing as
+	; Util.DoFemalePainSound); either way the trip still makes detection noise below.
+	If _SLS_IntAudioUtil.PlayVoice(PlayerRef, "KneeJerk", 0.5, "sls_voice") == 0
+		Int Pain = _SLS_PainSM.Play(PlayerRef)
+		Sound.SetInstanceVolume(Pain , 0.5)
+	EndIf
 	PlayerRef.CreateDetectionEvent(PlayerRef, aiSoundLevel = 25 + (100 - (PlayerRef.GetAv("Sneak") as Int)))
 EndFunction
 

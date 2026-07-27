@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.710
+	Version = 0.711
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -128,6 +128,7 @@ EndFunction
 Function LoadGameMaintenance()
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
+	Util.ApplyAudioUtilVolumes() ; AudioUtil group volumes reset to the toml defaults each session
 	Init.PlayerLoadsGame()
 	;Debug.Messagebox("0xFEFFFFFD: " + 0xFEFFFFFD +"\n0xFEFFFFFE: " + 0xFEFFFFFE + "\n0xFEFFFFFF: " + 0xFEFFFFFF + "\n\n0xFF000000: " + 0xFF000000 + "\n0xFF000001: " + 0xFF000001 + "\n0xFFFFFFFE: " + 0xFEFFFFFE + "\n0xFFFFFFFF: " + 0xFFFFFFFF)
 	
@@ -769,6 +770,16 @@ Function VersionCheck()
 	; registration strip runs from the every-load RegForEvents heal.
 	If Version < 0.710
 		UpdateVersion(0.710)
+	EndIf
+
+	; 0.711 integrates AudioUtil: Devious.DoMoan prefers a voice-pack moan (gag-muffled,
+	; lipsynced) over DD's stock and works without DD, trauma/trip pain squeaks prefer the
+	; packs' KneeJerk grunts, swallow reactions/gulps route through the voice-pack folders
+	; (also fixing the inverted Forced/Satisfied pick), and a masochist PC moans on trauma
+	; slaps (Slapping\Moans). SLS ships an AudioUtil overlay (SLS_voices.toml) and two MCM
+	; volume sliders driving its sls_voice/sls_sfx groups. Script-only, no save migration.
+	If Version < 0.711
+		UpdateVersion(0.711)
 	EndIf
 EndFunction
 

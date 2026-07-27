@@ -171,10 +171,14 @@ EndFunction
 State Installed
 
 	Function DoMoan(Actor akActor = None)
-		If akActor
+		If !akActor
+			akActor = PlayerRef
+		EndIf
+		; AudioUtil first: the moan comes from the actor's voice pack (gag-muffled slots and
+		; lipsync handled in the DLL) instead of DD's generic stock. 0 = AudioUtil absent or
+		; no pack resolves a moan for this actor - fall through to DD's own Moan.
+		If _SLS_IntAudioUtil.PlayVoice(akActor, "NearOrgasmNoises", Group = "sls_voice") == 0
 			_SLS_IntDevious.DoMoan(libsQuest, akActor)
-		Else
-			_SLS_IntDevious.DoMoan(libsQuest, PlayerRef)
 		EndIf
 	EndFunction
 	
@@ -857,6 +861,14 @@ EndState
 ; Empty state ==========================================================
 
 Function DoMoan(Actor akActor = None)
+	; No DD installed: AudioUtil (if present) still voices the moan prompts that were
+	; silent no-ops before. "NearOrgasmNoises" is the voice packs' non-verbal moan
+	; category (male packs remap/fall through to the SexLab moan stock in the toml).
+	If !akActor
+		akActor = PlayerRef
+	EndIf
+	; "sls_voice" is SLS's own AudioUtil volume bucket (MCM sliders, Trauma page General).
+	_SLS_IntAudioUtil.PlayVoice(akActor, "NearOrgasmNoises", Group = "sls_voice")
 EndFunction
 
 Bool Function IsWearingAnyDevice(Actor akActor)

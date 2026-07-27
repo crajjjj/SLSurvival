@@ -1,0 +1,56 @@
+# SL Survival additive overlay for AudioUtil (https://crajjjj.github.io/AudioUtil/).
+#
+# Registers SLS's stock loose sound pools (shipped by the original SexLab Survival
+# under Sound\fx\SL Survival\) as named [sfx] entries so they resolve through
+# AudioUtil: SLS scripts play the SLS_* names below via PlaySFX, other mods may do
+# the same, and everything is testable from the console (au sfx SLS_Pain).
+# [sfx] keys are last-writer-wins across config\*.toml files, so a voice pack or a
+# user overlay can retarget any single entry without touching this file. Voice
+# packs that just re-record the wavs keep working with no toml at all - same
+# folders, higher file priority.
+#
+# This file is content-only (additive). Engine globals live in the installed BASE
+# AudioUtil.toml (SLO VE's or another preset); nothing here overrides them.
+# Key/name matching is case- and space-insensitive. Reload in-game: au reload.
+
+[sfx]
+# Pools SLS itself plays through AudioUtil (fallback: the legacy Sound forms).
+SLS_CumSwallow = 'Sound\fx\SL Survival\CumSwallow'                     # per-gulp swallow
+SLS_CumSwallowForced = 'Sound\fx\SL Survival\CumSwallowForced'         # forced-swallow reaction (scene victim)
+SLS_CumSwallowSatisfied = 'Sound\fx\SL Survival\CumSwallowSatisfied'   # willing/greedy swallow reaction
+SLS_SlapMoans = 'Sound\fx\SL Survival\Slapping\Moans'                  # masochist moan on a trauma slap (shipped by voice packs, not stock)
+SLS_TraumaHits = 'Sound\fx\SL Survival\TraumaHits'                     # slap/hit impacts
+
+# Stock pools registered for completeness - played via legacy Sound forms today,
+# resolvable by name for console tests, voice packs and other consumer mods.
+SLS_Pain = 'Sound\fx\SL Survival\Pain'                                 # pain squeaks (the _SLS_PainSM pool)
+SLS_AssSlapMoan = 'Sound\fx\SL Survival\AssSlapMoan'                   # walk-by ass-slap grunts
+SLS_FemaleGasp = 'Sound\fx\SL Survival\FemaleGasp'
+SLS_Breathing = 'Sound\fx\SL Survival\Breathing'
+SLS_CatCalls = 'Sound\fx\SL Survival\Cat Calls'
+SLS_Help = 'Sound\fx\SL Survival\Help'
+SLS_Curse = 'Sound\fx\SL Survival\Curse'
+SLS_Dance = 'Sound\fx\SL Survival\Dance'
+SLS_Horse = 'Sound\fx\SL Survival\Horse'
+SLS_CumFill = 'Sound\fx\SL Survival\CumFill'
+SLS_Amputation = 'Sound\fx\SL Survival\Amputation'
+SLS_ArmorEquip = 'Sound\fx\SL Survival\ArmorEquip'
+SLS_BarefootPainFemale = 'Sound\fx\SL Survival\BarefootRealism\FemalePain'
+SLS_BarefootPainMale = 'Sound\fx\SL Survival\BarefootRealism\MalePain'
+SLS_DaydreamAction = 'Sound\fx\SL Survival\Voices\Action'              # cum-addict daydream head-voices
+SLS_DaydreamTaunt = 'Sound\fx\SL Survival\Voices\Taunt'
+SLS_AutoSuck = 'Sound\fx\SL Survival\Voices\Autosuck'
+
+[groups]
+# Startup volumes for SLS's own buckets. Runtime control lives in the SLS MCM
+# (Trauma page, General) via SetGroupVolume; these are just the pre-MCM defaults.
+sls_voice = 1.0   # voiced lines SLS plays (moans, pain grunts, swallow reactions)
+sls_sfx = 1.0     # impacts and gulps SLS plays
+
+[gag]
+# SLS's own mouth-occupier marker, so a base config with [gag] enabled muffles a
+# deepthroating/tongue-out PC even if its own list misses it (additive; a marker
+# whose mod isn't installed is skipped, and duplicates are harmless).
+keywords = [
+  'SL Survival.esp|0B74B5',   # _SLS_TongueKeyword
+]

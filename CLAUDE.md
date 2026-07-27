@@ -2,7 +2,7 @@
 
 Large Skyrim SE gameplay/survival overhaul mod. Pure **Papyrus** (`.psc` → `.pex`), no SKSE plugin of its own. ~812 source scripts. Heavily integrates with dozens of optional LoversLab/survival mods through a consistent adapter layer (see *Adapter Architecture* — it is the most important thing in this project).
 
-Current version: **0.710** (`meta.ini`).
+Current version: **0.711** (`meta.ini`).
 
 ## Git Commits
 Do **not** include a `Co-Authored-By` trailer in commit messages. Commits should look authored solely by the user (matches the convention in the user's other Skyrim mods).
@@ -55,7 +55,7 @@ Skip step 4 if you deliberately want the MCM version to lag (script-only hotfix 
 
 Every optional-mod integration is split into a **pair**, so SLS keeps working when the other mod is absent:
 
-- **`_SLS_IntXxx.psc`** — `Scriptname _SLS_IntXxx Hidden`, only `Global` functions. These are the *only* place that references the external mod's concrete types/scripts (e.g. `FrostUtil`, `CampUtil`, `CreatureFrameworkConfig`). Thin one-line wrappers. 58 of these.
+- **`_SLS_IntXxx.psc`** — `Scriptname _SLS_IntXxx Hidden`, only `Global` functions. These are the *only* place that references the external mod's concrete types/scripts (e.g. `FrostUtil`, `CampUtil`, `CreatureFrameworkConfig`). Thin one-line wrappers. 59 of these. (Exception: `_SLS_IntAudioUtil` wraps an SKSE-only plugin with no plugin file, so it has no Interface quest — each wrapper self-guards on `SKSE.GetPluginVersion`, like `_SLS_IntSlpp`.)
 - **`_SLS_InterfaceXxx.psc`** — `extends Quest`. Holds a two-state machine: empty state `""` (mod not installed → all methods are safe no-ops returning defaults) and `"Installed"` (delegates to the `_SLS_IntXxx` globals). `PlayerLoadsGame()` flips state based on `Game.GetModByName("Xxx.esm/.esp")`. 29 of these.
 
 Why the split: a script-level **property** typed to an external script resolves at *script load* — if the type is missing the whole script fails to load. A **global function call** resolves *lazily at call time*. Putting every hard reference behind `_SLS_IntXxx` globals, gated by the Interface's `"Installed"` state, lets SLS load and run regardless of which optional mods are present.

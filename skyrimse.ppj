@@ -74,6 +74,7 @@
         <Import>.\dependencies\Fade Tattoos Continued 2.0.0\scripts\source</Import>
         <Import>.\dependencies\Rape Tattoos Continued 2.0.2\scripts\source</Import>
         <Import>.\dependencies\Milk Addict\scripts\Source</Import>
+        <Import>.\dependencies\AudioUtil\Scripts\Source</Import>
 
         <Import>@SkyrimScripts</Import>
         <!-- After @SkyrimScripts: the live Data SLA sources resolve slaMainScr/slaFrameworkScr (they

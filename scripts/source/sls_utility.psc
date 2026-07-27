@@ -157,17 +157,31 @@ Bool Function IsEnjoyingCum()
 EndFunction
 
 Function DoCumSwallowEffects(Float LoadSize)
-	Bool EnjoysCum = IsEnjoyingCum()
-	;Debug.Messagebox("Swallowed " + LoadSize + " units of cum" + "\nEnjoying Cum: " + EnjoysCum)
-	If EnjoysCum
-		_SLS_CumSwallowForcedMarker.Play(PlayerRef)
-	Else
+	; Forced pool only when the player is the scene victim - matching the "I'm forced to
+	; swallow" notifications in DoPlayerOralLoad. The old IsEnjoyingCum gate collapsed
+	; victim-or-addict into one flag wired to the Forced pool: victims landed on Forced by
+	; luck, but enjoying-it cum addicts got the Forced lines instead of Satisfied.
+	Bool ForcedSwallow = false
+	If PlayerRef.IsInFaction(SexLabAnimatingFaction)
+		Int tid = Sexlab.FindPlayerController()
+		ForcedSwallow = tid >= 0 && Sexlab.IsVictim(tid, PlayerRef)
+	EndIf
+	; AudioUtil first, via the SLS_* names in SKSE\Plugins\AudioUtil\config\SLS_voices.toml
+	; (full folder scans - the Sound forms' explicit file lists skip pack files beyond the
+	; stock set, e.g. Satisfied only lists 4 of 5). 0 = AudioUtil absent - legacy Sound form.
+	If ForcedSwallow
+		If _SLS_IntAudioUtil.PlaySFX("SLS_CumSwallowForced", PlayerRef, 1.0, "sls_voice") == 0
+			_SLS_CumSwallowForcedMarker.Play(PlayerRef)
+		EndIf
+	ElseIf _SLS_IntAudioUtil.PlaySFX("SLS_CumSwallowSatisfied", PlayerRef, 1.0, "sls_voice") == 0
 		_SLS_CumSwallowSatisfiedMarker.Play(PlayerRef)
 	EndIf
 
 	Float SwallowAmount = 1.0
 	While LoadSize > 0.0
-		_SLS_CumSwallowMarker.Play(PlayerRef)
+		If _SLS_IntAudioUtil.PlaySFX("SLS_CumSwallow", PlayerRef, 1.0, "sls_sfx") == 0
+			_SLS_CumSwallowMarker.Play(PlayerRef)
+		EndIf
 		LoadSize -= SwallowAmount
 		SwallowAmount = SwallowAmount * 3.0 ; Increase the amount swallowed each iteration so it doesn't go on too long. This should give Big: 2 swallows, massive: 3 etc
 		If LoadSize > 0.0
@@ -1892,13 +1906,32 @@ Bool Function IsAnimating(Actor akTarget, Bool CheckCombat)
 EndFunction
 
 Function DoFemalePainSound(Actor akActor, Float Volume)
-	Int TraumaSound = _SLS_PainSM.Play(akActor)
-	Sound.SetInstanceVolume(TraumaSound, Volume * PainSoundVol)
+	; Voice-pack pain grunt first: "KneeJerk" is the packs' short pain-reaction category
+	; (gagged actors come out muffled via the DLL's gag slot). Packs without it resolve to
+	; 0 - the stock F0 slot ships no KneeJerk, so no unrelated moan substitutes for pain -
+	; and 0 falls through to the legacy Sound form.
+	If _SLS_IntAudioUtil.PlayVoice(akActor, "KneeJerk", Volume * PainSoundVol, "sls_voice") == 0
+		Int TraumaSound = _SLS_PainSM.Play(akActor)
+		Sound.SetInstanceVolume(TraumaSound, Volume * PainSoundVol)
+	EndIf
+EndFunction
+
+; SLS's own AudioUtil volume buckets, driven by the SLS MCM (Trauma page, General):
+; "sls_voice" for voiced lines, "sls_sfx" for impacts/gulps. Group volumes are DLL
+; session state, so reapply on every load and after a settings import.
+Function ApplyAudioUtilVolumes()
+	_SLS_IntAudioUtil.SetGroupVolume("sls_voice", AudioVoiceVol)
+	_SLS_IntAudioUtil.SetGroupVolume("sls_sfx", AudioSfxVol)
 EndFunction
 
 Function DoHitSound(Actor akActor, Float Volume)
-	Int TraumaSound = _SLS_TraumaHitSM.Play(akActor)
-	Sound.SetInstanceVolume(TraumaSound, Volume * HitSoundVol)
+	; AudioUtil positions the SFX at the actor with real engine distance attenuation -
+	; the very thing the Sound.Play comment in DoTraumaHitSound complains about - so it
+	; gets HitSoundVol only; the caller's manual falloff Volume stays on the legacy path.
+	If _SLS_IntAudioUtil.PlaySFX("SLS_TraumaHits", akActor, HitSoundVol, "sls_sfx") == 0
+		Int TraumaSound = _SLS_TraumaHitSM.Play(akActor)
+		Sound.SetInstanceVolume(TraumaSound, Volume * HitSoundVol)
+	EndIf
 EndFunction
 
 Function DoTraumaHitSound(Actor akActor, Bool PlayerSqueaks)
@@ -1906,6 +1939,12 @@ Function DoTraumaHitSound(Actor akActor, Bool PlayerSqueaks)
 	Float Volume = (1.0 - (0.1 * (PlayerRef.GetDistance(akActor) / 128.0))) ; Reduce volume by 10% for every 128 units away from the player
 	DoHitSound(akActor, Volume)
 	If PlayerSqueaks && akActor == PlayerRef ;akActor.GetLeveledActorBase().GetSex() == 1
+		; A masochist PC (STA attitude Likes/Loves pain) moans into the voice packs'
+		; Slapping\Moans pool (SLS_SlapMoans in SLS_voices.toml) instead of squeaking.
+		; STA absent (-2) or the pool not shipped (PlaySFX 0) keeps the pain squeak.
+		If Menu.Sta.GetPlayerMasochismAttitude() >= 1 && _SLS_IntAudioUtil.PlaySFX("SLS_SlapMoans", akActor, Volume, "sls_voice") > 0
+			Return
+		EndIf
 		DoFemalePainSound(akActor, Volume)
 	EndIf
 EndFunction
@@ -1979,6 +2018,9 @@ Float Property CumUnitsSwallowed = 0.0 Auto Hidden
 Float Property CumUnitsSwallowedHumanoid = 0.0 Auto Hidden
 Float Property CumUnitsSpat = 0.0 Auto Hidden
 Float Property PainSoundVol = 0.5 Auto Hidden
+; AudioUtil group volumes (sls_voice / sls_sfx) - MCM sliders on the Trauma page.
+Float Property AudioVoiceVol = 1.0 Auto Hidden
+Float Property AudioSfxVol = 1.0 Auto Hidden
 Float Property HitSoundVol = 0.5 Auto Hidden
 
 Sound Property _SLS_ScreamForHelpMarker Auto
