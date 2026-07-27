@@ -1587,13 +1587,65 @@ Function BegForCockMenu(Bool IsShortcut = false)
 	Int MenuSelect = ShowBegForCockMenu()
 	If MenuSelect == -1  && !IsShortcut
 		ActionsMenu()
-	ElseIf MenuSelect == 0
-		Debug.SendAnimationEvent(PlayerRef , "SLS_BegForCock_LeadIn_HandPump1")
-	ElseIf MenuSelect == 1
-		Debug.SendAnimationEvent(PlayerRef , "SLS_BegForCock_LeadIn_StickyFingers1")
-	ElseIf MenuSelect == 2
-		Debug.SendAnimationEvent(PlayerRef , "SLS_BegForCock_LeadIn_Sore1")
+	ElseIf MenuSelect >= 0 && MenuSelect <= 2 ; empty wheel slots return their index too - only the three real options act
+		If MenuSelect == 0
+			Debug.SendAnimationEvent(PlayerRef , "SLS_BegForCock_LeadIn_HandPump1")
+		ElseIf MenuSelect == 1
+			Debug.SendAnimationEvent(PlayerRef , "SLS_BegForCock_LeadIn_StickyFingers1")
+		ElseIf MenuSelect == 2
+			Debug.SendAnimationEvent(PlayerRef , "SLS_BegForCock_LeadIn_Sore1")
+		EndIf
+
+		; The pantomime advertises the offer - give the two-stage emote time to play
+		; before anyone reacts to it
+		Utility.Wait(6.0)
+		Actor Responder = FindBegForCockResponder()
+		If Responder
+			Debug.Notification(Responder.GetLeveledActorBase().GetName() + " has taken an interest in you")
+			Utility.Wait(2.5)
+			; The variant chooses the hole on offer. SexCat = 2 routes through the
+			; begging rules: BegSexAgg/BegSexVictim, orgasm/swallow-deal handling,
+			; DF willpower + Whore fame, and the Beg* stat counters
+			If MenuSelect == 0
+				Main.StartSexOralMale(Responder, SexCat = 2)
+			ElseIf MenuSelect == 1
+				Main.StartSexVaginal(Responder, SexCat = 2)
+			Else
+				Main.StartSexAnal(Responder, SexCat = 2)
+			EndIf
+		Else
+			Debug.Notification("Nobody seems interested in your begging...")
+		EndIf
 	EndIf
+EndFunction
+
+Actor Function FindBegForCockResponder()
+	; The most aroused nearby man who wins his roll answers the beg. GetGender == 0
+	; filters females and creatures in one check; the beg is visual, so he must be
+	; awake with line of sight (HasLOS is only reliable with the player involved).
+	Actor[] Nearby = MiscUtil.ScanCellNPCs(PlayerRef, 1200.0)
+	Actor Responder = None
+	Int BestArousal = -1
+	Int i = 0
+	While i < Nearby.Length
+		Actor Candidate = Nearby[i]
+		If Candidate != PlayerRef && !Candidate.IsChild() && !Candidate.IsInCombat() && Candidate.GetSleepState() == 0 \
+				&& Sexlab.GetGender(Candidate) == 0 && Candidate.HasLOS(PlayerRef) && Sexlab.IsValidActor(Candidate)
+			Int Arousal = _SLS_IntSlax.GetArousal(Candidate)
+			; Floor the chance: even an unaroused man might take a free offer, and
+			; without SLA installed GetArousal returns 0 for everyone
+			Int Chance = Arousal
+			If Chance < 15
+				Chance = 15
+			EndIf
+			If Arousal > BestArousal && Utility.RandomInt(0, 99) < Chance
+				BestArousal = Arousal
+				Responder = Candidate
+			EndIf
+		EndIf
+		i += 1
+	EndWhile
+	Return Responder
 EndFunction
 
 Int Function ShowBegForCockMenu()
