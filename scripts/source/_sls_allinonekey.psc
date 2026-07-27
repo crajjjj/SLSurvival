@@ -1610,7 +1610,19 @@ Function BegForCockMenu(Bool IsShortcut = false)
 			If Pace < 0.2
 				Pace = 0.2
 			EndIf
-			Responder.PathToReference(PlayerRef, Pace)
+			; A single PathToReference can return long before he is anywhere near -
+			; a busy package AI may reject or cut the walk short - which snapped the
+			; scene together from across the room. Re-issue the walk until he is
+			; actually close, with a patience cap so a blocked path can't hold the
+			; key hostage; SexLab's alignment absorbs whatever distance is left.
+			Int Patience = 6
+			While Patience > 0 && Responder.GetDistance(PlayerRef) > 200.0 && !Responder.IsDead() && !Responder.IsInCombat()
+				Responder.PathToReference(PlayerRef, Pace)
+				If Responder.GetDistance(PlayerRef) > 200.0
+					Utility.Wait(1.0)
+				EndIf
+				Patience -= 1
+			EndWhile
 			If Responder.IsDead() || Responder.IsInCombat()
 				Debug.Notification("Maybe this wasn't the best time to beg...")
 				Return
