@@ -41,9 +41,9 @@ SLS_DaydreamAction = 'Sound\fx\SL Survival\Voices\Action'              # cum-add
 SLS_DaydreamTaunt = 'Sound\fx\SL Survival\Voices\Taunt'
 SLS_AutoSuck = 'Sound\fx\SL Survival\Voices\Autosuck'
 
-# No [groups] volumes here on purpose. SLS's sls_voice / sls_sfx bucket volumes are
-# owned by the SLS MCM (Trauma page, General) and pushed via SetGroupVolume on every
-# load, so any startup value written here would just be overwritten - set them in-game.
+# No [groups] volumes here on purpose: set the sls_voice / sls_sfx volumes from the SLS
+# MCM (Trauma page, General), not this file. A value written here is overridden on load
+# anyway, so change the volume in-game instead.
 
 [gag]
 # SLS's own mouth-occupier marker, so a base config with [gag] enabled muffles a
