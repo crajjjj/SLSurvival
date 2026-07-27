@@ -29,7 +29,11 @@ Event OnUpdate()
 		;	_SLS_BikCurseShortBreathImod.Apply()
 		;EndIf
 
-		_SLS_BikCurseShortBreathSM.Play(PlayerRef)
+		; Panting is open-mouth breathing - route through the voice pack (PlayVoice "Panting")
+		; so it lipsyncs; 0 = no pack, stock short-breath sound.
+		If _SLS_IntAudioUtil.PlayVoice(PlayerRef, "Panting", 1.0, "sls_voice") == 0
+			_SLS_BikCurseShortBreathSM.Play(PlayerRef)
+		EndIf
 		Utility.WaitMenuMode(Utility.RandomFloat(0.6, 0.9))
 	EndWhile
 	If Animating

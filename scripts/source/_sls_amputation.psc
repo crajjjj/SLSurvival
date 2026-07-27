@@ -400,11 +400,15 @@ Function PlayerSpeak(Topic WhatToSay)
 		_SLS_PlayerSpeak.SetValueInt(0)
 	
 	Else
+		; Pain cry: voice-pack "KneeJerk" grunt (lipsynced, gag-muffled) first; 0 = no pack,
+		; fall back to the stock Amp Hurt/Pain sound.
 		Int Fx
-		If WhatToSay == _SLS_AmpHurt
-			Fx = _SLS_AmpHurtSM.Play(PlayerRef)
-		ElseIf WhatToSay == _SLS_AmpPain
-			Fx = _SLS_AmpPainSM.Play(PlayerRef)
+		If _SLS_IntAudioUtil.PlayVoice(PlayerRef, "KneeJerk", 1.0, "sls_voice") == 0
+			If WhatToSay == _SLS_AmpHurt
+				Fx = _SLS_AmpHurtSM.Play(PlayerRef)
+			ElseIf WhatToSay == _SLS_AmpPain
+				Fx = _SLS_AmpPainSM.Play(PlayerRef)
+			EndIf
 		EndIf
 		;Sound.SetInstanceVolume(Fx, 1.0)
 	EndIf

@@ -465,7 +465,12 @@ Function ScreamForHelpBegin()
 		EndIf
 	
 	Else
-		Scream = _SLS_GagTalkMarker.Play(PlayerRef)
+		; Gagged: PlayVoice routes to the pack's gag_slot so a muffled clip plays, and lipsync
+		; is auto-suppressed (the gag owns the mouth). "GagMoan" is AudioUtil's gag catch-all.
+		; 0 = no pack, stock gag-talk sound.
+		If _SLS_IntAudioUtil.PlayVoice(PlayerRef, "GagMoan", 1.0, "sls_voice") == 0
+			Scream = _SLS_GagTalkMarker.Play(PlayerRef)
+		EndIf
 	EndIf
 EndFunction
 
