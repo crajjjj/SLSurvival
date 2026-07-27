@@ -79,7 +79,7 @@ You don't need any of these. Install the ones you want and SLS adapts.
 | Extensible Follower Framework (EFF) | Follower framework support (e.g. followers stealing gold) |
 | FNIS Sexy Move | Walk-style integration |
 | Spank That Ass | Spanking integration |
-| AudioUtil (+ a voice pack, e.g. SLO VE) | Moan prompts, trauma/trip pain squeaks and cum-swallow reactions play through your voice pack — gag-muffled and lipsynced — instead of the stock sounds; moan prompts work even without DD, and a masochist PC (Spank That Ass "Likes"/"Loves" pain) moans instead of squeaking when slapped. Two sliders on the **Trauma** page (General) control the volume of SLS-played voice and SFX separately from the voice-pack mod's own sliders |
+| AudioUtil (+ a voice pack, e.g. SLO VE) | Moan prompts, trauma/trip pain squeaks and cum-swallow reactions play through your voice pack — gag-muffled and lipsynced — instead of the stock sounds; moan prompts work even without DD, and a masochist PC (Spank That Ass "Likes"/"Loves" pain) moans instead of squeaking when slapped. Screams for help, NPC catcalls and clothes-strip gasps are lipsynced; cum-addict daydream moans come from the NPC's own voice pack. Two sliders on the **Trauma** page (General) control the volume of SLS-played voice and SFX separately from the voice-pack mod's own sliders |
 | yps Immersive Fashion | Piercings/hair/nails (requires the tweak version) |
 | Simply Knock | Knock-to-enter / trespassing handling (**Frostfall & Simply Knock** MCM page) |
 | JKs Skyrim | Adds the extra Riften gate as a toll door |

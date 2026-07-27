@@ -2312,7 +2312,10 @@ Function FollowerTakesPlayerClothes(Actor Follower)
 	_SLS_FollowerNakedClothesLockQuest.Stop()
 	_SLS_FollowerNakedClothesLockQuest.Start()
 	(_SLS_FollowerNakedClothesLockQuest.GetNthAlias(0) as ReferenceAlias).ForceRefTo(Follower)
-	_SLS_FemaleGasp.Play(PlayerRef)
+	; Voice-pack "Oh" / bundled SLS1 gasp (lipsynced) first; 0 = legacy Sound form.
+	If _SLS_IntAudioUtil.PlayGasp(PlayerRef) == 0
+		_SLS_FemaleGasp.Play(PlayerRef)
+	EndIf
 EndFunction
 
 Float Function GetLicenceDiscountMagic()

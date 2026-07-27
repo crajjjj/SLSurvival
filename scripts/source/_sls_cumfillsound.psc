@@ -8,7 +8,10 @@ EndEvent
 Function DoCumFillSound(Actor akTarget, Float LoadSize)
 	Float FillAmount = 1.0
 	While LoadSize > 0.0
-		_SLS_CumFillSM.Play(akTarget)
+		; AudioUtil pool first (sls_sfx volume bucket); 0 = legacy Sound form.
+		If _SLS_IntAudioUtil.PlaySFX("SLS_CumFill", akTarget, 1.0, "sls_sfx") == 0
+			_SLS_CumFillSM.Play(akTarget)
+		EndIf
 		LoadSize -= FillAmount
 		FillAmount = FillAmount * 3.0 ; Increase the amount filled each iteration so it doesn't go on too long. This should give Big: 2 swallows, massive: 3 etc
 		If LoadSize > 0.0

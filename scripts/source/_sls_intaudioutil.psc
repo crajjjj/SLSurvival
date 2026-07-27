@@ -24,6 +24,73 @@ Int Function PlayVoice(Actor akActor, String Category, Float Volume = 1.0, Strin
 	Return 0
 EndFunction
 
+; Same as PlayVoice but the slot is named explicitly instead of resolved from the actor -
+; used for SLS's own bundled voice lines (the SLS1 slot in SLS_voices.toml). akFollow
+; provides the 3D position and the lipsynced mouth.
+Int Function PlayVoiceFromSlot(String Slot, String Category, Actor akFollow, Float Volume = 1.0, String Group = "", String Channel = "", Bool BlockLipSync = false) Global
+	If GetIsInstalled()
+		Return AudioUtil.PlayVoiceFromSlot(Slot, Category, akFollow, Volume, Group, Channel, BlockLipSync)
+	EndIf
+	Return 0
+EndFunction
+
+; Slot id PlayVoice would resolve for this actor ("F1", "M4", ...; "" if none/absent).
+String Function GetSlotForActor(Actor akActor) Global
+	If GetIsInstalled()
+		Return AudioUtil.GetSlotForActor(akActor)
+	EndIf
+	Return ""
+EndFunction
+
+; Per-slot layout label: "B" = IVDT scene-label folders, "A" = default (also for unknown).
+String Function GetSlotVariation(String Slot) Global
+	If GetIsInstalled()
+		Return AudioUtil.GetSlotVariation(Slot)
+	EndIf
+	Return "A"
+EndFunction
+
+; True if slot/category resolves to at least one file (aliases/fallbacks applied).
+Bool Function CategoryExists(String Slot, String Category) Global
+	If GetIsInstalled()
+		Return AudioUtil.CategoryExists(Slot, Category)
+	EndIf
+	Return false
+EndFunction
+
+; Variation-aware category pick, mirroring SLO VE's VarB pattern: B-layout packs ship
+; IVDT scene-label folders instead of the A script names, so when the actor's slot is
+; Variation B AND it ships the B label, request that; otherwise the A name (which
+; resolves via the toml alias/fallback/stock chain).
+String Function ResolveCategory(Actor akActor, String ACategory, String BCategory) Global
+	If GetIsInstalled() && BCategory != ""
+		String Slot = AudioUtil.GetSlotForActor(akActor)
+		If Slot != "" && AudioUtil.GetSlotVariation(Slot) == "B" && AudioUtil.CategoryExists(Slot, BCategory)
+			Return BCategory
+		EndIf
+	EndIf
+	Return ACategory
+EndFunction
+
+; The strip-gasp voice tiers shared by _SLS_LicenceUtil and _SLS_SteepFall (which has no
+; Util property to host this): pack "Oh" on A-layout slots only (B packs don't ship it -
+; via the stock fallback it would degrade to a moan, worse than the bundled gasp), then
+; the bundled SLS1 "Gasp" pool. Returns the handle; 0 = caller plays its legacy Sound form.
+Int Function PlayGasp(Actor akActor) Global
+	If !GetIsInstalled()
+		Return 0
+	EndIf
+	Int Handle = 0
+	String Slot = AudioUtil.GetSlotForActor(akActor)
+	If Slot == "" || AudioUtil.GetSlotVariation(Slot) != "B"
+		Handle = AudioUtil.PlayVoice(akActor, "Oh", 1.0, "sls_voice")
+	EndIf
+	If Handle == 0
+		Handle = AudioUtil.PlayVoiceFromSlot("SLS1", "Gasp", akActor, 1.0, "sls_voice")
+	EndIf
+	Return Handle
+EndFunction
+
 ; Named SFX at the actor's position. Returns an instance handle, 0 if not resolved.
 Int Function PlaySFX(String SfxName, Actor akFollow, Float Volume = 1.0, String Group = "sfx", String Channel = "") Global
 	If GetIsInstalled()

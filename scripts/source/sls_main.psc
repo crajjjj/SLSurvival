@@ -777,7 +777,10 @@ Function VersionCheck()
 	; packs' KneeJerk grunts, swallow reactions/gulps route through the voice-pack folders
 	; (also fixing the inverted Forced/Satisfied pick), and a masochist PC moans on trauma
 	; slaps (Slapping\Moans). SLS ships an AudioUtil overlay (SLS_voices.toml) and two MCM
-	; volume sliders driving its sls_voice/sls_sfx groups. Script-only, no save migration.
+	; volume sliders driving its sls_voice/sls_sfx groups. The sweep also covers screams
+	; for help, catcalls and strip gasps (lipsynced via the bundled SLS1 slot), daydream
+	; moans (the NPC's own voice pack, variation-aware), head-voices and the cum-fill
+	; squelch. Script-only, no save migration.
 	If Version < 0.711
 		UpdateVersion(0.711)
 	EndIf

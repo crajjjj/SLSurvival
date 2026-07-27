@@ -13,6 +13,18 @@
 # AudioUtil.toml (SLO VE's or another preset); nothing here overrides them.
 # Key/name matching is case- and space-insensitive. Reload in-game: au reload.
 
+# SLS-bundled voice lines, played only via PlayVoiceFromSlot("SLS1", ...) - never resolved
+# from an actor (sex "All" keeps it out of the blind default-by-sex fallback). These get
+# lipsync like any voice slot; the wavs ship with the original SexLab Survival, so the slot
+# always resolves. Used for: scream for help, NPC catcalls, the clothes-strip gasp.
+[[slot]]
+id = "SLS1"
+sex = "All"
+[slot.categories]
+Help = 'Sound\fx\SL Survival\Help'
+CatCall = 'Sound\fx\SL Survival\Cat Calls'
+Gasp = 'Sound\fx\SL Survival\FemaleGasp'
+
 [sfx]
 # Foley SLS plays through AudioUtil via PlaySFX, all in the sls_sfx bucket (fallback: legacy
 # Sound forms). Swallow sounds are here, not treated as voice: the mouth is busy swallowing,
@@ -21,11 +33,17 @@ SLS_CumSwallow = 'Sound\fx\SL Survival\CumSwallow'                     # per-gul
 SLS_CumSwallowForced = 'Sound\fx\SL Survival\CumSwallowForced'         # forced-swallow reaction (scene victim)
 SLS_CumSwallowSatisfied = 'Sound\fx\SL Survival\CumSwallowSatisfied'   # willing/greedy swallow reaction
 SLS_TraumaHits = 'Sound\fx\SL Survival\TraumaHits'                     # slap/hit impacts
+SLS_CumFill = 'Sound\fx\SL Survival\CumFill'                           # cum-fill squelch (inside loads)
 
 # Masochist slap moan: the mouth IS free, so SLS plays it through PlayVoice "NearOrgasmNoises"
 # (voice-pack category, lipsynced) - NOT this name. Folder kept for console tests / voice-pack
 # override; it is the no-pack fallback (legacy Sound form).
 SLS_SlapMoans = 'Sound\fx\SL Survival\Slapping\Moans'                  # masochist moan on a trauma slap (shipped by voice packs, not stock)
+
+# Daydream head-voices: inner monologue, deliberately played as SFX (no lipsync - the
+# voices are in her head, the mouth stays still), in the sls_voice volume bucket.
+SLS_DaydreamAction = 'Sound\fx\SL Survival\Voices\Action'              # cum-addict daydream head-voices
+SLS_DaydreamTaunt = 'Sound\fx\SL Survival\Voices\Taunt'
 
 # Stock pools registered for completeness - played via legacy Sound forms today,
 # resolvable by name for console tests, voice packs and other consumer mods.
@@ -38,13 +56,10 @@ SLS_Help = 'Sound\fx\SL Survival\Help'
 SLS_Curse = 'Sound\fx\SL Survival\Curse'
 SLS_Dance = 'Sound\fx\SL Survival\Dance'
 SLS_Horse = 'Sound\fx\SL Survival\Horse'
-SLS_CumFill = 'Sound\fx\SL Survival\CumFill'
 SLS_Amputation = 'Sound\fx\SL Survival\Amputation'
 SLS_ArmorEquip = 'Sound\fx\SL Survival\ArmorEquip'
 SLS_BarefootPainFemale = 'Sound\fx\SL Survival\BarefootRealism\FemalePain'
 SLS_BarefootPainMale = 'Sound\fx\SL Survival\BarefootRealism\MalePain'
-SLS_DaydreamAction = 'Sound\fx\SL Survival\Voices\Action'              # cum-addict daydream head-voices
-SLS_DaydreamTaunt = 'Sound\fx\SL Survival\Voices\Taunt'
 SLS_AutoSuck = 'Sound\fx\SL Survival\Voices\Autosuck'
 
 # No [groups] volumes here on purpose: set the sls_voice / sls_sfx volumes from the SLS

@@ -34,11 +34,16 @@ Function LoadGameMaintenance()
 	AudioCategoryVOCGeneral.SetVolume(VanillaVoiceVolume)
 EndFunction
 
-Function DoVoices(Sound WhatTheVoicesSaid, Float MinWait, Float MaxWait)
+Function DoVoices(Sound WhatTheVoicesSaid, Float MinWait, Float MaxWait, String SfxName = "")
 	AudioCategoryVOCGeneral.SetVolume(0.15)
 	Utility.Wait(0.5)
-	Int VoicesInstance = WhatTheVoicesSaid.Play(PlayerRef)
-	Sound.SetInstanceVolume(VoicesInstance, VoicesVolume)
+	; Head-voices are inner monologue: deliberately played as SFX (no lipsync, the mouth
+	; stays still) in the sls_voice volume bucket. "" (autosuck callers) or 0 = legacy
+	; Sound form.
+	If SfxName == "" || _SLS_IntAudioUtil.PlaySFX(SfxName, PlayerRef, VoicesVolume, "sls_voice") == 0
+		Int VoicesInstance = WhatTheVoicesSaid.Play(PlayerRef)
+		Sound.SetInstanceVolume(VoicesInstance, VoicesVolume)
+	EndIf
 	Utility.Wait(Utility.RandomFloat(MinWait, MaxWait)) ; Wait for line to be said with real voices dulled out
 	AudioCategoryVOCGeneral.SetVolume(VanillaVoiceVolume) ; Then bring real voices back in
 EndFunction
@@ -59,11 +64,11 @@ State HeadVoices
 	Event OnUpdate()
 		If VoicesChance > Utility.RandomFloat(0.0, 100.0)
 			If TauntCount <= 0
-				DoVoices(_SLS_DaydreamVoicesActionSM, MinWait = 3.0, MaxWait = 4.0)
+				DoVoices(_SLS_DaydreamVoicesActionSM, MinWait = 3.0, MaxWait = 4.0, SfxName = "SLS_DaydreamAction")
 				TauntCount = Utility.RandomInt(0, 5)
 				DoUpdateIn(Utility.RandomFloat(1.0, 2.5))
 			Else
-				DoVoices(_SLS_DaydreamVoicesTauntSM, MinWait = 0.5, MaxWait = 2.0)
+				DoVoices(_SLS_DaydreamVoicesTauntSM, MinWait = 0.5, MaxWait = 2.0, SfxName = "SLS_DaydreamTaunt")
 				TauntCount -= 1
 				If TauntCount <= 0 ; End of taunt followups. Wait longer
 					;Debug.Messagebox("End of taunt session")

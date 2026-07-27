@@ -53,19 +53,22 @@ EndEvent
 
 Bool Function DoFemaleConvoEffect(Actor akActor)
 	If Sexlab.CountCumOral(akActor) == 0
-		If !DoMoans(akActor, SexLabVoiceFemale01Mild, Reps = 3, StartVol = 0.3, EndVol = 0.5, WaitMin = 1.0, WaitMax = 1.8)
+		; Voice-pack categories: "NearOrgasmNoises" is the A-layout non-verbal moan; B-layout
+		; packs ship "Penetrated Grunt"(+" Intense") instead (resolved per-NPC in DoMoans).
+		; "Orgasm" ships in both layouts. The Sound forms stay as the no-pack fallback.
+		If !DoMoans(akActor, SexLabVoiceFemale01Mild, Reps = 3, StartVol = 0.3, EndVol = 0.5, WaitMin = 1.0, WaitMax = 1.8, ACategory = "NearOrgasmNoises", BCategory = "Penetrated Grunt")
 			Return false
 		EndIf
-		If !DoMoans(akActor, SexLabVoiceFemale01Medium, Reps = 3, StartVol = 0.5, EndVol = 0.9, WaitMin = 0.9, WaitMax = 1.6)
+		If !DoMoans(akActor, SexLabVoiceFemale01Medium, Reps = 3, StartVol = 0.5, EndVol = 0.9, WaitMin = 0.9, WaitMax = 1.6, ACategory = "NearOrgasmNoises", BCategory = "Penetrated Grunt")
 			Return false
 		EndIf
-		If !DoMoans(akActor, SexLabVoiceFemale01Hot, Reps = 1, StartVol = 1.0, EndVol = 1.0, WaitMin = 0.8, WaitMax = 1.0)
+		If !DoMoans(akActor, SexLabVoiceFemale01Hot, Reps = 1, StartVol = 1.0, EndVol = 1.0, WaitMin = 0.8, WaitMax = 1.0, ACategory = "NearOrgasmNoises", BCategory = "Penetrated Grunt Intense")
 			Return false
 		EndIf
-		If !DoMoans(akActor, SexLabOrgasmFX, Reps = 1, StartVol = 1.0, EndVol = 1.0, WaitMin = 0.1, WaitMax = 0.2)
+		If !DoMoans(akActor, SexLabOrgasmFX, Reps = 1, StartVol = 1.0, EndVol = 1.0, WaitMin = 0.1, WaitMax = 0.2, ACategory = "Orgasm")
 			Return false
 		EndIf
-		If !DoMoans(akActor, SexLabOrgasmFX, Reps = 1, StartVol = 1.0, EndVol = 1.0, WaitMin = 0.1, WaitMax = 0.2)
+		If !DoMoans(akActor, SexLabOrgasmFX, Reps = 1, StartVol = 1.0, EndVol = 1.0, WaitMin = 0.1, WaitMax = 0.2, ACategory = "Orgasm")
 			Return false
 		EndIf
 		
@@ -114,13 +117,29 @@ Event OnMenuClose(String MenuName)
 	EndIf
 EndEvent
 
-Bool Function DoMoans(Actor akActor, Sound Moan, Int Reps, Float StartVol, Float EndVol, Float WaitMin, Float WaitMax)
+Bool Function DoMoans(Actor akActor, Sound Moan, Int Reps, Float StartVol, Float EndVol, Float WaitMin, Float WaitMax, String ACategory = "", String BCategory = "")
 	Int i = 0
 	Float VolMod = StorageUtil.GetFloatValue(Menu, "CumAddictDayDreamVol", Missing = 1.0)
+	; Resolve the voice-pack category once per tier: variation-aware (a B-layout slot gets
+	; the B label when it ships that folder). "" = legacy Sound form only. The NPC herself
+	; is the moaner, so this resolves against HER slot - each daydream NPC keeps her own
+	; pack voice. Lipsync is auto-suppressed while she is in dialogue (the game owns the
+	; mouth), so the moan plays without fighting the dialogue face.
+	String Category = ""
+	If ACategory != ""
+		Category = _SLS_IntAudioUtil.ResolveCategory(akActor, ACategory, BCategory)
+	EndIf
 	While i < Reps
 		If UI.IsMenuOpen("Dialogue Menu")
-			Int MoanInst = Moan.Play(akActor)
-			Sound.SetInstanceVolume(MoanInst, (StartVol + ((EndVol - StartVol)/Reps) * i) * VolMod)
+			Float Vol = (StartVol + ((EndVol - StartVol)/Reps) * i) * VolMod
+			Bool Played = false
+			If Category != ""
+				Played = _SLS_IntAudioUtil.PlayVoice(akActor, Category, Vol, "sls_voice") > 0
+			EndIf
+			If !Played
+				Int MoanInst = Moan.Play(akActor)
+				Sound.SetInstanceVolume(MoanInst, Vol)
+			EndIf
 			i += 1
 			Utility.Wait(Utility.RandomFloat(WaitMin, WaitMax))
 		Else

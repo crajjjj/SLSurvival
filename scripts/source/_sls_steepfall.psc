@@ -222,7 +222,10 @@ Function StripItemByCount(Int Count)
 		EndIf
 	EndWhile
 	If StorageUtil.FormListCount(Trig, "_SLS_DroppedItems") > 0
-		_SLS_FemaleGasp.Play(PlayerRef)
+		; Voice-pack "Oh" / bundled SLS1 gasp (lipsynced) first; 0 = legacy Sound form.
+		If _SLS_IntAudioUtil.PlayGasp(PlayerRef) == 0
+			_SLS_FemaleGasp.Play(PlayerRef)
+		EndIf
 		LostCount = StorageUtil.FormListCount(Trig, "_SLS_DroppedItems")
 		(Trig as _SLS_DroppedItemTrigger).InitTrigger()
 	Else

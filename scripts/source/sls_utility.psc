@@ -436,7 +436,11 @@ EndFunction
 Function ScreamForHelpBegin()
 	Int Scream
 	If CanSpeak(PlayerRef)
-		Scream = _SLS_ScreamForHelpMarker.Play(PlayerRef)
+		; Bundled scream via the SLS1 slot (lipsynced Help wavs); 0 = AudioUtil absent -
+		; legacy Sound form.
+		If _SLS_IntAudioUtil.PlayVoiceFromSlot("SLS1", "Help", PlayerRef, 1.0, "sls_voice") == 0
+			Scream = _SLS_ScreamForHelpMarker.Play(PlayerRef)
+		EndIf
 		If PlayerRef.IsInCombat()
 			_SLS_ScreamForHelpAliases.Stop()
 			_SLS_ScreamForHelpAliases.Start()
@@ -1617,8 +1621,12 @@ Function SetNumFreeDeviceSlots()
 EndFunction
 
 Function DoCatCall(Actor akSpeaker)
-	Int CatCall = _SLS_CatCallsSM.Play(akSpeaker)
-	Sound.SetInstanceVolume(CatCall, (Menu.CatCallVol / 100.0))
+	; Bundled catcall via the SLS1 slot: lipsync + real engine 3D at the NPC, shuffle-bag
+	; over the same Cat calls wavs. 0 = AudioUtil absent - legacy Sound form.
+	If _SLS_IntAudioUtil.PlayVoiceFromSlot("SLS1", "CatCall", akSpeaker, Menu.CatCallVol / 100.0, "sls_voice") == 0
+		Int CatCall = _SLS_CatCallsSM.Play(akSpeaker)
+		Sound.SetInstanceVolume(CatCall, (Menu.CatCallVol / 100.0))
+	EndIf
 	If Menu.CatCallWillLoss > 0.0
 		If !Dflow.IsOldDeviousFollowers()
 			Dflow.DecDflowWill(Amount = (Menu.CatCallWillLoss * _SLS_CoveringNakedStatus.GetValueInt()), DoNotify = false)
