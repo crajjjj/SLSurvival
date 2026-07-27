@@ -1602,7 +1602,20 @@ Function BegForCockMenu(Bool IsShortcut = false)
 		Actor Responder = FindBegForCockResponder()
 		If Responder
 			Debug.Notification(Responder.GetLeveledActorBase().GetName() + " has taken an interest in you")
-			Utility.Wait(2.5)
+			; Make him actually come to collect instead of letting SexLab snap the
+			; scene together - PathToReference is latent and returns once he arrives
+			; or pathing gives up (fall through to the scene either way; SexLab's own
+			; alignment covers a failed path). Pace scales with his arousal.
+			Float Pace = _SLS_IntSlax.GetArousal(Responder) / 100.0
+			If Pace < 0.2
+				Pace = 0.2
+			EndIf
+			Responder.PathToReference(PlayerRef, Pace)
+			If Responder.IsDead() || Responder.IsInCombat()
+				Debug.Notification("Maybe this wasn't the best time to beg...")
+				Return
+			EndIf
+			Utility.Wait(0.5)
 			; The variant chooses the hole on offer. SexCat = 2 routes through the
 			; begging rules: BegSexAgg/BegSexVictim, orgasm/swallow-deal handling,
 			; DF willpower + Whore fame, and the Beg* stat counters
