@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.711
+	Version = 0.712
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -783,6 +783,14 @@ Function VersionCheck()
 	; head-voices and the cum-fill squelch. Script-only, no save migration.
 	If Version < 0.711
 		UpdateVersion(0.711)
+	EndIf
+
+	; 0.712 finishes the Beg For Cock action (a nearby aroused man now answers and walks over,
+	; scene routed through the begging rules), fixes the Bathe wheel option staying greyed out
+	; under Bathing in Skyrim - Renewed, and hardens the barter licence checks against
+	; spam-click force-through. Script-only, no save migration.
+	If Version < 0.712
+		UpdateVersion(0.712)
 	EndIf
 EndFunction
 
