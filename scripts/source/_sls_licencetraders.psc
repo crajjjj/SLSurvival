@@ -18,58 +18,48 @@ Function DoDependencyCheck()
 EndFunction
 
 Event OnMenuOpen(String MenuName)
+	SaveSpeech()
 	Trader = Game.GetCurrentCrosshairRef() as Actor
 	If Trader && !_SLS_TraderListExceptions.HasForm(Trader) && !Trader.IsInFaction(JobFenceFaction) && !Trader.IsInFaction(KhajiitCaravanFaction)
-		RemoveAllInventoryEventFilters()
+		; Order matters: town state and the licence snapshot must be ready before the
+		; filter comes off and transaction events can flow. The cache warm runs last -
+		; it is only an accelerator, so an abort there (e.g. Papyrus Extender missing)
+		; still leaves enforcement working through the classify-on-first-sight path.
 		GetIsEnslavedTown()
+		SnapshotLicences()
+		RemoveAllInventoryEventFilters()
+		WarmCategoryCache()
 	EndIf
-	SaveSpeech()
 EndEvent
 
 Event OnMenuClose(String MenuName)
 	AddInventoryEventFilter(_SLS_NeverAddedItem)
 EndEvent
 
+; The per-event work here must stay minimal: the engine caps how many Papyrus events it
+; dispatches per frame, and every external call unlocks this script - a slow handler loses
+; the race against spam-clicked purchases, which force illegal items through (reported by
+; the OSL Licenses author, who hit the same wall). Static form facts (armor class,
+; enchantment, keywords) are classified once per form into a persistent StorageUtil int;
+; licence state is snapshotted at menu open (it can't change while barter pauses the game).
+; Exception-list membership is deliberately NOT cached - the MCM can add/remove exceptions
+; at runtime - but those lookups only run for items already failing on licences.
+
 Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemReference, ObjectReference akSourceContainer)
 	If akBaseItem == Gold001
 		LastGoldAmount = aiItemCount
-	
+
 	Else
-		If akBaseItem as Armor
-			If !_SLS_LicExceptionsArmor.HasForm(akBaseItem)
-				If (akBaseItem as Armor).GetWeightClass() < 2
-					If !LicUtil.HasValidArmorLicence && !LicUtil.HasValidBikiniLicence
-						CeaseTrading(akBaseItem, aiItemCount, akSourceContainer, Transaction = false)
-					EndIf
-				
-				Else
-					If (akBaseItem as Armor).GetEnchantment() != None
-						If LicUtil.LicMagicEnable && !LicUtil.HasValidMagicLicence
-							CeaseTrading(akBaseItem, aiItemCount, akSourceContainer, Transaction = false)
-						EndIf
-					EndIf
-					If !LicUtil.HasValidClothesLicence
-						If LicUtil.LicClothesEnable == 1
-							CeaseTrading(akBaseItem, aiItemCount, akSourceContainer, Transaction = false)
-						
-						ElseIf LicUtil.LicClothesEnable == 2 && !IsFreeTown
-							CeaseTrading(akBaseItem, aiItemCount, akSourceContainer, Transaction = false)
-						EndIf
-					EndIf
-				EndIf
-			EndIf
-		
-		ElseIf akBaseItem as Weapon || akBaseItem as Ammo
-			If !LicUtil.HasValidWeaponLicence && !_SLS_LicExceptionsWeapon.HasForm(akBaseItem) && !akBaseItem.HasKeyword(VendorItemStaff)
-				CeaseTrading(akBaseItem, aiItemCount, akSourceContainer, Transaction = false)
-			ElseIf LicUtil.LicMagicEnable && !LicUtil.HasValidMagicLicence && akBaseItem.HasKeyword(VendorItemStaff)
-				CeaseTrading(akBaseItem, aiItemCount, akSourceContainer, Transaction = false)
-			EndIf
-			
-		ElseIf akBaseItem.HasKeyword(VendorItemSpellTome)
-			If LicUtil.LicMagicEnable && !LicUtil.HasValidMagicLicence
-				CeaseTrading(akBaseItem, aiItemCount, akSourceContainer, Transaction = false)
-			EndIf
+		Int Cat = StorageUtil.GetIntValue(akBaseItem, "_SLS_TradeCat", missing = -1)
+		If Cat == -1
+			; First sight (cell-placed vendor item, mid-menu addition) - classify once.
+			; Vanilla lets merchants sell havoked items placed in the owned cell; those
+			; have no source container so no prefilter can enumerate them, but they are
+			; unique refs (no stack to spam), so the slow path is safe for them.
+			Cat = ClassifyForm(akBaseItem)
+		EndIf
+		If IsTradeBlocked(Cat, akBaseItem, IsBuying = true)
+			CeaseTrading(akBaseItem, aiItemCount, akSourceContainer, Transaction = false)
 		EndIf
 		SaveSpeech()
 	EndIf
@@ -78,45 +68,113 @@ EndEvent
 Event OnItemRemoved(Form akBaseItem, int aiItemCount, ObjectReference akItemReference, ObjectReference akDestContainer)
 	If akBaseItem == Gold001
 		LastGoldAmount = aiItemCount
-	
+
 	Else
-		If akBaseItem as Armor
-			If (akBaseItem as Armor).GetWeightClass() < 2
-				If !LicUtil.HasValidArmorLicence && !LicUtil.HasValidBikiniLicence
-					CeaseTrading(akBaseItem, aiItemCount, akDestContainer, Transaction = true)
-				EndIf
-			
-			Else
-				If (akBaseItem as Armor).GetEnchantment() != None
-					If LicUtil.LicMagicEnable && !LicUtil.HasValidMagicLicence
-						CeaseTrading(akBaseItem, aiItemCount, akDestContainer, Transaction = true)
-					EndIf
-				EndIf
-				If !LicUtil.HasValidClothesLicence
-					If LicUtil.LicClothesEnable == 1
-						CeaseTrading(akBaseItem, aiItemCount, akDestContainer, Transaction = true)
-					
-					ElseIf LicUtil.LicClothesEnable == 2 && !IsFreeTown
-						CeaseTrading(akBaseItem, aiItemCount, akDestContainer, Transaction = true)
-					EndIf
-				EndIf
-			EndIf
-		
-		ElseIf akBaseItem as Weapon || akBaseItem as Ammo
-			If !LicUtil.HasValidWeaponLicence && !_SLS_LicExceptionsWeapon.HasForm(akBaseItem) && !akBaseItem.HasKeyword(VendorItemStaff)
-				CeaseTrading(akBaseItem, aiItemCount, akDestContainer, Transaction = true)
-			ElseIf LicUtil.LicMagicEnable && !LicUtil.HasValidMagicLicence && akBaseItem.HasKeyword(VendorItemStaff)
-				CeaseTrading(akBaseItem, aiItemCount, akDestContainer, Transaction = true)
-			EndIf
-			
-		ElseIf akBaseItem.HasKeyword(VendorItemSpellTome)
-			If LicUtil.LicMagicEnable && !LicUtil.HasValidMagicLicence
-				CeaseTrading(akBaseItem, aiItemCount, akDestContainer, Transaction = true)
-			EndIf
+		Int Cat = StorageUtil.GetIntValue(akBaseItem, "_SLS_TradeCat", missing = -1)
+		If Cat == -1
+			Cat = ClassifyForm(akBaseItem)
+		EndIf
+		If IsTradeBlocked(Cat, akBaseItem, IsBuying = false)
+			CeaseTrading(akBaseItem, aiItemCount, akDestContainer, Transaction = true)
 		EndIf
 		SaveSpeech()
 	EndIf
 EndEvent
+
+; Static classification, cached per form for the whole save. Categories: 0 - never
+; licence-relevant, 1 - real armor (weight class < 2), 2 - plain clothing, 3 - enchanted
+; clothing, 4 - weapon/ammo, 5 - staff, 6 - spell tome. Player-enchanted items are new
+; dynamic forms, so they classify fresh; StorageUtil purges deleted forms on load.
+Int Function ClassifyForm(Form akBaseItem)
+	Int Cat = 0
+	If akBaseItem as Armor
+		If (akBaseItem as Armor).GetWeightClass() < 2
+			Cat = 1
+		ElseIf (akBaseItem as Armor).GetEnchantment() != None
+			Cat = 3
+		Else
+			Cat = 2
+		EndIf
+	ElseIf akBaseItem as Weapon || akBaseItem as Ammo
+		If akBaseItem.HasKeyword(VendorItemStaff)
+			Cat = 5
+		Else
+			Cat = 4
+		EndIf
+	ElseIf akBaseItem.HasKeyword(VendorItemSpellTome)
+		Cat = 6
+	EndIf
+	StorageUtil.SetIntValue(akBaseItem, "_SLS_TradeCat", Cat)
+	Return Cat
+EndFunction
+
+Bool Function IsTradeBlocked(Int Cat, Form akBaseItem, Bool IsBuying)
+	; In-script snapshot checks come first so the external exception-list lookups only
+	; run for items that already fail on licences. The armor exceptions list exempts
+	; buying only (selling has never consulted it); the weapon list exempts both ways.
+	If Cat == 1
+		If !SnapArmorLic && !SnapBikiniLic
+			Return !IsBuying || !_SLS_LicExceptionsArmor.HasForm(akBaseItem)
+		EndIf
+	ElseIf Cat == 2 || Cat == 3
+		If (Cat == 3 && SnapMagicEnable && !SnapMagicLic) || GetClothesRuleBlocks()
+			Return !IsBuying || !_SLS_LicExceptionsArmor.HasForm(akBaseItem)
+		EndIf
+	ElseIf Cat == 4
+		If !SnapWeaponLic
+			Return !_SLS_LicExceptionsWeapon.HasForm(akBaseItem)
+		EndIf
+	ElseIf Cat == 5 || Cat == 6
+		Return SnapMagicEnable && !SnapMagicLic
+	EndIf
+	Return false
+EndFunction
+
+Bool Function GetClothesRuleBlocks()
+	If SnapClothesEnable == 1
+		Return !SnapClothesLic
+	ElseIf SnapClothesEnable == 2
+		Return !SnapClothesLic && !IsFreeTown
+	EndIf
+	Return false
+EndFunction
+
+Function SnapshotLicences()
+	SnapArmorLic = LicUtil.HasValidArmorLicence
+	SnapBikiniLic = LicUtil.HasValidBikiniLicence
+	SnapClothesLic = LicUtil.HasValidClothesLicence
+	SnapWeaponLic = LicUtil.HasValidWeaponLicence
+	SnapMagicLic = LicUtil.HasValidMagicLicence
+	SnapMagicEnable = LicUtil.LicMagicEnable
+	SnapClothesEnable = LicUtil.LicClothesEnable
+EndFunction
+
+Function WarmCategoryCache()
+	; Pre-classify the vendor's container stock so its first spam-click session is
+	; already on the fast path. Vendors sell from merchant chests (via faction vendor
+	; data), their own inventory, and cell-placed refs - the last group has no
+	; container to walk and warms through classify-on-first-sight instead.
+	WarmForms(PO3_SKSEFunctions.AddAllItemsToArray(Trader, abNoEquipped = false))
+	Faction[] TraderFactions = Trader.GetFactions(-128, 127)
+	Int i = 0
+	While i < TraderFactions.Length
+		ObjectReference MerchantChest = TraderFactions[i].GetMerchantContainer()
+		If MerchantChest
+			WarmForms(PO3_SKSEFunctions.AddAllItemsToArray(MerchantChest, abNoEquipped = false))
+		EndIf
+		i += 1
+	EndWhile
+EndFunction
+
+Function WarmForms(Form[] Items)
+	Int i = 0
+	While i < Items.Length
+		If StorageUtil.GetIntValue(Items[i], "_SLS_TradeCat", missing = -1) == -1
+			ClassifyForm(Items[i])
+		EndIf
+		i += 1
+	EndWhile
+EndFunction
 
 Function CeaseTrading(Form akBaseItem, Int aiItemCount, ObjectReference akDestContainer, Bool Transaction) ; Transaction - true = selling, false = buying
 	While Utility.IsInMenuMode()
@@ -192,6 +250,16 @@ Int LastGoldAmount
 Actor Trader
 Bool IsFreeTown = true
 Bool MwaInstalled = false
+
+; Licence state snapshotted at barter open - barter pauses the game, so it cannot
+; change mid-session, and reading it per event was most of the handler's latency
+Bool SnapArmorLic
+Bool SnapBikiniLic
+Bool SnapClothesLic
+Bool SnapWeaponLic
+Bool SnapMagicLic
+Bool SnapMagicEnable
+Int SnapClothesEnable
 
 Float SpeechExp
 Float SpeechLevel
