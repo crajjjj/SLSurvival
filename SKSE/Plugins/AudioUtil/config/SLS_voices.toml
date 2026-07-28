@@ -21,6 +21,7 @@
 [[slot]]
 id = "SLS1"
 sex = "all"
+script_only = true   # played directly via PlayVoiceFromSlot; suppresses the wiring-audit orphan warning
 [slot.categories]
 Help = 'Sound\fx\SL Survival\Help'
 CatCall = 'Sound\fx\SL Survival\Cat Calls'
