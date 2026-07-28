@@ -18,6 +18,16 @@ Function DoDependencyCheck()
 EndFunction
 
 Event OnMenuOpen(String MenuName)
+	; The owning quest is stopped whenever trade restrictions are off - which the master
+	; Licences toggle forces when the whole licence system is disabled. Quest.Stop() does NOT
+	; clear RegisterForMenu though (same stale-registration trap as the 0.710 ahegao bug), so
+	; this event still fires on a stopped quest; bail on the quest state so a disabled licence
+	; system never enforces at the counter. Re-arm the filter first in case a prior session
+	; left it off (e.g. a barter closed without OnMenuClose), so no transaction event slips in.
+	If !GetOwningQuest().IsRunning()
+		AddInventoryEventFilter(_SLS_NeverAddedItem)
+		Return
+	EndIf
 	SaveSpeech()
 	Trader = Game.GetCurrentCrosshairRef() as Actor
 	If Trader && !_SLS_TraderListExceptions.HasForm(Trader) && !Trader.IsInFaction(JobFenceFaction) && !Trader.IsInFaction(KhajiitCaravanFaction)
