@@ -27,6 +27,7 @@ Event OnMenuOpen(String MenuName)
 		; still leaves enforcement working through the classify-on-first-sight path.
 		GetIsEnslavedTown()
 		SnapshotLicences()
+		ResetTradeSession()
 		RemoveAllInventoryEventFilters()
 		WarmCategoryCache()
 	EndIf
@@ -34,31 +35,38 @@ EndEvent
 
 Event OnMenuClose(String MenuName)
 	AddInventoryEventFilter(_SLS_NeverAddedItem)
+	ResetTradeSession() ; the verdict lists are per-barter scratch - keep them out of the save
 EndEvent
+
+Function ResetTradeSession()
+	StorageUtil.FormListClear(None, "_SLS_TradeSeen")
+	StorageUtil.FormListClear(None, "_SLS_TradeBlockBuy")
+	StorageUtil.FormListClear(None, "_SLS_TradeBlockSell")
+EndFunction
 
 ; The per-event work here must stay minimal: the engine caps how many Papyrus events it
 ; dispatches per frame, and every external call unlocks this script - a slow handler loses
 ; the race against spam-clicked purchases, which force illegal items through (reported by
-; the OSL Licenses author, who hit the same wall). Static form facts (armor class,
-; enchantment, keywords) are classified once per form into a persistent StorageUtil int;
-; licence state is snapshotted at menu open (it can't change while barter pauses the game).
-; Exception-list membership is deliberately NOT cached - the MCM can add/remove exceptions
-; at runtime - but those lookups only run for items already failing on licences.
+; the OSL Licenses author, who hit the same wall). Verdicts are baked per barter session:
+; licence state is snapshotted at menu open (barter pauses the game, and the MCM cannot
+; open mid-barter, so exception-list membership is equally fixed), and each form's verdict
+; is computed once into per-session seen/blocked lists - rebuilt fresh every barter, so
+; nothing persists to go stale (mod updates, KID/SPID keywords, runtime form edits) and
+; nothing accumulates in the save. The seen list is what makes the warm window safe: a
+; blocklist alone cannot tell "checked and legal" from "not yet checked".
 
 Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemReference, ObjectReference akSourceContainer)
 	If akBaseItem == Gold001
 		LastGoldAmount = aiItemCount
 
 	Else
-		Int Cat = StorageUtil.GetIntValue(akBaseItem, "_SLS_TradeCat", missing = -1)
-		If Cat == -1
-			; First sight (cell-placed vendor item, mid-menu addition) - classify once.
-			; Vanilla lets merchants sell havoked items placed in the owned cell; those
-			; have no source container so no prefilter can enumerate them, but they are
-			; unique refs (no stack to spam), so the slow path is safe for them.
-			Cat = ClassifyForm(akBaseItem)
+		If !StorageUtil.FormListHas(None, "_SLS_TradeSeen", akBaseItem)
+			; First sight - classify now. Covers cell-placed vendor items too (vanilla
+			; sells havoked refs with no source container, so no prefilter can
+			; enumerate them - but they are unique refs with no stack to spam).
+			ClassifyForm(akBaseItem)
 		EndIf
-		If IsTradeBlocked(Cat, akBaseItem, IsBuying = true)
+		If StorageUtil.FormListHas(None, "_SLS_TradeBlockBuy", akBaseItem)
 			CeaseTrading(akBaseItem, aiItemCount, akSourceContainer, Transaction = false)
 		EndIf
 		SaveSpeech()
@@ -70,64 +78,55 @@ Event OnItemRemoved(Form akBaseItem, int aiItemCount, ObjectReference akItemRefe
 		LastGoldAmount = aiItemCount
 
 	Else
-		Int Cat = StorageUtil.GetIntValue(akBaseItem, "_SLS_TradeCat", missing = -1)
-		If Cat == -1
-			Cat = ClassifyForm(akBaseItem)
+		If !StorageUtil.FormListHas(None, "_SLS_TradeSeen", akBaseItem)
+			ClassifyForm(akBaseItem)
 		EndIf
-		If IsTradeBlocked(Cat, akBaseItem, IsBuying = false)
+		If StorageUtil.FormListHas(None, "_SLS_TradeBlockSell", akBaseItem)
 			CeaseTrading(akBaseItem, aiItemCount, akDestContainer, Transaction = true)
 		EndIf
 		SaveSpeech()
 	EndIf
 EndEvent
 
-; Static classification, cached per form for the whole save. Categories: 0 - never
-; licence-relevant, 1 - real armor (weight class < 2), 2 - plain clothing, 3 - enchanted
-; clothing, 4 - weapon/ammo, 5 - staff, 6 - spell tome. Player-enchanted items are new
-; dynamic forms, so they classify fresh; StorageUtil purges deleted forms on load.
-Int Function ClassifyForm(Form akBaseItem)
-	Int Cat = 0
+; Classify one form and bake its buy/sell verdicts into this barter session's lists.
+; The armor exceptions list exempts buying only (selling has never consulted it); the
+; weapon list exempts both directions; staffs and tomes consult no exception list.
+; The form goes on the seen list LAST, so a racing event can never see "seen" before
+; the verdicts have landed - the worst race outcome is a harmless double classify.
+Function ClassifyForm(Form akBaseItem)
+	Bool BlockBuy = false
+	Bool BlockSell = false
 	If akBaseItem as Armor
-		If (akBaseItem as Armor).GetWeightClass() < 2
-			Cat = 1
-		ElseIf (akBaseItem as Armor).GetEnchantment() != None
-			Cat = 3
-		Else
-			Cat = 2
+		If (akBaseItem as Armor).GetWeightClass() < 2 ; real armor - enchantment never mattered here
+			BlockSell = !SnapArmorLic && !SnapBikiniLic
+		Else ; clothing
+			BlockSell = GetClothesRuleBlocks()
+			If !BlockSell && SnapMagicEnable && !SnapMagicLic
+				BlockSell = (akBaseItem as Armor).GetEnchantment() != None
+			EndIf
+		EndIf
+		If BlockSell
+			BlockBuy = !_SLS_LicExceptionsArmor.HasForm(akBaseItem)
 		EndIf
 	ElseIf akBaseItem as Weapon || akBaseItem as Ammo
 		If akBaseItem.HasKeyword(VendorItemStaff)
-			Cat = 5
+			BlockBuy = SnapMagicEnable && !SnapMagicLic
 		Else
-			Cat = 4
+			BlockBuy = !SnapWeaponLic && !_SLS_LicExceptionsWeapon.HasForm(akBaseItem)
 		EndIf
+		BlockSell = BlockBuy
 	ElseIf akBaseItem.HasKeyword(VendorItemSpellTome)
-		Cat = 6
+		BlockBuy = SnapMagicEnable && !SnapMagicLic
+		BlockSell = BlockBuy
 	EndIf
-	StorageUtil.SetIntValue(akBaseItem, "_SLS_TradeCat", Cat)
-	Return Cat
-EndFunction
 
-Bool Function IsTradeBlocked(Int Cat, Form akBaseItem, Bool IsBuying)
-	; In-script snapshot checks come first so the external exception-list lookups only
-	; run for items that already fail on licences. The armor exceptions list exempts
-	; buying only (selling has never consulted it); the weapon list exempts both ways.
-	If Cat == 1
-		If !SnapArmorLic && !SnapBikiniLic
-			Return !IsBuying || !_SLS_LicExceptionsArmor.HasForm(akBaseItem)
-		EndIf
-	ElseIf Cat == 2 || Cat == 3
-		If (Cat == 3 && SnapMagicEnable && !SnapMagicLic) || GetClothesRuleBlocks()
-			Return !IsBuying || !_SLS_LicExceptionsArmor.HasForm(akBaseItem)
-		EndIf
-	ElseIf Cat == 4
-		If !SnapWeaponLic
-			Return !_SLS_LicExceptionsWeapon.HasForm(akBaseItem)
-		EndIf
-	ElseIf Cat == 5 || Cat == 6
-		Return SnapMagicEnable && !SnapMagicLic
+	If BlockBuy
+		StorageUtil.FormListAdd(None, "_SLS_TradeBlockBuy", akBaseItem, allowDuplicate = false)
 	EndIf
-	Return false
+	If BlockSell
+		StorageUtil.FormListAdd(None, "_SLS_TradeBlockSell", akBaseItem, allowDuplicate = false)
+	EndIf
+	StorageUtil.FormListAdd(None, "_SLS_TradeSeen", akBaseItem, allowDuplicate = false)
 EndFunction
 
 Bool Function GetClothesRuleBlocks()
@@ -169,7 +168,7 @@ EndFunction
 Function WarmForms(Form[] Items)
 	Int i = 0
 	While i < Items.Length
-		If StorageUtil.GetIntValue(Items[i], "_SLS_TradeCat", missing = -1) == -1
+		If !StorageUtil.FormListHas(None, "_SLS_TradeSeen", Items[i])
 			ClassifyForm(Items[i])
 		EndIf
 		i += 1
