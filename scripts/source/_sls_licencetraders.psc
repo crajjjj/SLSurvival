@@ -8,6 +8,11 @@ EndEvent
 
 Event OnPlayerLoadGame()
 	DoDependencyCheck()
+	; Inventory event filters are runtime-only and do NOT survive save/load. Without this,
+	; a load leaves the whitelist empty (all item events fire) until the next barter closes
+	; and re-arms it - so the handler would classify every item picked up in between.
+	; Re-slam it shut on load; OnMenuOpen re-opens it per barter as needed.
+	AddInventoryEventFilter(_SLS_NeverAddedItem)
 EndEvent
 
 Function DoDependencyCheck()
