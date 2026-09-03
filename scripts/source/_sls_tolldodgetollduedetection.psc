@@ -7,6 +7,9 @@ Event OnInit()
 EndEvent
 
 Event OnUpdate()
+	If !Self.IsRunning() ; Quest.Stop() doesn't unregister a pending update - don't flag toll due after leaving the city
+		Return
+	EndIf
 	_SLS_TollDodgeGuardSearch.Stop()
 	_SLS_TollDodgeGuardSearch.Start()
 	
@@ -20,8 +23,8 @@ Event OnUpdate()
 				Debug.Notification("The guards have spotted me. They'll expect the toll be paid before I leave";/ + Guard.GetBaseObject().GetName()/;)
 				Debug.Trace("_SLS_: The guards have spotted me: " + Guard + " - " + Guard.GetBaseObject().GetName())
 				TollDodge.SetTollDue(TollDodge.LastTollLocation, true)
-				Return
 				Self.Stop()
+				Return
 			EndIf
 		EndIf
 	EndWhile

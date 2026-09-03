@@ -61,8 +61,12 @@ Function SetTollDue(String TollLocation, Bool IsDue)
 		EndIf
 		
 	Else
-		Debug.Messagebox("Loc not known")
-		
+		; LastTollLocation is cleared when the player leaves the city, but a toll-due
+		; detection update already in flight can still land here - log it and bail
+		; without touching TollIsDue so a stale detection can't flag a toll outside.
+		Debug.Trace("_SLS_: SetTollDue: unknown toll location '" + LastTollLocation + "' (IsDue=" + IsDue + ")")
+		Return
+
 	EndIf
 	TollIsDue = IsDue
 	;Debug.Messagebox("Toll due in " + TollLocation + ": " + IsDue)
