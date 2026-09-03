@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.712
+	Version = 0.713
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -791,6 +791,13 @@ Function VersionCheck()
 	; Script-only, no save migration.
 	If Version < 0.712
 		UpdateVersion(0.712)
+	EndIf
+
+	; 0.713 stops the toll-due detection quest from flagging a toll after the player has
+	; already left the city: its pending update survived Quest.Stop(), and the flagging path
+	; never actually stopped the quest. Script-only, no save migration.
+	If Version < 0.713
+		UpdateVersion(0.713)
 	EndIf
 EndFunction
 
