@@ -5,8 +5,8 @@ Float Function GetCumCapacityMax(Quest FhuConfigQuest) Global
 EndFunction
 
 Float Function GetOralCumCapacityMax(Quest FhuConfigQuest) Global
-	; Oral has its own pool size in FHU 2.x. Returns 0.0 on FHU 1.x (property absent there),
-	; so callers must guard the divide.
+	; Oral has its own pool size, separate from maxInflation. sr_inflateConfig builds without
+	; the property (pre-Baka FHU) read back as 0.0 and log, so callers must guard the divide.
 	Return (FhuConfigQuest as sr_inflateConfig).OralmaxInflation
 EndFunction
 

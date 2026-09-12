@@ -1398,19 +1398,18 @@ Function TattooNpc()
 	Actor akActor = XhairTarget as Actor
 	If !akActor
 		Debug.Notification("I need to be looking at someone to do that")
+		Return
 	EndIf
-	If akActor
-		If PlayerRef.GetItemCount(Charcoal) > 0
-			If (Init.PahInstalled && akActor.IsInFaction(Init.PahFaction)) || (Init.SbcInstalled && akActor.IsInFaction(Init.SbcFaction)) || (Init.ZazInstalled && akActor.IsInFaction(Init.ZazSlaveFaction)) || !Devious.AreHandsAvailable(akActor)
-				Debug.SendAnimationEvent(PlayerRef, "IdleLockPick")
-				RapeTats.AddRapeTat(akActor)
-				PlayerRef.RemoveItem(Charcoal, 1)
-			Else
-				Debug.Notification(akActor.GetLeveledActorBase().GetName() + ": I don't think so!")
-			EndIf
-		Else
-			Debug.Notification("I need some charcoal to do that")
-		EndIf
+	If PlayerRef.GetItemCount(Charcoal) <= 0
+		Debug.Notification("I need some charcoal to do that")
+		Return
+	EndIf
+	If (Init.PahInstalled && akActor.IsInFaction(Init.PahFaction)) || (Init.SbcInstalled && akActor.IsInFaction(Init.SbcFaction)) || (Init.ZazInstalled && akActor.IsInFaction(Init.ZazSlaveFaction)) || !Devious.AreHandsAvailable(akActor)
+		Debug.SendAnimationEvent(PlayerRef, "IdleLockPick")
+		RapeTats.AddRapeTat(akActor)
+		PlayerRef.RemoveItem(Charcoal, 1)
+	Else
+		Debug.Notification(akActor.GetLeveledActorBase().GetName() + ": I don't think so!")
 	EndIf
 EndFunction
 
@@ -2543,7 +2542,7 @@ Int Function ShowStatusMenu()
 	If Fhu.GetState() == "Installed"
 		;Float CumCapacity = Fhu.GetCumCapacityMax()
 		String FhuStatus = "Cum In My Pussy: " + (((Fhu.GetCurrentCumVaginal(PlayerRef) / CumCapacity) * 100.0) as Int) + "%" + ". Cum In My Ass: " + (((Fhu.GetCurrentCumAnal(PlayerRef) / CumCapacity) * 100.0) as Int) + "%"
-		Float OralCapacity = Fhu.GetOralCumCapacityMax() ; Oral pool exists on FHU 2.x only - 0.0 on 1.x
+		Float OralCapacity = Fhu.GetOralCumCapacityMax() ; 0.0 on FHU builds with no separate oral pool
 		If OralCapacity > 0.0
 			FhuStatus += ". Mouth: " + (((Fhu.GetCurrentCumOral(PlayerRef) / OralCapacity) * 100.0) as Int) + "%"
 		EndIf
@@ -2656,7 +2655,7 @@ Int Function ShowStatusMenu()
 			ListMenu.AddEntryItem("Cum Fullness: " + SnipToDecimalPlaces(StrInput = (Util.GetLoadFullnessMod(CrosshairRef) * 100.0), Places = 1) + "%")
 		ElseIf Fhu.GetState() == "Installed"
 			String FhuTargetStatus = "Cum in her ass: " + (((Fhu.GetCurrentCumAnal(CrosshairRef) / CumCapacity) * 100.0) as Int) + "%. Pussy: " + (((Fhu.GetCurrentCumVaginal(CrosshairRef) / CumCapacity) * 100.0) as Int) + "%"
-			Float OralCapacityT = Fhu.GetOralCumCapacityMax() ; 0.0 on FHU 1.x - no oral pool there
+			Float OralCapacityT = Fhu.GetOralCumCapacityMax() ; 0.0 on FHU builds with no separate oral pool
 			If OralCapacityT > 0.0
 				FhuTargetStatus += ". Mouth: " + (((Fhu.GetCurrentCumOral(CrosshairRef) / OralCapacityT) * 100.0) as Int) + "%"
 			EndIf
