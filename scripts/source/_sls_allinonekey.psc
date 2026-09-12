@@ -137,14 +137,27 @@ Function SelfMenu(Bool IsShortcut = false)
 	If MenuSelect == -1
 		MainMenu()
 	ElseIf MenuSelect == 1 ; Open/Close Mouth
-		CumSwallow.OnKeyDown(0)
-		GoToState("OpenCloseMouth")
+		; Requirement checks message instead of greying out - a dead option doesn't tell the player why
+		If Devious.IsPlayerGagged()
+			Debug.Notification("I can't move my mouth with this gag on")
+		Else
+			CumSwallow.OnKeyDown(0)
+			GoToState("OpenCloseMouth")
+		EndIf
 	ElseIf MenuSelect == 0 ; Cover self
-		CoverMyself.OnKeyDown(0)
-		GoToState("CoverMyself")
+		If _SLS_BodyCoverStatus.GetValueInt() != 0
+			Debug.Notification("I'm dressed - no need to cover myself")
+		Else
+			CoverMyself.OnKeyDown(0)
+			GoToState("CoverMyself")
+		EndIf
 	ElseIf MenuSelect == 2
-		TongueMenu()
-		GoToState("Tongue")
+		If !Devious.CanDoOral(PlayerRef)
+			Debug.Notification("I can't do anything with my tongue right now")
+		Else
+			TongueMenu()
+			GoToState("Tongue")
+		EndIf
 	ElseIf MenuSelect == 3
 		BeginLookAt()
 		GoToState("LookAt")
@@ -205,9 +218,10 @@ Int Function ShowSelfMenu()
 	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 6, value = PlayWithMyselfString)
 	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 7, value = "Dance ")
 	
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 0, value = _SLS_BodyCoverStatus.GetValueInt() == 0)
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 1, value = !Devious.IsPlayerGagged())
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 2, value = Devious.CanDoOral(PlayerRef))
+	; Kept selectable even when the requirement fails - SelfMenu() explains why in a notification
+	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 0, value = true)
+	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 1, value = true)
+	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 2, value = true)
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 3, value = true)
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 4, value = true)
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 5, value = true)
@@ -451,17 +465,19 @@ Int Function ShowChangeStanceMenu()
 	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 0, value = CrawlString)
 	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 1, value = KneelString)
 	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 2, value = "Bend Over")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 3, value = "Sexy Move")
-	
+	If Game.GetModByName("FNISSexyMove.esp") != 255 ; Hidden entirely without FNIS Sexy Move
+		wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 3, value = "Sexy Move")
+		wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 3, value = "Sexy Move")
+		wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 3, value = (!Init.IsKneeling && !Init.IsCrawling))
+	EndIf
+
 	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 0, value = CrawlString)
 	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 1, value = KneelString)
 	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 2, value = "Bend Over")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 3, value = "Sexy Move")
-	
+
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 0, value = !Init.IsKneeling)
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 1, value = !Init.IsCrawling)
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 2, value = (!Init.IsKneeling && !Init.IsCrawling))
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 3, value = (!Init.IsKneeling && !Init.IsCrawling) && Game.GetModByName("FNISSexyMove.esp") != 255)
 	
 	Return wheelMenu.OpenMenu()
 EndFunction
@@ -1069,15 +1085,17 @@ EndFunction
 Int Function ShowCumMenu()
 	UIMenuBase wheelMenu = UIExtensions.GetMenu("UIWheelMenu")
 
-	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 0, value = "Drain Cum")
+	If Game.GetModByName("sr_FillHerUp.esp") != 255 ; Hide entirely (blank slice) when FHU is absent - index 0 stays reserved so the handler mapping holds
+		wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 0, value = "Drain Cum")
+		wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 0, value = "Drain Cum")
+		wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 0, value = true)
+	EndIf
 	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 1, value = "Collect Cum")
 	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 2, value = "Pour Cum")
-	
-	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 0, value = "Drain Cum")
+
 	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 1, value = "Collect Cum")
 	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 2, value = "Pour Cum")
-	
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 0, value = Game.GetModByName("sr_FillHerUp.esp") != 255)
+
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 1, value = true)
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 2, value = true)
 	
@@ -1085,24 +1103,40 @@ Int Function ShowCumMenu()
 EndFunction
 
 Function CollectCumMenu(Bool IsShortcut = false)
-	If Bis.GetPlayerDirt() < 0.6
-		If Devious.AreHandsAvailable(PlayerRef)
-			Int MenuSelect = ShowCollectCumMenu()
-			If MenuSelect == -1 && !IsShortcut
-				CumMenu()
-			ElseIf MenuSelect == 0
-				CumAddict.FillCumtainerFromFace(PlayerRef)
-			ElseIf MenuSelect == 1
-				CumAddict.FillCumtainerFromPussy(PlayerRef)
-			ElseIf MenuSelect == 2
-				CumAddict.FillCumtainerFromAss(PlayerRef)
-			EndIf
-		
-		Else
-			Debug.Notification("I can't do that with my hands tied")
-		EndIf
-	Else
+	; Explain every unmet requirement instead of silently doing nothing - the cumtainer/cum
+	; prerequisites aren't discoverable any other way
+	If Bis.GetPlayerDirt() >= 0.6
 		Debug.Notification("I'm too dirty to recover any cum")
+		Return
+	EndIf
+	If !Devious.AreHandsAvailable(PlayerRef)
+		Debug.Notification("I can't do that with my hands tied")
+		Return
+	EndIf
+	If !CumAddict.HasCumtainer(PlayerRef) ; Notifies "I need an empty cumtainer" itself
+		Return
+	EndIf
+	Int MenuSelect = ShowCollectCumMenu()
+	If MenuSelect == -1 && !IsShortcut
+		CumMenu()
+	ElseIf MenuSelect == 0
+		If Sexlab.CountCumOral(PlayerRef) >= 2
+			CumAddict.FillCumtainerFromFace(PlayerRef)
+		Else
+			Debug.Notification("There isn't enough cum on my face and tits to fill a cumtainer")
+		EndIf
+	ElseIf MenuSelect == 1
+		If Sexlab.CountCumVaginal(PlayerRef) >= 2
+			CumAddict.FillCumtainerFromPussy(PlayerRef)
+		Else
+			Debug.Notification("There isn't enough cum on my pussy and belly to fill a cumtainer")
+		EndIf
+	ElseIf MenuSelect == 2
+		If Sexlab.CountCumAnal(PlayerRef) >= 2
+			CumAddict.FillCumtainerFromAss(PlayerRef)
+		Else
+			Debug.Notification("There isn't enough cum on my ass and back to fill a cumtainer")
+		EndIf
 	EndIf
 EndFunction
 
@@ -1117,9 +1151,10 @@ Int Function ShowCollectCumMenu()
 	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 1, value = "From My Pussy & Belly")
 	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 2, value = "From My Ass & Back")
 	
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 0, value = Sexlab.CountCumOral(PlayerRef) >= 2)
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 1, value = Sexlab.CountCumVaginal(PlayerRef) >= 2)
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 2, value = Sexlab.CountCumAnal(PlayerRef) >= 2)
+	; Kept selectable - CollectCumMenu() explains the missing cum layers in a notification
+	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 0, value = true)
+	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 1, value = true)
+	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 2, value = true)
 	
 	Return wheelMenu.OpenMenu()
 EndFunction
@@ -1199,6 +1234,10 @@ Function ShowCumPotionList(Actor akActor)
 			StorageUtil.FormListAdd(Self, "_SLS_CumPotionListTemp", _SLS_CumPotionAll.GetAt(i))
 		EndIf
 	EndWhile
+	If StorageUtil.FormListCount(Self, "_SLS_CumPotionListTemp") == 0
+		Debug.Notification("I don't have any filled cumtainers to pour")
+		Return
+	EndIf
 	ListMenu.OpenMenu()
 	Int Result = ListMenu.GetResultInt()
 	If Result > 0
@@ -1218,8 +1257,12 @@ Function MoreActionsMenu(Bool IsShortcut = false)
 		SpankNpc()
 		GoToState("SpankNpc")
 	ElseIf MenuResult == 2
-		Mme.MilkPlayer()
-		GoToState("MilkMyself")
+		If StorageUtil.GetFloatValue(PlayerRef, "MME.MilkMaid.MilkCount", Missing = -1.0) < 1.0
+			Debug.Notification("My breasts aren't full enough to milk")
+		Else
+			Mme.MilkPlayer()
+			GoToState("MilkMyself")
+		EndIf
 	ElseIf MenuResult == 3
 		UntieNpc()
 		GoToState("UntieNpc")
@@ -1236,25 +1279,36 @@ EndFunction
 Int Function ShowMoreActionsMenu()
 	UIMenuBase wheelMenu = UIExtensions.GetMenu("UIWheelMenu")
 	
+	; Mod-gated options are hidden entirely (blank slice) when the mod is absent; indices stay
+	; fixed so the MoreActionsMenu() handler mapping holds
 	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 0, value = "Cry For Help")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 1, value = "Spank Npc")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 2, value = "Milk Myself")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 3, value = "Devices ")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 4, value = "Tattoo Npc")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 5, value = "Beg For Cock")
-
 	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 0, value = "Cry For Help")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 1, value = "Spank Npc")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 2, value = "Milk Myself")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 3, value = "Devices ")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 4, value = "Tattoo Npc")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 5, value = "Beg For Cock")
-	
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 0, value = true)
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 1, value = Game.GetModByName("Spank That Ass.esp") != 255)
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 2, value = (Game.GetModByName("MilkModNEW.esp") != 255) && StorageUtil.GetFloatValue(PlayerRef, "MME.MilkMaid.MilkCount", Missing = -1.0) >= 1.0)
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 3, value = (Game.GetModByName("Devious Devices - Expansion.esm") != 255))
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 4, value = XhairTarget as Actor)
+
+	If Game.GetModByName("Spank That Ass.esp") != 255
+		wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 1, value = "Spank Npc")
+		wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 1, value = "Spank Npc")
+		wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 1, value = true)
+	EndIf
+
+	If Game.GetModByName("MilkModNEW.esp") != 255
+		wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 2, value = "Milk Myself")
+		wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 2, value = "Milk Myself")
+		wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 2, value = true) ; Low milk explained on select
+	EndIf
+
+	If Game.GetModByName("Devious Devices - Expansion.esm") != 255
+		wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 3, value = "Devices ")
+		wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 3, value = "Devices ")
+		wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 3, value = true)
+	EndIf
+
+	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 4, value = "Tattoo Npc")
+	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 4, value = "Tattoo Npc")
+	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 4, value = true) ; No-target explained on select
+
+	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 5, value = "Beg For Cock")
+	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 5, value = "Beg For Cock")
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 5, value = true)
 	
 	Return wheelMenu.OpenMenu()
@@ -1342,6 +1396,9 @@ EndFunction
 
 Function TattooNpc()
 	Actor akActor = XhairTarget as Actor
+	If !akActor
+		Debug.Notification("I need to be looking at someone to do that")
+	EndIf
 	If akActor
 		If PlayerRef.GetItemCount(Charcoal) > 0
 			If (Init.PahInstalled && akActor.IsInFaction(Init.PahFaction)) || (Init.SbcInstalled && akActor.IsInFaction(Init.SbcFaction)) || (Init.ZazInstalled && akActor.IsInFaction(Init.ZazSlaveFaction)) || !Devious.AreHandsAvailable(akActor)
@@ -1720,7 +1777,15 @@ Int Function ShowSurvivalMenu()
 	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 0, value = "Crafting ")
 	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 1, value = "Sleep On Ground")
 	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 2, value = "Skills ")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 3, value = "Bathe ")
+	; Gate on the adapter's state, not a hardcoded plugin name - the BiS fork was renamed
+	; ("Bathing in Skyrim - Main.esp" -> Renewed's "Bathing in Skyrim.esp") and a stale name
+	; here left the Bathe option permanently greyed out while the interface itself worked.
+	; Hidden entirely (blank slice) when the interface is inactive.
+	If Bis.GetIsInterfaceActive()
+		wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 3, value = "Bathe ")
+		wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 3, value = "Bathe ")
+		wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 3, value = true)
+	EndIf
 	If WildlingEn
 		wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 4, value = "Wildling ")
 	EndIf
@@ -1728,18 +1793,13 @@ Int Function ShowSurvivalMenu()
 	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 0, value = "Crafting ")
 	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 1, value = "Sleep On Ground")
 	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 2, value = "Skills ")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 3, value = "Bathe ")
 	If WildlingEn
 		wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 4, value = "Wildling ")
 	EndIf
-	
+
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 0, value = true)
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 1, value = true)
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 2, value = true)
-	; Gate on the adapter's state, not a hardcoded plugin name - the BiS fork was renamed
-	; ("Bathing in Skyrim - Main.esp" -> Renewed's "Bathing in Skyrim.esp") and a stale name
-	; here left the Bathe option permanently greyed out while the interface itself worked.
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 3, value = Bis.GetIsInterfaceActive())
 	If WildlingEn
 		wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 4, value = WildlingEn)
 	EndIf
@@ -1805,23 +1865,28 @@ Function CraftingMenu(Bool IsShortcut = false)
 EndFunction
 
 Int Function ShowCraftingMenu()
+	Bool CampfireInstalled = Game.GetModByName("Campfire.esm") != 255
+	Bool HunterbornInstalled = Game.GetModByName("Hunterborn.esp") != 255
 	UIMenuBase wheelMenu = UIExtensions.GetMenu("UIWheelMenu")
-	
-	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 0, value = "Frostfall Crafting")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 1, value = "Hunterborn Crafting")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 2, value = "Primitive Cooking")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 3, value = "Mortar & Pestle")
 
-	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 0, value = "Frostfall Crafting")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 1, value = "Hunterborn Crafting")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 2, value = "Primitive Cooking")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 3, value = "Mortar & Pestle")
-	
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 0, value = Game.GetModByName("Campfire.esm") != 255)
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 1, value = Game.GetModByName("Hunterborn.esp") != 255)
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 2, value = Game.GetModByName("Hunterborn.esp") != 255)
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 3, value = Game.GetModByName("Campfire.esm") != 255)
-	
+	; Absent mods leave a blank slice instead of a permanently greyed option
+	If CampfireInstalled
+		wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 0, value = "Frostfall Crafting")
+		wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 0, value = "Frostfall Crafting")
+		wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 0, value = true)
+		wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 3, value = "Mortar & Pestle")
+		wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 3, value = "Mortar & Pestle")
+		wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 3, value = true)
+	EndIf
+	If HunterbornInstalled
+		wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 1, value = "Hunterborn Crafting")
+		wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 1, value = "Hunterborn Crafting")
+		wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 1, value = true)
+		wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 2, value = "Primitive Cooking")
+		wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 2, value = "Primitive Cooking")
+		wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 2, value = true)
+	EndIf
+
 	Return wheelMenu.OpenMenu()
 EndFunction
 
@@ -1867,31 +1932,34 @@ Int Function ShowSurvivalSkillsMenu()
 	
 	UIMenuBase wheelMenu = UIExtensions.GetMenu("UIWheelMenu")
 	
-	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 0, value = "Build Campfire")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 1, value = "Place Tent")
+	; Campfire/Hunterborn options are hidden entirely when the mod is absent. "Senses" is
+	; SLS's own submenu - it was wrongly gated on Campfire before, so always show it.
+	If CampfireInstalled
+		wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 0, value = "Build Campfire")
+		wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 0, value = "Build Campfire")
+		wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 0, value = true)
+		wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 1, value = "Place Tent")
+		wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 1, value = "Place Tent")
+		wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 1, value = true)
+		wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 3, value = "Instincts ")
+		wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 3, value = "Instincts ")
+		wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 3, value = true)
+		wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 5, value = "Harvest Wood")
+		wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 5, value = "Harvest Wood")
+		wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 5, value = true)
+	EndIf
 	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 2, value = "Senses")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 3, value = "Instincts ")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 4, value = "Forage ")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 5, value = "Harvest Wood")
-	;wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 6, value = "Sense Items")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 7, value = "Search Ground")
-
-	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 0, value = "Build Campfire")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 1, value = "Place Tent")
 	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 2, value = "Senses")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 3, value = "Instincts ")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 4, value = "Forage ")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 5, value = "Harvest Wood")
-	;wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 6, value = "Sense Items")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 7, value = "Search Ground")
-	
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 0, value = CampfireInstalled)
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 1, value = CampfireInstalled)
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 2, value = CampfireInstalled)
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 3, value = CampfireInstalled)
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 4, value = Game.GetModByName("Hunterborn.esp") != 255)
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 5, value = true)
+	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 2, value = true)
+	If Game.GetModByName("Hunterborn.esp") != 255
+		wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 4, value = "Forage ")
+		wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 4, value = "Forage ")
+		wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 4, value = true)
+	EndIf
+	;wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 6, value = "Sense Items")
 	;wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 6, value = !_SLS_HighlightItemsQuest.IsRunning()) ;/Game.GetModByName("Mortal Weapons & Armor.esp") != 255)/;
+	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 7, value = "Search Ground")
+	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 7, value = "Search Ground")
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 7, value = true)
 	
 	Return wheelMenu.OpenMenu()
@@ -1926,18 +1994,21 @@ Int Function ShowSenseMenu()
 	UIMenuBase wheelMenu = UIExtensions.GetMenu("UIWheelMenu")
 	
 	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 0, value = "Sense Items")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 1, value = "Sense Direction")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 2, value = "Sense Arousal")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 3, value = "Sense Cum Fullness")
-	
 	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 0, value = "Sense Items")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 1, value = "Sense Direction")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 2, value = "Sense Arousal")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 3, value = "Sense Cum Fullness")
-	
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 0, value = !_SLS_HighlightItemsQuest.IsRunning())
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 1, value = Game.GetModByName("Hunterborn.esp") != 255)
+
+	If Game.GetModByName("Hunterborn.esp") != 255 ; Hidden entirely without Hunterborn
+		wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 1, value = "Sense Direction")
+		wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 1, value = "Sense Direction")
+		wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 1, value = true)
+	EndIf
+
+	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 2, value = "Sense Arousal")
+	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 2, value = "Sense Arousal")
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 2, value = !_SLS_SenseArousalQuest.IsRunning() && !_SLS_SenseCumFullnessQuest.IsRunning())
+
+	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 3, value = "Sense Cum Fullness")
+	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 3, value = "Sense Cum Fullness")
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 3, value = !_SLS_SenseCumFullnessQuest.IsRunning() && !_SLS_SenseArousalQuest.IsRunning())
 	
 	Return wheelMenu.OpenMenu()
@@ -2471,7 +2542,12 @@ Int Function ShowStatusMenu()
 	
 	If Fhu.GetState() == "Installed"
 		;Float CumCapacity = Fhu.GetCumCapacityMax()
-		ListMenu.AddEntryItem("Cum In My Pussy: " + (((Fhu.GetCurrentCumVaginal(PlayerRef) / CumCapacity) * 100.0) as Int) + "%" + ". Cum In My Ass: " + (((Fhu.GetCurrentCumAnal(PlayerRef) / CumCapacity) * 100.0) as Int) + "%")
+		String FhuStatus = "Cum In My Pussy: " + (((Fhu.GetCurrentCumVaginal(PlayerRef) / CumCapacity) * 100.0) as Int) + "%" + ". Cum In My Ass: " + (((Fhu.GetCurrentCumAnal(PlayerRef) / CumCapacity) * 100.0) as Int) + "%"
+		Float OralCapacity = Fhu.GetOralCumCapacityMax() ; Oral pool exists on FHU 2.x only - 0.0 on 1.x
+		If OralCapacity > 0.0
+			FhuStatus += ". Mouth: " + (((Fhu.GetCurrentCumOral(PlayerRef) / OralCapacity) * 100.0) as Int) + "%"
+		EndIf
+		ListMenu.AddEntryItem(FhuStatus)
 	EndIf
 
 	; Milk
@@ -2489,14 +2565,13 @@ Int Function ShowStatusMenu()
 	EndIf
 	
 	; Soulgem Oven
-	If Sgo.GetState() == "Installed"
-		Float GemProgress = Sgo.ActorGemGetPercent(PlayerRef)
-		;Debug.Messagebox("GemProgress: " + GemProgress)
-		If GemProgress > 0.0
+	If Sgo.GetIsInterfaceActive()
+		Float GemProgress = Sgo.GetPregnancyPercent(PlayerRef)
+		Float MilkPercent = Sgo.GetMilkPercent(PlayerRef)
+		If GemProgress > 0.0 || MilkPercent > 0.0
 			String SgoString = "Gems: " + SnipToDecimalPlaces(GemProgress, 2) + "%"
-			Float Milk = StorageUtil.GetFloatValue(PlayerRef, "SGO.Actor.Milk.Data")
-			If Milk > 0.0
-				SgoString += ". Milk: " + SnipToDecimalPlaces(((Milk / Sgo.GetMilkCapacity(PlayerRef)) * 100.0), 2) + "%"
+			If MilkPercent > 0.0
+				SgoString += ". Milk: " + SnipToDecimalPlaces(MilkPercent, 2) + "%"
 			EndIf
 			ListMenu.AddEntryItem(SgoString)
 		EndIf
@@ -2580,7 +2655,12 @@ Int Function ShowStatusMenu()
 		If (CrosshairRef).GetLeveledActorBase().GetSex() == 0 ; Male
 			ListMenu.AddEntryItem("Cum Fullness: " + SnipToDecimalPlaces(StrInput = (Util.GetLoadFullnessMod(CrosshairRef) * 100.0), Places = 1) + "%")
 		ElseIf Fhu.GetState() == "Installed"
-			ListMenu.AddEntryItem("Cum in her ass: " + (((Fhu.GetCurrentCumAnal(CrosshairRef) / CumCapacity) * 100.0) as Int) + "%. Pussy: " + (((Fhu.GetCurrentCumVaginal(CrosshairRef) / CumCapacity) * 100.0) as Int) + "%")
+			String FhuTargetStatus = "Cum in her ass: " + (((Fhu.GetCurrentCumAnal(CrosshairRef) / CumCapacity) * 100.0) as Int) + "%. Pussy: " + (((Fhu.GetCurrentCumVaginal(CrosshairRef) / CumCapacity) * 100.0) as Int) + "%"
+			Float OralCapacityT = Fhu.GetOralCumCapacityMax() ; 0.0 on FHU 1.x - no oral pool there
+			If OralCapacityT > 0.0
+				FhuTargetStatus += ". Mouth: " + (((Fhu.GetCurrentCumOral(CrosshairRef) / OralCapacityT) * 100.0) as Int) + "%"
+			EndIf
+			ListMenu.AddEntryItem(FhuTargetStatus)
 		EndIf
 		ListMenu.AddEntryItem("Cum On Their Skin: Face: " + Sexlab.CountCumOral(CrosshairRef) + ". Vag: " + Sexlab.CountCumVaginal(CrosshairRef) + ". Ass: " + Sexlab.CountCumAnal(CrosshairRef))
 	EndIf
@@ -2607,7 +2687,7 @@ Function MiscMenu(Bool IsShortcut = false)
 	ElseIf MenuResult == 0
 		DebugMenu()
 	ElseIf MenuResult == 1
-		(Game.GetFormFromFile(0x002DD9, "dcc-soulgem-oven-000.esm") as Spell).Cast(PlayerRef, PlayerRef)
+		(Game.GetFormFromFile(0x000881, "SGO4IF.esp") as Spell).Cast(PlayerRef, PlayerRef) ; SGO4_SpellMenuMainOpen
 	ElseIf MenuResult == 2
 		;(Game.GetFormFromFile(0x000F5B, "EFFCore.esm") as Spell).Cast(PlayerRef, PlayerRef)
 		TeleportFollowersMenu()
@@ -2620,18 +2700,23 @@ Int Function ShowMiscMenu()
 	UIMenuBase wheelMenu = UIExtensions.GetMenu("UIWheelMenu")
 	
 	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 0, value = "Debug Menu")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 1, value = "SGO Menu")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 2, value = "Teleport Followers")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 3, value = "Assign Favorite")
-
 	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 0, value = "Debug Menu")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 1, value = "SGO Menu")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 2, value = "Teleport Followers")
-	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 3, value = "Assign Favorite")
-
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 0, value = true)
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 1, value = Game.GetModByName("dcc-soulgem-oven-000.esm") != 255)
-	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 2, value = Game.GetModByName("EFFCore.esm") != 255)
+
+	If Sgo.GetIsInterfaceActive() ; Hidden entirely without Soulgem Oven
+		wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 1, value = "SGO Menu")
+		wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 1, value = "SGO Menu")
+		wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 1, value = true)
+	EndIf
+
+	If Game.GetModByName("EFFCore.esm") != 255 ; Hidden entirely without EFF
+		wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 2, value = "Teleport Followers")
+		wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 2, value = "Teleport Followers")
+		wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 2, value = true)
+	EndIf
+
+	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 3, value = "Assign Favorite")
+	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 3, value = "Assign Favorite")
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 3, value = true)
 
 	Return wheelMenu.OpenMenu()

@@ -44,6 +44,10 @@ State Installed
 	Float Function GetCumCapacityMax()
 		Return _SLS_IntFhu.GetCumCapacityMax(FhuConfigQuest)
 	EndFunction
+
+	Float Function GetOralCumCapacityMax()
+		Return _SLS_IntFhu.GetOralCumCapacityMax(FhuConfigQuest)
+	EndFunction
 	
 	Event On_SLS_FhuInflate(Form akTarget, Int Hole, Float Time, Float TargetLevel = -1.0)
 		If akTarget as Actor
@@ -72,6 +76,10 @@ Float Function GetCumCapacityMax()
 	Return 0.0
 EndFunction
 
+Float Function GetOralCumCapacityMax()
+	Return 0.0
+EndFunction
+
 Event On_SLS_FhuInflate(Form akTarget, Int Hole, Float Time, Float TargetLevel = -1.0)
 EndEvent
 
@@ -89,6 +97,10 @@ EndFunction
 
 Float Function GetCurrentCumVaginal(Actor akTarget)
 	Return StorageUtil.GetFloatValue(akTarget, "sr.inflater.cum.vaginal", Missing = 0.0)
+EndFunction
+
+Float Function GetCurrentCumOral(Actor akTarget)
+	Return StorageUtil.GetFloatValue(akTarget, "sr.inflater.cum.oral", Missing = 0.0)
 EndFunction
 
 Function DrainCum()
