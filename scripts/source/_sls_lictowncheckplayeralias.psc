@@ -6,6 +6,26 @@ Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemRefere
 	EndIf
 EndEvent
 
+Event OnItemRemoved(Form akBaseItem, int aiItemCount, ObjectReference akItemReference, ObjectReference akDestContainer)
+	; Dropping/selling contraband must be able to clear the violation flag again, or the
+	; enforcer force-greet stays armed with nothing to confiscate ("..." greet, possible CTD).
+	; Debounced via a single update: selling a stack fires one removal per item.
+	If _SLS_LicTownViolation.GetValueInt() == 1 && LicUtil.IsObjectContraband(akBaseItem, LocTrack.PlayerCurrentLocIndex)
+		RegisterForSingleUpdate(1.0)
+	EndIf
+EndEvent
+
+Event OnUpdate()
+	If !Self.GetOwningQuest().IsRunning() ; Player left the restricted area before the recheck fired
+		Return
+	EndIf
+	If GetState() == "InProc" ; Full check already running - try again once it's done
+		RegisterForSingleUpdate(1.0)
+	Else
+		GetShouldApproach() ; Re-evaluates ALL violation causes; only clears the flag if none remain
+	EndIf
+EndEvent
+
 Function GetShouldApproach()
 	GoToState("InProc")
 	LicUtil.LicInfractionType = -1
