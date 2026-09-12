@@ -57,7 +57,7 @@ You don't need any of these. Install the ones you want and SLS adapts.
 | Milk Mod Economy (MME) | Lactation/milking recognised; milk offered/demanded in tolls |
 | Milk Addict | Milk-addiction pool integration |
 | SexLab Skooma Whore | Drug lists power forced-drugging and drug toll demands |
-| Soulgem Oven | Adapter exists but is **deliberately left disabled** in the current build |
+| Soulgem Oven IV - Insemination Fantasies | Gem incubation and milk levels shown in the status menu; incubation progress lengthens animal-breeding cooloff |
 
 ## Prostitution & captivity
 

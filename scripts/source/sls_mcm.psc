@@ -2018,7 +2018,7 @@ event OnPageReset(string page)
 		StorageUtil.SetIntValue(Self, "IntSexyMoveOID", AddToggleOption("Sexy Move", SexyMove.GetIsInterfaceActive()))
 		StorageUtil.SetIntValue(Self, "IntSlaverunOID", AddToggleOption("Slaverun 3.x", Slaverun.GetIsInterfaceActive()))
 		StorageUtil.SetIntValue(Self, "IntTatsOID", AddToggleOption("Slavetats ", Tats.GetIsInterfaceActive()))
-		StorageUtil.SetIntValue(Self, "IntSgoOID", AddToggleOption("Soulgem Oven 3.0 ", Sgo.GetIsInterfaceActive()))
+		StorageUtil.SetIntValue(Self, "IntSgoOID", AddToggleOption("Soulgem Oven 4 IF ", Sgo.GetIsInterfaceActive()))
 		StorageUtil.SetIntValue(Self, "IntStaOID", AddToggleOption("Spank That Ass", Sta.GetIsInterfaceActive()))
 		AddEmptyOption()
 		
@@ -4547,7 +4547,7 @@ Event OnOptionSelect(int option)
 	ElseIf option == StorageUtil.GetIntValue(Self, "IntEffOID")
 		RestartInterfacePrompt("EFFCore.esm")
 	ElseIf option == StorageUtil.GetIntValue(Self, "IntSgoOID")
-		RestartInterfacePrompt("dcc-soulgem-oven-000.esm")
+		RestartInterfacePrompt("SGO4IF.esp")
 	ElseIf option == StorageUtil.GetIntValue(Self, "IntFhuOID")
 		RestartInterfacePrompt("sr_FillHerUp.esp")
 	ElseIf option == StorageUtil.GetIntValue(Self, "IntAmpOID")
@@ -6808,7 +6808,7 @@ Function RestartInterfacePrompt(String IntSelect)
 			RestartIntErrorMsg(IntSelect)
 		EndIf
 
-	ElseIf IntSelect == "dcc-soulgem-oven-000.esm"
+	ElseIf IntSelect == "SGO4IF.esp"
 		If Game.GetModByName(IntSelect) != 255
 			RestartInterface(Game.GetFormFromFile(0x063A97, "SL Survival.esp") as Quest)
 		Else

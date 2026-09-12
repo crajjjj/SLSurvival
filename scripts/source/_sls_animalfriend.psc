@@ -356,13 +356,8 @@ Float Function GetNextBreedingSession(Actor akActor)
 	Float CoveredInCum = Sexlab.CountCum(PlayerRef) / 6.0
 	HoursToNextBreeding += CoveredInCum * BreedingCooloffCumCovered
 	Float Pregnancy = 0.0
-	If Game.GetModByName("dcc-soulgem-oven-000.esm") != 255
-		Float GemCount = Sgo.ActorGemGetCount(PlayerRef) as Float
-		Float GemsMax = Sgo.GetGemCapacityMax() as Float
-		If GemsMax > 0.0 ; guard: SGO returns 0 capacity when absent/uninitialized -> avoid NaN propagating into the breeding timer
-			Pregnancy = GemCount / GemsMax
-		EndIf
-		;Debug.Messagebox("GemCount: " + GemCount + "\nGemsMax: " + GemsMax)
+	If Sgo.GetIsInterfaceActive()
+		Pregnancy = Sgo.GetPregnancyPercent(PlayerRef) / 100.0 ; SGO4IF reports incubation progress as a 0-100 faction rank
 		
 	ElseIf Fm.GetIsInterfaceActive() ; Beeing Female preferred over Fertility Mode (handled in the interface)
 		If Fm.GetIsPregnant(PlayerRef)
