@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.713
+	Version = 0.714
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -798,6 +798,16 @@ Function VersionCheck()
 	; never actually stopped the quest. Script-only, no save migration.
 	If Version < 0.713
 		UpdateVersion(0.713)
+	EndIf
+
+	; 0.714 makes _SLS_Needs re-pick its needs-mod state (needed for saves where the SunHelm
+	; patch - or any needs mod - was added mid-save: OnInit only ever ran once), and restarts
+	; the sleep deprivation quest, which OnInit-stopped itself when it found no supported
+	; needs mod at install time.
+	If Version < 0.714
+		Menu.Needs.OnInit() ; Re-registers events + re-picks the Rnd/iNeed/Esd(/Shs) state
+		Menu.ToggleSleepDepriv() ; Start/Stop to match the MCM toggle now that SunHelm counts
+		UpdateVersion(0.714)
 	EndIf
 EndFunction
 

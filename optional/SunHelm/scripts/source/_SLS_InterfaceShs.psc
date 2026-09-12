@@ -45,7 +45,7 @@ EndEvent
 State Installed
 
     Bool Function IsNeedsModActive()
-        Return _SHHungerQuest.IsRunning()
+        Return _SHHungerQuest && _SHHungerQuest.IsRunning() ; None until OnEndState has fetched the SunHelm quests
     EndFunction
 
     Function Eat(Float FoodPoints)
@@ -119,35 +119,35 @@ State Installed
     EndFunction
 
     Function CorrectFatigue(Float SleepPenalty, Float StartingFatigue, Float HoursSlept)
-        
+        ; SunHelm fatigue: 0 = fully rested, _SHFatigueStage5 (default 480) = exhausted.
+        ; Runs ~5s after SunHelm's own OnSleepStop restore, and raises fatigue back up to the
+        ; floor the sleep conditions imply, so a bad bed/arousal/etc actually costs rest.
+        ; Same structure as the proven RND adapter (branch on StartingFatigue vs Target).
         Int[] FatigueLevels = _SLS_IntShs.GetFatigueLevels(_SHFatigueQuest)
-        
+
         Float TargetFatigue
         If SleepPenalty <= 0.2
-            TargetFatigue = (SleepPenalty / 0.2) * FatigueLevels[1] ; Rested
+            TargetFatigue = (SleepPenalty / 0.2) * FatigueLevels[1] ; Up to 'Rested' threshold
         ElseIf SleepPenalty <= 0.4
-            TargetFatigue = (SleepPenalty / 0.4) * FatigueLevels[2] ; Slightly Tired
+            TargetFatigue = (SleepPenalty / 0.4) * FatigueLevels[2] ; 'Slightly Tired'
         ElseIf SleepPenalty <= 0.6
-            TargetFatigue = (SleepPenalty / 0.6) * FatigueLevels[2] ; Tired
+            TargetFatigue = (SleepPenalty / 0.6) * FatigueLevels[3] ; 'Tired'
         ElseIf SleepPenalty <= 0.8
-            TargetFatigue = (SleepPenalty / 0.8) * FatigueLevels[2] ; Weary
+            TargetFatigue = (SleepPenalty / 0.8) * FatigueLevels[4] ; 'Weary'
         Else
-            TargetFatigue = (SleepPenalty / 1.0) * (FatigueLevels[4] + FatigueLevels[5]) / 2 ; Set to midpoint between 'Weary' and 'Exhausted' levels
+            TargetFatigue = (SleepPenalty / 1.0) * ((FatigueLevels[4] + FatigueLevels[5]) / 2.0) ; Midpoint of 'Weary'..'Exhausted'
         EndIf
-        
+
         ; Debug.Messagebox("SleepPenalty: " + SleepPenalty + ". TargetFatigue: " + TargetFatigue)
         Float CurrentFatigue = GetFatigue()
-        If StartingFatigue < TargetFatigue ; Player is more tired after sleep - cap rest gained
-            If CurrentFatigue > TargetFatigue 
-                Float Delta = TargetFatigue - CurrentFatigue
-                ; Debug.Messagebox("Delta: " + Delta)
-                ModFatigue(Delta as Int)
-            ;Else   ; Else player is still more tired than the cap - Do nothing
+        If StartingFatigue > TargetFatigue ; Player was more tired than the cap when sleep began - cap the rest gained
+            If CurrentFatigue < TargetFatigue ; SunHelm rested them below the floor - pull back up to it
+                ModFatigue(TargetFatigue - CurrentFatigue) ; Positive = add fatigue
+            ;Else   ; Still more tired than the cap - do nothing
             EndIf
 
-        Else ; Player is more refreshed after sleep - interpolate fatigue points using sleep duration 
-                
-            Float Delta = TargetFatigue - CurrentFatigue
+        Else ; Player was fresher than the floor - sleeping in bad conditions slowly wears them down toward it
+            Float Delta = (TargetFatigue + StartingFatigue) - CurrentFatigue
             Float ThisNapFatigue = (Delta / 8.0) * HoursSlept ; 8 hours of sleeping to reach target fatigue
             ;Debug.MessageBox("ThisNapFatigue: " + ThisNapFatigue)
             ModFatigue(ThisNapFatigue)

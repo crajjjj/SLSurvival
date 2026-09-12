@@ -32,6 +32,18 @@ _SLS_InterfaceSpankThatAss Property Sta Auto
 Bool DoSleepDeprivMessage = true
 
 Event OnInit()
+    PickNeedsState()
+    RegisterForModEvent("_SLS_Int_PlayerLoadsGame", "On_SLS_Int_PlayerLoadsGame")
+    RegisterForMenu("Sleep/Wait Menu")
+    RegisterForControl("Wait")
+    ;Debug.Messagebox("Needs state: " + Self.GetState())
+EndEvent
+
+Event On_SLS_Int_PlayerLoadsGame(string eventName, string strArg, float numArg, Form sender)
+    PickNeedsState() ; Re-pick each load so installing/removing a needs mod mid-save takes effect
+EndEvent
+
+Function PickNeedsState()
     If Game.GetModByName("RealisticNeedsandDiseases.esp") != 255
         GoToState("Rnd")
     ElseIf Game.GetModByName("iNeed.esp") != 255
@@ -40,11 +52,10 @@ Event OnInit()
         GoToState("Esd")
     ElseIf Game.GetModByName("SunHelmSurvival.esp") != 255
         GoToState("Shs")
+    Else
+        GoToState("")
     EndIf
-    RegisterForMenu("Sleep/Wait Menu")
-    RegisterForControl("Wait")
-    ;Debug.Messagebox("Needs state: " + Self.GetState())
-EndEvent
+EndFunction
 
 Event OnControlDown(string control)
     DoSleepDeprivMessage = false

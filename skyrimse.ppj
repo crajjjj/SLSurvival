@@ -75,6 +75,8 @@
         <Import>.\dependencies\Rape Tattoos Continued 2.0.2\scripts\source</Import>
         <Import>.\dependencies\Milk Addict\scripts\Source</Import>
         <Import>.\dependencies\AudioUtil\Scripts\Source</Import>
+        <Import>.\dependencies\Advanced Nudity Detection\Scripts\Source</Import>
+        <Import>.\dependencies\SunHelm Survival\Source\Scripts</Import><!-- compile target for the optional SunHelm patch scripts -->
 
         <Import>@SkyrimScripts</Import>
         <!-- After @SkyrimScripts: the live Data SLA sources resolve slaMainScr/slaFrameworkScr (they
