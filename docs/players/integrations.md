@@ -34,6 +34,7 @@ You don't need any of these. Install the ones you want and SLS adapts.
 | Mod | What it unlocks |
 |-----|-----------------|
 | SexLab Aroused | Arousal state drives many SLS effects and NPC reactions |
+| Advanced Nudity Detection (AND) | Naked/exposed detection uses AND's rendered-coverage verdict (transparent and skimpy outfits count) for cat calls and the cover-myself mechanics |
 | SexLab Separate Orgasm (SLSO) | Orgasm framework used by the "must orgasm" rules |
 | SexLab - Sexual Fame [SLSF] | Sexual-fame reputation feeds SLS |
 | Apropos 2 | Wear-and-tear scene descriptions |

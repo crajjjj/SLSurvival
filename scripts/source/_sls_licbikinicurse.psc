@@ -21,6 +21,7 @@ Event On_SLS_Int_PlayerLoadsGame(string eventName, string strArg, float numArg, 
 EndEvent
 
 Function InitHeelsMgef()
+	AndInstalled = Game.GetModByName("Advanced Nudity Detection.esp") != 255 ; Re-checked each load alongside the heels mgef
 	HdtHeelsInstalled = false
 	If Game.GetModByName("hdtHighHeel.esm") != 255
 		hdtMagicEffectHighHeels = Game.GetFormFromFile(0x000800, "hdtHighHeel.esm") as MagicEffect
@@ -286,29 +287,51 @@ EndFunction
 Function DoCatCallCheck()
 	; Check is body slot armor eligible for cat calling
 	Form akBaseObject = PlayerRef.GetWornForm(4) ; Body slot
-	If akBaseObject
-		; Get is armor set as whoreish or slutty in Milk addict
-		Int MaSlutiness = -1
-		If Init.MilkAddictInstalled
-			Int Index = JsonUtil.FormListFind("Milk Addict/SlutClothes.json", "ClothesList", akBaseObject)
-			If Index > -1
-				MaSlutiness = JsonUtil.IntListGet("Milk Addict/SlutClothes.json", "Sluttiness", Index)
-			EndIf
-		EndIf
-		
-		If akBaseObject.HasKeyword(_SLS_BikiniArmor) || akBaseObject.HasKeyword(_SLS_HalfNakedCoverKw) || StorageUtil.GetIntValue(akBaseObject, "SLAroused.IsSlootyArmor", Missing = -1) > 0 || StorageUtil.GetIntValue(akBaseObject, "SLAroused.IsBikiniArmor", Missing = -1) > 0 || (MaSlutiness >= 5 && MaSlutiness <=6) ;
-			_SLS_BodyCoverStatus.SetValueInt(1) ; Bikini/slooty etc
-			SendModEvent(eventName = "_SLS_IntCoverShutdown", strArg = "", numArg = 1.0)
-		Else
-			_SLS_BodyCoverStatus.SetValue(2) ; Full cover
-			SendModEvent(eventName = "_SLS_IntCoverShutdown", strArg = "", numArg = 2.0)
-		EndIf
+
+	; Advanced Nudity Detection sees what is actually rendered (transparent meshes, partial
+	; coverage, non-body-slot outfits), so when it's present its nudity verdict replaces the
+	; raw "body slot empty" check.
+	Bool PlayerIsNaked
+	If AndInstalled
+		PlayerIsNaked = _SLS_IntAnd.IsNude(PlayerRef)
 	Else
+		PlayerIsNaked = !akBaseObject
+	EndIf
+
+	If PlayerIsNaked
 		_SLS_BodyCoverStatus.SetValueInt(0) ; Player is naked
 		SendModEvent(eventName = "_SLS_IntCoverShutdown", strArg = "", numArg = 0.0)
 		If Menu.CoverMyselfMechanics
 			_SLS_CoverMySelfQuest.Start()
 		EndIf
+		Return
+	EndIf
+
+	; Get is armor set as whoreish or slutty in Milk addict
+	Int MaSlutiness = -1
+	If akBaseObject && Init.MilkAddictInstalled
+		Int Index = JsonUtil.FormListFind("Milk Addict/SlutClothes.json", "ClothesList", akBaseObject)
+		If Index > -1
+			MaSlutiness = JsonUtil.IntListGet("Milk Addict/SlutClothes.json", "Sluttiness", Index)
+		EndIf
+	EndIf
+
+	; The bikini/slooty keyword checks stay even with AND installed: bikini armor can cover
+	; everything AND tracks while still deserving cat calls (bikini licence mechanics).
+	Bool IsSlooty = false
+	If akBaseObject
+		IsSlooty = akBaseObject.HasKeyword(_SLS_BikiniArmor) || akBaseObject.HasKeyword(_SLS_HalfNakedCoverKw) || StorageUtil.GetIntValue(akBaseObject, "SLAroused.IsSlootyArmor", Missing = -1) > 0 || StorageUtil.GetIntValue(akBaseObject, "SLAroused.IsBikiniArmor", Missing = -1) > 0 || (MaSlutiness >= 5 && MaSlutiness <=6)
+	EndIf
+	If !IsSlooty && AndInstalled
+		IsSlooty = _SLS_IntAnd.IsRevealing(PlayerRef) ; Dressed but visibly exposed (sheer/skimpy/partial)
+	EndIf
+
+	If IsSlooty
+		_SLS_BodyCoverStatus.SetValueInt(1) ; Bikini/slooty etc
+		SendModEvent(eventName = "_SLS_IntCoverShutdown", strArg = "", numArg = 1.0)
+	Else
+		_SLS_BodyCoverStatus.SetValue(2) ; Full cover
+		SendModEvent(eventName = "_SLS_IntCoverShutdown", strArg = "", numArg = 2.0)
 	EndIf
 EndFunction
 
@@ -316,6 +339,7 @@ Int[] SlotMasks
 Bool IsInMenu = false
 Bool ObjectJustEquipped = false
 Bool HdtHeelsInstalled = false
+Bool AndInstalled = false ; Advanced Nudity Detection present - set in InitHeelsMgef()
 
 Bool Property HeelsRequired = true Auto Hidden
 Float Property HeelHeightRequired = 5.0 Auto Hidden
