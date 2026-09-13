@@ -312,7 +312,10 @@ EndFunction
 ; time (registered in InitHeelsMgef, per game load) and just recompute whenever AND's exposure
 ; verdict actually changes. The signature compare is the cheap per-footstep guard: an unchanged
 ; verdict - the overwhelming common case - returns before any of ApplyCoverStatus's real work.
-Event On_SLS_AndNudityUpdate(string eventName, string strArg, float numArg, Form sender)
+; NO parameters: AND raises this with a bare ModEvent.Create/Send and pushes nothing, so the
+; usual 4-arg SKSE mod-event signature makes every dispatch fail with "Expected 4, got 0" and
+; the handler never runs at all. Must match the sender's arity exactly.
+Event On_SLS_AndNudityUpdate()
 	If !AndInstalled || !GetOwningQuest().IsRunning() ; stopped quests still receive mod events
 		Return
 	EndIf
