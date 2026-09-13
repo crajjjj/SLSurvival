@@ -3157,6 +3157,12 @@ String Function RevokeRandomLicence(Actor akSpeaker = None, ObjectReference Rece
 EndFunction
 
 Bool Function IsPubicZoneVisible(Actor akActor)
+	; With AND present, ask it directly - it reads the rendered crotch, and HalfNakedCover no
+	; longer equips the marker garment this body-slot check keys off. Lazy global, so the
+	; _SLS_IntAnd reference is safe whether or not AND is installed.
+	If Game.GetModByName("Advanced Nudity Detection.esp") != 255
+		Return _SLS_IntAnd.IsPubicZoneVisible(akActor)
+	EndIf
 	Form Cuirass = PlayerRef.GetWornForm(0x00000004)
 	If Cuirass && Cuirass != Menu.HalfNakedCover._SLS_HalfNakedCoverArmor && StorageUtil.GetIntValue(Cuirass, "SLAroused.IsSlootyArmor", Missing = -1) <= 0
 		;Debug.Messagebox("Not visisble")

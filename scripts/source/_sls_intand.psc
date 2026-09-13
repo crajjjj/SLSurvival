@@ -18,6 +18,20 @@ Bool Function IsRevealing(Actor akActor) Global
 	Return AND_ModEventListener.GetTopless(akActor) || AND_ModEventListener.GetBottomless(akActor) || AND_ModEventListener.GetShowingChest(akActor) || AND_ModEventListener.GetShowingGenitals(akActor) || AND_ModEventListener.GetShowingAss(akActor)
 EndFunction
 
+Bool Function IsInUnderwear(Actor akActor) Global
+	; Bra and/or panties worn as the outermost layer - the "half naked" tier SLS otherwise
+	; fakes with the _SLS_HalfNakedCoverArmor marker. AND tracks it natively (showing bra /
+	; showing underwear), so with AND present the marker is unnecessary. Distinct from
+	; IsRevealing: underwear covers chest/genitals, so none of those "showing" flags trip.
+	Return AND_ModEventListener.GetShowingBra(akActor) || AND_ModEventListener.GetShowingUnderwear(akActor)
+EndFunction
+
+Bool Function IsPubicZoneVisible(Actor akActor) Global
+	; Crotch actually exposed - bottomless, or genitals visible through sheer/partial cover.
+	; Panties keep this false; full nudity or a thong/bottomless outfit makes it true.
+	Return AND_ModEventListener.GetBottomless(akActor) || AND_ModEventListener.GetShowingGenitals(akActor)
+EndFunction
+
 Int Function GetModestyRank(Actor akActor) Global
 	Return AND_ModEventListener.GetModestyRank(akActor)
 EndFunction

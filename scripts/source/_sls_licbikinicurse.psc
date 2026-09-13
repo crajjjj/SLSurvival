@@ -389,7 +389,10 @@ Function ApplyCoverStatus(Form akBaseObject, Bool PlayerIsNaked)
 		IsSlooty = akBaseObject.HasKeyword(_SLS_BikiniArmor) || akBaseObject.HasKeyword(_SLS_HalfNakedCoverKw) || StorageUtil.GetIntValue(akBaseObject, "SLAroused.IsSlootyArmor", Missing = -1) > 0 || StorageUtil.GetIntValue(akBaseObject, "SLAroused.IsBikiniArmor", Missing = -1) > 0 || (MaSlutiness >= 5 && MaSlutiness <=6)
 	EndIf
 	If !IsSlooty && AndInstalled
-		IsSlooty = _SLS_IntAnd.IsRevealing(PlayerRef) ; Dressed but visibly exposed (sheer/skimpy/partial)
+		; Dressed but visibly exposed (sheer/skimpy/partial), or down to bra/panties - the
+		; latter is the half-naked tier the _SLS_HalfNakedCoverArmor marker used to flag,
+		; now read straight from AND since HalfNakedCover stands down when AND is present.
+		IsSlooty = _SLS_IntAnd.IsRevealing(PlayerRef) || _SLS_IntAnd.IsInUnderwear(PlayerRef)
 	EndIf
 
 	If IsSlooty
