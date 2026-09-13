@@ -34,7 +34,8 @@ You don't need any of these. Install the ones you want and SLS adapts.
 | Mod | What it unlocks |
 |-----|-----------------|
 | SexLab Aroused | Arousal state drives many SLS effects and NPC reactions |
-| Advanced Nudity Detection (AND) | Naked/exposed detection uses AND's rendered-coverage verdict (transparent and skimpy outfits count) for cat calls and the cover-myself mechanics |
+| Advanced Nudity Detection (AND) | Naked/exposed detection uses AND's rendered-coverage verdict (transparent and skimpy outfits count) for cat calls and the cover-myself mechanics, including the bra/underwear tier and pubic visibility |
+| Modesty Toggle | Lets Cover Myself own the nude cover animations. Without it the OAR covering movesets keep playing over your choice, so uncover never visibly works — see [Cover Myself](#cover-myself-and-the-nude-cover-animations) |
 | SexLab Separate Orgasm (SLSO) | Orgasm framework used by the "must orgasm" rules |
 | SexLab - Sexual Fame [SLSF] | Sexual-fame reputation feeds SLS |
 | Apropos 2 | Wear-and-tear scene descriptions |
@@ -88,6 +89,18 @@ You don't need any of these. Install the ones you want and SLS adapts.
 
 !!! note "The list evolves"
     Supported mods and their required versions change between SLS releases, and this table reflects the integrations present in the current source. Treat the [SexLab Survival LoversLab page](https://www.loverslab.com/files/file/5914-sexlab-survival/) as the authoritative, current list.
+
+## Cover Myself and the nude cover animations
+
+If you run nude cover animations — Dynamic Feminine Female Modesty (the `KP_nude*` OAR replacers), or the condition overrides AND ships for them — they replace your walk and idle with a covering pose whenever the game decides you are being modest. That is decided by OAR conditions, entirely outside SLS, so it used to fight the **Cover Myself** key: pressing uncover stopped the SLS pose but the covering moveset kept playing underneath, and you never actually looked uncovered.
+
+Install **Modesty Toggle** to resolve it. While Cover Myself owns covering (you are naked and the mechanic is enabled), SLS asks Modesty Toggle — through its own public API — to hold manual control and force expose, so the movesets stand down and your key genuinely decides whether you are covered. When you dress, your previous setting is handed back and control is released.
+
+Notes:
+
+- **Nothing is taken from you.** A manual force-cover or force-expose set with Modesty Toggle's hotkeys is saved before SLS takes over and restored afterwards, so it survives a strip/dress cycle.
+- **AND is unaffected.** Modesty ranks, comments and corruption keep progressing exactly as before — only the animations yield.
+- **It is optional.** Without Modesty Toggle, SLS falls back to the `NoModesty` keyword, which some setups ignore; and with Cover Myself mechanics switched off in the MCM, SLS never touches any of this.
 
 ## Toggling integrations
 
