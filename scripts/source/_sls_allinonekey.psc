@@ -2541,7 +2541,7 @@ Int Function ShowStatusMenu()
 	
 	If Fhu.GetState() == "Installed"
 		;Float CumCapacity = Fhu.GetCumCapacityMax()
-		String FhuStatus = "Cum In My Pussy: " + (((Fhu.GetCurrentCumVaginal(PlayerRef) / CumCapacity) * 100.0) as Int) + "%" + ". Cum In My Ass: " + (((Fhu.GetCurrentCumAnal(PlayerRef) / CumCapacity) * 100.0) as Int) + "%"
+		String FhuStatus = "Cum in my pussy: " + (((Fhu.GetCurrentCumVaginal(PlayerRef) / CumCapacity) * 100.0) as Int) + "%. Ass: " + (((Fhu.GetCurrentCumAnal(PlayerRef) / CumCapacity) * 100.0) as Int) + "%"
 		Float OralCapacity = Fhu.GetOralCumCapacityMax() ; 0.0 on FHU builds with no separate oral pool
 		If OralCapacity > 0.0
 			FhuStatus += ". Mouth: " + (((Fhu.GetCurrentCumOral(PlayerRef) / OralCapacity) * 100.0) as Int) + "%"

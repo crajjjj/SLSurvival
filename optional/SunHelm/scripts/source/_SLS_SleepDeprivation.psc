@@ -26,11 +26,17 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 EndEvent
 
 Event OnSleepStop(bool abInterrupted)
+    If !Self.GetOwningQuest().IsRunning() ; Sleep deprivation toggled off - RegisterForSleep survives the Stop()
+        Return
+    EndIf
     Float HoursSlept = (Utility.GetCurrentGameTime() - SleepStartTime) * 24.0
     ;Debug.Messagebox("OnSleepStop - Sleep Penalty: " + SleepPenalty + ", StartingFatigue: " + StartingFatigue + ", HoursSlept: " + HoursSlept)
     Utility.Wait(5.0)
     ;Debug.Messagebox("Wait Over")
     Needs.CorrectFatigue(SleepPenalty, StartingFatigue, HoursSlept)
+    If !Needs.GetConditionsShownRecently() ; Sleep began without the Sleep/Wait menu ever opening (e.g. Go To Bed) - show the breakdown on waking instead
+        Needs.ShowLastConditions(SleepPenalty)
+    EndIf
 EndEvent
 
 _SLS_Needs Property Needs Auto

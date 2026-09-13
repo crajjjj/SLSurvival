@@ -29,6 +29,8 @@ _SLS_InterfaceDevious Property Devious Auto
 _SLS_InterfaceSpankThatAss Property Sta Auto
 
 Bool DoSleepDeprivMessage = true
+String LastConditions ; Breakdown from the most recent GetSleepPenalty() call, minus the flavor statement
+Float ConditionsShownRT = -3600.0 ; Real-time stamp of the last on-screen breakdown (Sleep/Wait menu hook path)
 
 Event OnInit()
 	PickNeedsState()
@@ -114,7 +116,13 @@ Float Function GetSleepPenalty(Bool ShowConditions = false, Bool IsSleeping)
 
 	; Bed?
 	Bool HasBed = false
-	ObjectReference Bed = Game.GetCurrentCrosshairRef()
+	; Go To Bed-style mods put the player IN the bed before sleep starts, which empties the
+	; crosshair - the furniture being occupied is the truth then. Vanilla sleeps via the menu
+	; with the player still standing (no furniture), so the crosshair fallback covers that path.
+	ObjectReference Bed = PlayerRef.GetFurnitureReference()
+	If !Bed
+		Bed = Game.GetCurrentCrosshairRef()
+	EndIf
 	;Debug.Messagebox("Bed: " + Bed.GetBaseObject().GetName())
 	If Bed
 		Faction OwningFaction = Bed.GetFactionOwner()
@@ -364,12 +372,27 @@ Float Function GetSleepPenalty(Bool ShowConditions = false, Bool IsSleeping)
 	
 	;Conditions += "Sleep penalty: " + ((SleepPenalty * 100.0) as Int) + "%"
 	Conditions += "\nFinal sleep penalty: " + ((SleepPenalty * 100.0) as Int) + "%\n"
+	LastConditions = Conditions ; Kept for the wake-up fallback display (Go To Bed never opens the Sleep/Wait menu)
 	If ShowConditions
 		Conditions += "\n" + GetConditionsStatement(SleepPenalty)
 		Debug.Messagebox(Conditions)
+		ConditionsShownRT = Utility.GetCurrentRealTime()
 	EndIf
 	LastSleepPenalty = SleepPenalty
 	Return SleepPenalty
+EndFunction
+
+Bool Function GetConditionsShownRecently()
+{True if the conditions box was shown in the last couple of minutes - i.e. the Sleep/Wait menu hook fired for this sleep.}
+	Float Delta = Utility.GetCurrentRealTime() - ConditionsShownRT
+	Return Delta >= 0.0 && Delta < 120.0 ; Negative = stale stamp from before a game load
+EndFunction
+
+Function ShowLastConditions(Float SleepPenalty)
+{Wake-up fallback: show the breakdown captured when the sleep penalty was actually applied.}
+	If LastConditions
+		Debug.Messagebox(LastConditions + "\n" + GetConditionsStatement(SleepPenalty))
+	EndIf
 EndFunction
 
 String Function GetDeviousString(Int NumDevices, Float MasochismAttitude)
