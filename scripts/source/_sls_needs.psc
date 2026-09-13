@@ -398,10 +398,19 @@ Bool Function GetSleptInFurniture()
 EndFunction
 
 Function ShowLastConditions(Float SleepPenalty)
-{Wake-up fallback: show the breakdown captured when the sleep penalty was actually applied.}
-	If LastConditions
-		Debug.Messagebox(LastConditions + "\n" + GetConditionsStatement(SleepPenalty))
+{Wake-up fallback: show the breakdown captured when the sleep penalty was actually applied.
+Rides out other wake-up boxes first (the engine renders one modal at a time, and a second box
+fired alongside can be swallowed) and the get-out-of-bed state (a box fired while still bedded
+is eaten - the same suppression that hides the pre-sleep box under Go To Bed).}
+	If !LastConditions
+		Return
 	EndIf
+	Int Tries = 60 ; ~30s of active gameplay, then show anyway; Wait() doesn't tick while a menu/box is up
+	While Tries > 0 && (Utility.IsInMenuMode() || PlayerRef.GetFurnitureReference())
+		Utility.Wait(0.5)
+		Tries -= 1
+	EndWhile
+	Debug.Messagebox(LastConditions + "\n" + GetConditionsStatement(SleepPenalty))
 EndFunction
 
 String Function GetDeviousString(Int NumDevices, Float MasochismAttitude)

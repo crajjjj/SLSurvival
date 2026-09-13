@@ -11,6 +11,10 @@ Event OnInit()
 	RegisterForSleep()
 EndEvent
 
+Event OnPlayerLoadGame()
+	RegisterForSleep() ; Sleep registration can be lost in older saves (the quest OnInit-stopped itself pre-0.714 with no needs mod) - re-arm every load
+EndEvent
+
 ;/
 Event OnKeyDown(Int KeyCode)
 	Debug.Messagebox("Fatigue: " + (Game.GetFormFromFile(0x000D62, "iNeed.esp") as _SNQuestScript).TempFatigueState + ". TimePassed: " + (Game.GetFormFromFile(0x000D62, "iNeed.esp") as _SNQuestScript).TimePassed)
