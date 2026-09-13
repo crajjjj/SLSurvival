@@ -9,9 +9,23 @@ Event OnInit()
 			;RegisterForKey(Menu.CoverMyselfKey)
 			RegisterforCameraState()
 			_SLS_CoveringNakedStatus.SetValueInt(5) ; player is naked and not covering
+			; AND / Dynamic Feminine Modesty swap the nude locomotion set via OAR whenever
+			; the player counts as modest - which overrides the cover/uncover choice this
+			; quest exists to give. While this quest owns covering, gate those movesets off;
+			; the key-driven offset anim is the only cover visual.
+			_SLS_IntModestyAnims.SuppressCoverAnims(PlayerRef)
 		Else
 			CoverQuest.Stop()
 		EndIf
+	EndIf
+EndEvent
+
+Event OnPlayerLoadGame()
+	; Suppression is applied at quest start; a save made while the quest was already
+	; running never re-fires OnInit, so re-assert it on every load. Defined in the empty
+	; state only - the default impl still runs while in "Covered", which is also correct.
+	If Self.GetOwningQuest().IsRunning() && Menu.CoverMyselfMechanics
+		_SLS_IntModestyAnims.SuppressCoverAnims(PlayerRef)
 	EndIf
 EndEvent
 
@@ -81,6 +95,7 @@ Event On_SLS_IntCoverShutdown(string eventName, string strArg, float numArg, For
 		If GetState() == "Covered"
 			EndCover()
 		EndIf
+		_SLS_IntModestyAnims.RestoreCoverAnims(PlayerRef) ; hand cover anims back to AND/OAR
 		Self.GetOwningQuest().Stop()
 	EndIf
 EndEvent

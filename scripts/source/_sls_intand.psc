@@ -4,7 +4,11 @@ script allowed to reference AND types - global calls resolve lazily, so this is 
 whether or not "Advanced Nudity Detection.esp" is present, as long as callers gate on it.}
 
 Bool Function IsNude(Actor akActor) Global
-	Return AND_ModEventListener.GetNude(akActor)
+	; GetNude is AND's strictest class (its AND_NudeActorFaction): pasties, curtains or
+	; underwear-class items keep an actor out of it even though nothing meaningful is
+	; covered. Topless + bottomless together is AND's "effectively naked", which is what
+	; SLS's naked mechanics actually care about.
+	Return AND_ModEventListener.GetNude(akActor) || (AND_ModEventListener.GetTopless(akActor) && AND_ModEventListener.GetBottomless(akActor))
 EndFunction
 
 Bool Function IsRevealing(Actor akActor) Global

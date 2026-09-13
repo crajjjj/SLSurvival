@@ -294,10 +294,76 @@ Function DoCatCallCheck()
 	Bool PlayerIsNaked
 	If AndInstalled
 		PlayerIsNaked = _SLS_IntAnd.IsNude(PlayerRef)
+		; AND reads the RENDERED body, not inventory: after an unequip the naked mesh
+		; takes ~3s to rebuild and its scans report "covered" until it does (observed 8
+		; scans over 3s before the nude rank flipped). So right after an equip change its
+		; verdict lags the inventory. When it contradicts the raw slot state, defer the
+		; decision instead of blocking on a fixed Wait: AND pings AdvancedNudityDetectionUpdate
+		; each time its scan finishes, so re-run then. Genuine contradictions (sheer body
+		; suit = slot filled but nude; non-body-slot outfit = slot empty but dressed) just
+		; settle on the backstop tick and AND's verdict still wins.
+		If PlayerIsNaked != (!akBaseObject)
+			BeginAndSettleWait()
+			Return
+		EndIf
+		EndAndSettleWait() ; verdict already consistent - drop any pending deferral
 	Else
 		PlayerIsNaked = !akBaseObject
 	EndIf
+	ApplyCoverStatus(akBaseObject, PlayerIsNaked)
+EndFunction
 
+; AND fires AdvancedNudityDetectionUpdate on footsteps, equip changes and its game-time
+; timer. Registering permanently would re-run this per footstep (cloak-scan-grade spam), so
+; the registration is transient: armed only while AND's verdict is mid-rebuild, dropped the
+; instant it agrees with inventory. RegisterForSingleUpdate is a backstop for standing still,
+; where AND's pings are motion-gated and might not arrive on their own.
+Function BeginAndSettleWait()
+	AndSettleTicks = 0
+	AwaitingAndSettle = true
+	; Re-register unconditionally, not gated on the flag: mod-event/update registrations
+	; are dropped across save/load while the flag (a script var) persists, so a save made
+	; mid-wait would otherwise leave the flag stuck true with nothing listening. Repeat
+	; RegisterForModEvent is idempotent.
+	RegisterForModEvent("AdvancedNudityDetectionUpdate", "On_SLS_AndNudityUpdate")
+	RegisterForSingleUpdate(1.0)
+EndFunction
+
+Function EndAndSettleWait()
+	If AwaitingAndSettle
+		AwaitingAndSettle = false
+		UnregisterForModEvent("AdvancedNudityDetectionUpdate")
+		UnregisterForUpdate()
+	EndIf
+EndFunction
+
+Event On_SLS_AndNudityUpdate(string eventName, string strArg, float numArg, Form sender)
+	TryResolveAndSettle()
+EndEvent
+
+Event OnUpdate()
+	If AwaitingAndSettle
+		RegisterForSingleUpdate(1.0) ; keep a heartbeat going while standing still
+		TryResolveAndSettle()
+	EndIf
+EndEvent
+
+Function TryResolveAndSettle()
+	If !AwaitingAndSettle
+		Return ; stale ping after we already settled
+	EndIf
+	Form akBaseObject = PlayerRef.GetWornForm(4)
+	Bool PlayerIsNaked = _SLS_IntAnd.IsNude(PlayerRef)
+	AndSettleTicks += 1
+	; Settle once AND agrees with inventory, or give up after ~12s of ticks and trust
+	; AND's current verdict anyway (a real sheer/partial contradiction never converges).
+	If PlayerIsNaked == (!akBaseObject) || AndSettleTicks >= 12
+		EndAndSettleWait()
+		ApplyCoverStatus(akBaseObject, PlayerIsNaked)
+	EndIf
+EndFunction
+
+Function ApplyCoverStatus(Form akBaseObject, Bool PlayerIsNaked)
 	If PlayerIsNaked
 		_SLS_BodyCoverStatus.SetValueInt(0) ; Player is naked
 		SendModEvent(eventName = "_SLS_IntCoverShutdown", strArg = "", numArg = 0.0)
@@ -340,6 +406,8 @@ Bool IsInMenu = false
 Bool ObjectJustEquipped = false
 Bool HdtHeelsInstalled = false
 Bool AndInstalled = false ; Advanced Nudity Detection present - set in InitHeelsMgef()
+Bool AwaitingAndSettle = false ; deferring cover status until AND's rendered-body scan catches up
+Int AndSettleTicks = 0
 
 Bool Property HeelsRequired = true Auto Hidden
 Float Property HeelHeightRequired = 5.0 Auto Hidden

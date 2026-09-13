@@ -8538,6 +8538,9 @@ Function ToggleCoverMechanics()
 				_SLS_CoverMySelfQuest.Stop()
 				;Debug.SendAnimationEvent(PlayerRef, "IdleForceDefaultState")
 				Debug.SendAnimationEvent(PlayerRef, "OffsetStop")
+				; These Stop paths bypass the alias's shutdown handler, so the OAR
+				; suppression keyword must be lifted here too or it leaks into the save
+				_SLS_IntModestyAnims.RestoreCoverAnims(PlayerRef)
 			EndIf
 		;/Else
 			CoverMyselfMechanics = false
@@ -8551,6 +8554,7 @@ Function ToggleCoverMechanics()
 		;Debug.SendAnimationEvent(PlayerRef, "IdleForceDefaultState")
 		Debug.SendAnimationEvent(PlayerRef, "OffsetStop")
 		_SLS_CoveringNakedStatus.SetValueInt(1)
+		_SLS_IntModestyAnims.RestoreCoverAnims(PlayerRef)
 	EndIf
 EndFunction
 ;/
