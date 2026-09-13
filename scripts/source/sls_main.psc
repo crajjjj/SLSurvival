@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.714
+	Version = 0.715
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -808,6 +808,9 @@ Function VersionCheck()
 		Menu.Needs.OnInit() ; Re-registers events + re-picks the Rnd/iNeed/Esd(/Shs) state
 		Menu.ToggleSleepDepriv() ; Start/Stop to match the MCM toggle now that SunHelm counts
 		UpdateVersion(0.714)
+	EndIf
+	If Version < 0.715
+		UpdateVersion(0.715)
 	EndIf
 EndFunction
 
