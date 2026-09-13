@@ -22,6 +22,13 @@ EndEvent
 
 Function InitHeelsMgef()
 	AndInstalled = Game.GetModByName("Advanced Nudity Detection.esp") != 255 ; Re-checked each load alongside the heels mgef
+	If AndInstalled
+		; Subscribe for the whole session - AND's update pings drive the cover/naked/slooty
+		; status (see On_SLS_AndNudityUpdate). Re-registered each load (mod-event registrations
+		; don't survive save/load); -1 forces the next pass to re-apply after a load.
+		RegisterForModEvent("AdvancedNudityDetectionUpdate", "On_SLS_AndNudityUpdate")
+		LastAndSig = -1
+	EndIf
 	HdtHeelsInstalled = false
 	If Game.GetModByName("hdtHighHeel.esm") != 255
 		hdtMagicEffectHighHeels = Game.GetFormFromFile(0x000800, "hdtHighHeel.esm") as MagicEffect
@@ -289,86 +296,54 @@ Function DoCatCallCheck()
 	Form akBaseObject = PlayerRef.GetWornForm(4) ; Body slot
 
 	; Advanced Nudity Detection sees what is actually rendered (transparent meshes, partial
-	; coverage, non-body-slot outfits), so when it's present its nudity verdict replaces the
-	; raw "body slot empty" check.
-	Bool PlayerIsNaked
+	; coverage, non-body-slot outfits), so when present its verdict replaces the body-slot
+	; check. AND's scan is async (it reads the rebuilding body, ~3s behind an equip), but every
+	; scan pass re-fires AdvancedNudityDetectionUpdate and On_SLS_AndNudityUpdate recomputes
+	; from it - so if this equip-time read is still stale, the next pass self-corrects. No wait.
 	If AndInstalled
-		; AND reads the RENDERED body, and every "update" event is just one scan pass, not a
-		; final verdict - right after a strip early passes still report "covered" until the
-		; naked mesh rebuilds (~3s). So defer only while AND looks like it's still catching
-		; up (see AndScanCatchingUp), and re-check on each pass. Any coherent AND reading -
-		; nude, underwear or otherwise revealing - is trusted immediately; only the
-		; impossible "body slot empty yet fully covered" state means the scan is mid-rebuild.
-		If AndScanCatchingUp(akBaseObject)
-			BeginAndSettleWait()
-			Return
-		EndIf
-		EndAndSettleWait() ; verdict is coherent - drop any pending deferral
-		PlayerIsNaked = _SLS_IntAnd.IsNude(PlayerRef)
+		ApplyFromAnd(akBaseObject)
 	Else
-		PlayerIsNaked = !akBaseObject
-	EndIf
-	ApplyCoverStatus(akBaseObject, PlayerIsNaked)
-EndFunction
-
-; AND fires AdvancedNudityDetectionUpdate on footsteps, equip changes and its game-time
-; timer. Registering permanently would re-run this per footstep (cloak-scan-grade spam), so
-; the registration is transient: armed only while AND's verdict is mid-rebuild, dropped the
-; instant it agrees with inventory. RegisterForSingleUpdate is a backstop for standing still,
-; where AND's pings are motion-gated and might not arrive on their own.
-Function BeginAndSettleWait()
-	AndSettleTicks = 0
-	AwaitingAndSettle = true
-	; Re-register unconditionally, not gated on the flag: mod-event/update registrations
-	; are dropped across save/load while the flag (a script var) persists, so a save made
-	; mid-wait would otherwise leave the flag stuck true with nothing listening. Repeat
-	; RegisterForModEvent is idempotent.
-	RegisterForModEvent("AdvancedNudityDetectionUpdate", "On_SLS_AndNudityUpdate")
-	RegisterForSingleUpdate(1.0)
-EndFunction
-
-Function EndAndSettleWait()
-	If AwaitingAndSettle
-		AwaitingAndSettle = false
-		UnregisterForModEvent("AdvancedNudityDetectionUpdate")
-		UnregisterForUpdate()
+		ApplyCoverStatus(akBaseObject, !akBaseObject)
 	EndIf
 EndFunction
 
+; AND re-fires AdvancedNudityDetectionUpdate on EVERY scan pass (per footstep, per equip, and
+; its game-time timer) - never a single "verdict final" signal. So we stay subscribed the whole
+; time (registered in InitHeelsMgef, per game load) and just recompute whenever AND's exposure
+; verdict actually changes. The signature compare is the cheap per-footstep guard: an unchanged
+; verdict - the overwhelming common case - returns before any of ApplyCoverStatus's real work.
 Event On_SLS_AndNudityUpdate(string eventName, string strArg, float numArg, Form sender)
-	TryResolveAndSettle()
+	If !AndInstalled || !GetOwningQuest().IsRunning() ; stopped quests still receive mod events
+		Return
+	EndIf
+	Int Sig = AndExposureSig()
+	If Sig == LastAndSig
+		Return
+	EndIf
+	LastAndSig = Sig
+	ApplyCoverStatus(PlayerRef.GetWornForm(4), Math.LogicalAnd(Sig, 1) == 1) ; bit 0 = naked
 EndEvent
 
-Event OnUpdate()
-	If AwaitingAndSettle
-		RegisterForSingleUpdate(1.0) ; keep a heartbeat going while standing still
-		TryResolveAndSettle()
-	EndIf
-EndEvent
-
-Function TryResolveAndSettle()
-	If !AwaitingAndSettle
-		Return ; stale ping after we already settled
-	EndIf
-	Form akBaseObject = PlayerRef.GetWornForm(4)
-	AndSettleTicks += 1
-	; Settle once AND's verdict is coherent again, or give up after ~12s of ticks (a steady
-	; fully-covered non-body-slot outfit looks the same as a mid-rebuild strip and never
-	; converges - trust AND's current read at that point).
-	If !AndScanCatchingUp(akBaseObject) || AndSettleTicks >= 12
-		EndAndSettleWait()
-		ApplyCoverStatus(akBaseObject, _SLS_IntAnd.IsNude(PlayerRef))
-	EndIf
+Function ApplyFromAnd(Form akBaseObject)
+	Int Sig = AndExposureSig()
+	LastAndSig = Sig ; keep the listener's cache in step so it won't redundantly re-fire
+	ApplyCoverStatus(akBaseObject, Math.LogicalAnd(Sig, 1) == 1)
 EndFunction
 
-Bool Function AndScanCatchingUp(Form akBaseObject)
-	; True only while AND's scan looks unsettled after a strip: body slot empty yet AND reports
-	; no exposure at all (not nude, not underwear, not otherwise revealing). That combination is
-	; impossible for a genuinely bare body, so the rendered-body scan must still be rebuilding.
-	; A filled body slot, or any positive AND reading, means the verdict has settled. (A fully-
-	; covered outfit that uses no body slot also matches and just waits out the ~12s cap - it's
-	; indistinguishable from a mid-rebuild strip at the instant of the check.)
-	Return !akBaseObject && !_SLS_IntAnd.IsNude(PlayerRef) && !_SLS_IntAnd.IsInUnderwear(PlayerRef) && !_SLS_IntAnd.IsRevealing(PlayerRef)
+Int Function AndExposureSig()
+	; Bit 0 = naked, 1 = underwear, 2 = otherwise revealing. Any exposure change flips the value
+	; and triggers a recompute; between equips a fixed outfit reads the same, so the guard holds.
+	Int Sig = 0
+	If _SLS_IntAnd.IsNude(PlayerRef)
+		Sig = Sig + 1
+	EndIf
+	If _SLS_IntAnd.IsInUnderwear(PlayerRef)
+		Sig = Sig + 2
+	EndIf
+	If _SLS_IntAnd.IsRevealing(PlayerRef)
+		Sig = Sig + 4
+	EndIf
+	Return Sig
 EndFunction
 
 Function ApplyCoverStatus(Form akBaseObject, Bool PlayerIsNaked)
@@ -417,8 +392,7 @@ Bool IsInMenu = false
 Bool ObjectJustEquipped = false
 Bool HdtHeelsInstalled = false
 Bool AndInstalled = false ; Advanced Nudity Detection present - set in InitHeelsMgef()
-Bool AwaitingAndSettle = false ; deferring cover status until AND's rendered-body scan catches up
-Int AndSettleTicks = 0
+Int LastAndSig = -1 ; last AND exposure verdict applied (bit0 naked / bit1 underwear / bit2 revealing); -1 = recompute on next pass
 
 Bool Property HeelsRequired = true Auto Hidden
 Float Property HeelHeightRequired = 5.0 Auto Hidden
