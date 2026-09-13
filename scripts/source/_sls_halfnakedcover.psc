@@ -86,21 +86,6 @@ Function EventFired(Form akBaseObject)
 EndFunction
 
 Function CheckCover()
-	; Advanced Nudity Detection tracks the bra/underwear exposure tier natively (showing bra /
-	; showing underwear) and reads the rendered body - an invisible marker armor in slot 32
-	; would only confuse its mesh scan. So under AND this feature stands down entirely; the
-	; slooty tier (_SLS_LicBikiniCurse) and pubic-visibility (_SLS_LicenceUtil) read AND
-	; directly instead. Detected inline, not cached at OnInit: on saves that predate this
-	; script OnInit never re-fires, so a stored flag would stay stale.
-	If Game.GetModByName("Advanced Nudity Detection.esp") != 255
-		; Stand down and change NOTHING that is already worn. _SLS_HalfNakedCoverArmor is a
-		; real body-slot garment (6 armor addons), not an invisible flag - stripping it out
-		; from under the player on load visibly altered her body. So never unequip/remove it
-		; here; just stop driving it, and let the MCM toggle (ToggleHalfNakedCover) do the
-		; deliberate cleanup if the player turns the feature off.
-		GoToState("") ; EventFired parks us in InProc before calling - re-arm on the way out
-		Return
-	EndIf
 	Form Panty = PlayerRef.GetWornForm(SlotMasks[(PantySlot - 30)])
 	Form Bra = PlayerRef.GetWornForm(SlotMasks[(BraSlot - 30)])
 	Armor Cuirass = PlayerRef.GetWornForm(SlotMasks[2]) as Armor
