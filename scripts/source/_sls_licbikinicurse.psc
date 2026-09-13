@@ -293,20 +293,18 @@ Function DoCatCallCheck()
 	; raw "body slot empty" check.
 	Bool PlayerIsNaked
 	If AndInstalled
-		PlayerIsNaked = _SLS_IntAnd.IsNude(PlayerRef)
-		; AND reads the RENDERED body, not inventory: after an unequip the naked mesh
-		; takes ~3s to rebuild and its scans report "covered" until it does (observed 8
-		; scans over 3s before the nude rank flipped). So right after an equip change its
-		; verdict lags the inventory. When it contradicts the raw slot state, defer the
-		; decision instead of blocking on a fixed Wait: AND pings AdvancedNudityDetectionUpdate
-		; each time its scan finishes, so re-run then. Genuine contradictions (sheer body
-		; suit = slot filled but nude; non-body-slot outfit = slot empty but dressed) just
-		; settle on the backstop tick and AND's verdict still wins.
-		If PlayerIsNaked != (!akBaseObject)
+		; AND reads the RENDERED body, and every "update" event is just one scan pass, not a
+		; final verdict - right after a strip early passes still report "covered" until the
+		; naked mesh rebuilds (~3s). So defer only while AND looks like it's still catching
+		; up (see AndScanCatchingUp), and re-check on each pass. Any coherent AND reading -
+		; nude, underwear or otherwise revealing - is trusted immediately; only the
+		; impossible "body slot empty yet fully covered" state means the scan is mid-rebuild.
+		If AndScanCatchingUp(akBaseObject)
 			BeginAndSettleWait()
 			Return
 		EndIf
-		EndAndSettleWait() ; verdict already consistent - drop any pending deferral
+		EndAndSettleWait() ; verdict is coherent - drop any pending deferral
+		PlayerIsNaked = _SLS_IntAnd.IsNude(PlayerRef)
 	Else
 		PlayerIsNaked = !akBaseObject
 	EndIf
@@ -353,14 +351,24 @@ Function TryResolveAndSettle()
 		Return ; stale ping after we already settled
 	EndIf
 	Form akBaseObject = PlayerRef.GetWornForm(4)
-	Bool PlayerIsNaked = _SLS_IntAnd.IsNude(PlayerRef)
 	AndSettleTicks += 1
-	; Settle once AND agrees with inventory, or give up after ~12s of ticks and trust
-	; AND's current verdict anyway (a real sheer/partial contradiction never converges).
-	If PlayerIsNaked == (!akBaseObject) || AndSettleTicks >= 12
+	; Settle once AND's verdict is coherent again, or give up after ~12s of ticks (a steady
+	; fully-covered non-body-slot outfit looks the same as a mid-rebuild strip and never
+	; converges - trust AND's current read at that point).
+	If !AndScanCatchingUp(akBaseObject) || AndSettleTicks >= 12
 		EndAndSettleWait()
-		ApplyCoverStatus(akBaseObject, PlayerIsNaked)
+		ApplyCoverStatus(akBaseObject, _SLS_IntAnd.IsNude(PlayerRef))
 	EndIf
+EndFunction
+
+Bool Function AndScanCatchingUp(Form akBaseObject)
+	; True only while AND's scan looks unsettled after a strip: body slot empty yet AND reports
+	; no exposure at all (not nude, not underwear, not otherwise revealing). That combination is
+	; impossible for a genuinely bare body, so the rendered-body scan must still be rebuilding.
+	; A filled body slot, or any positive AND reading, means the verdict has settled. (A fully-
+	; covered outfit that uses no body slot also matches and just waits out the ~12s cap - it's
+	; indistinguishable from a mid-rebuild strip at the instant of the check.)
+	Return !akBaseObject && !_SLS_IntAnd.IsNude(PlayerRef) && !_SLS_IntAnd.IsInUnderwear(PlayerRef) && !_SLS_IntAnd.IsRevealing(PlayerRef)
 EndFunction
 
 Function ApplyCoverStatus(Form akBaseObject, Bool PlayerIsNaked)
