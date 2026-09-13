@@ -34,7 +34,9 @@ Event OnSleepStop(bool abInterrupted)
     Utility.Wait(5.0)
     ;Debug.Messagebox("Wait Over")
     Needs.CorrectFatigue(SleepPenalty, StartingFatigue, HoursSlept)
-    If !Needs.GetConditionsShownRecently() ; Sleep began without the Sleep/Wait menu ever opening (e.g. Go To Bed) - show the breakdown on waking instead
+    ; Go To Bed DOES open the Sleep/Wait menu, so the hook fires and stamps the gate - but its box
+    ; is eaten while the player is bedded. Being in furniture at sleep start is the reliable tell.
+    If Needs.GetSleptInFurniture() || !Needs.GetConditionsShownRecently()
         Needs.ShowLastConditions(SleepPenalty)
     EndIf
 EndEvent

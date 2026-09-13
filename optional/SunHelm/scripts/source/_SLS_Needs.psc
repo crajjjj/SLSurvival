@@ -32,6 +32,7 @@ _SLS_InterfaceSpankThatAss Property Sta Auto
 Bool DoSleepDeprivMessage = true
 String LastConditions ; Breakdown from the most recent GetSleepPenalty() call, minus the flavor statement
 Float ConditionsShownRT = -3600.0 ; Real-time stamp of the last on-screen breakdown (Sleep/Wait menu hook path)
+Bool SleptInFurniture ; Player was already in the bed when the applied penalty was computed (Go To Bed-style flow)
 
 Event OnInit()
     PickNeedsState()
@@ -123,6 +124,9 @@ Float Function GetSleepPenalty(Bool ShowConditions = false, Bool IsSleeping)
     ; crosshair - the furniture being occupied is the truth then. Vanilla sleeps via the menu
     ; with the player still standing (no furniture), so the crosshair fallback covers that path.
     ObjectReference Bed = PlayerRef.GetFurnitureReference()
+    If IsSleeping
+        SleptInFurniture = Bed != None ; The menu-hook box is unreliable in this flow - the wake-up fallback keys off this
+    EndIf
     If !Bed
         Bed = Game.GetCurrentCrosshairRef()
     EndIf
@@ -389,6 +393,11 @@ Bool Function GetConditionsShownRecently()
 {True if the conditions box was shown in the last couple of minutes - i.e. the Sleep/Wait menu hook fired for this sleep.}
     Float Delta = Utility.GetCurrentRealTime() - ConditionsShownRT
     Return Delta >= 0.0 && Delta < 120.0 ; Negative = stale stamp from before a game load
+EndFunction
+
+Bool Function GetSleptInFurniture()
+{True when the applied penalty was computed with the player already occupying the bed - Go To Bed etc.}
+    Return SleptInFurniture
 EndFunction
 
 Function ShowLastConditions(Float SleepPenalty)
