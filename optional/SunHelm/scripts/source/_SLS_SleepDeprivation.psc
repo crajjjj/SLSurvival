@@ -27,6 +27,11 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
     SleepStartTime = Utility.GetCurrentGameTime()
     StartingFatigue = Needs.GetFatigue()
     SleepPenalty = Needs.GetSleepPenalty(ShowConditions = false, IsSleeping = true)
+    ; Correct SunHelm's bedroll latch against the furniture actually being slept in - it is set by an
+    ; activate perk and only cleared on a completed sleep, so it otherwise carries a stale bedroll
+    ; onto the next sleep. Safe to run before or after SunHelm's own sleep-start hook: nothing reads
+    ; the flag until its OnSleepStop.
+    Needs.SyncBedrollSleepFlag()
 EndEvent
 
 Event OnSleepStop(bool abInterrupted)

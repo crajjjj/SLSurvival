@@ -37,7 +37,10 @@ Event OnEndState()
     _SHCurrentHungerLevel = Game.GetFormFromFile(0x00EAAE, "SunHelmSurvival.esp") as GlobalVariable
     _SHCurrentThirstLevel = Game.GetFormFromFile(0x05C472, "SunHelmSurvival.esp") as GlobalVariable
     _SHCurrentFatigueLevel = Game.GetFormFromFile(0x021E3F, "SunHelmSurvival.esp") as GlobalVariable
-    
+
+    _SHBedrollSleep = Game.GetFormFromFile(0x989769, "SunHelmSurvival.esp") as GlobalVariable
+    _SHBedrollList = Game.GetFormFromFile(0x2F894C, "SunHelmSurvival.esp") as FormList ; editorID reads _SHBagList, but every entry is a bedroll or hay pile - it is SunHelm's bedroll set
+
 EndEvent
 
 ; Installed state ==================================================
@@ -66,6 +69,37 @@ State Installed
     
     Float Function GetFatigue()
         Return _SHCurrentFatigueLevel.GetValue()
+    EndFunction
+
+    Function SyncBedrollSleepFlag()
+        ; SunHelm latches _SHBedrollSleep from a bedroll's ACTIVATE perk and clears it only when a
+        ; sleep completes, so an activation that never became a sleep (cancelled menu, interruption,
+        ; or a Go To Bed / Sleep in Bed SKSE flow) leaks onto the NEXT sleep - a proper bed then gets
+        ; the "sore from sleeping on the ground" message AND its silent 0.75x rest penalty. Re-derive
+        ; the flag from the furniture actually being slept in. Only written when that furniture is
+        ; readable: with no reference we cannot tell a bed from a bedroll, and clearing on a guess
+        ; would refund a real bedroll's penalty.
+        ; Resolved lazily, not only in OnEndState: a save already sitting in the Installed state
+        ; never fires that event again, so these newly added properties would stay None there and
+        ; the correction would silently never run on exactly the saves that need it.
+        If !_SHBedrollSleep
+            _SHBedrollSleep = Game.GetFormFromFile(0x989769, "SunHelmSurvival.esp") as GlobalVariable
+        EndIf
+        If !_SHBedrollList
+            _SHBedrollList = Game.GetFormFromFile(0x2F894C, "SunHelmSurvival.esp") as FormList
+        EndIf
+        If !_SHBedrollSleep || !_SHBedrollList
+            Return
+        EndIf
+        ObjectReference Bed = Game.GetPlayer().GetFurnitureReference()
+        If !Bed
+            Return
+        EndIf
+        If _SHBedrollList.HasForm(Bed.GetBaseObject())
+            _SHBedrollSleep.SetValue(1.0)
+        Else
+            _SHBedrollSleep.SetValue(0.0)
+        EndIf
     EndFunction
 
     ; TO-DO
@@ -296,6 +330,9 @@ Float Function GetFatigue()
     Return 0.0
 EndFunction
 
+Function SyncBedrollSleepFlag()
+EndFunction
+
 String Function GetConditionsStatement(Float SleepPenalty)
     Return ""
 EndFunction
@@ -349,6 +386,10 @@ GlobalVariable Property _SHHungerTimeStamp Auto Hidden
 GlobalVariable Property _SHCurrentHungerLevel Auto Hidden
 GlobalVariable Property _SHCurrentThirstLevel Auto Hidden
 GlobalVariable Property _SHCurrentFatigueLevel Auto Hidden
+
+; Bedroll latch (Short) + the bedroll furniture set it should reflect
+GlobalVariable Property _SHBedrollSleep Auto Hidden
+FormList Property _SHBedrollList Auto Hidden
 
 ; Belly scale values
 Float Property BellyScaleShs00 = 1.5 Auto Hidden

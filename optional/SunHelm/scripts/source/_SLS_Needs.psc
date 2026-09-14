@@ -482,6 +482,9 @@ EndFunction
 Function CorrectFatigue(Float SleepPenalty, Float StartingFatigue, Float HoursSlept)
 EndFunction
 
+Function SyncBedrollSleepFlag() ; No-op unless the needs mod has a bedroll latch to correct (SunHelm)
+EndFunction
+
 Function ModFatigue(Float Amount)
 EndFunction
 
@@ -798,6 +801,10 @@ State Shs ; SunHelmSurvival ====================================================
 
     Function CorrectFatigue(Float SleepPenalty, Float StartingFatigue, Float HoursSlept)
         Shs.CorrectFatigue(SleepPenalty, StartingFatigue, HoursSlept)
+    EndFunction
+
+    Function SyncBedrollSleepFlag()
+        Shs.SyncBedrollSleepFlag()
     EndFunction
 
     Function ModFatigue(Float Amount)
