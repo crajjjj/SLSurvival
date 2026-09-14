@@ -30,8 +30,12 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
     ; Correct SunHelm's bedroll latch against the furniture actually being slept in - it is set by an
     ; activate perk and only cleared on a completed sleep, so it otherwise carries a stale bedroll
     ; onto the next sleep. Safe to run before or after SunHelm's own sleep-start hook: nothing reads
-    ; the flag until its OnSleepStop.
-    Needs.SyncBedrollSleepFlag()
+    ; the flag until its OnSleepStop. Gated on the quest like OnSleepStop is - RegisterForSleep
+    ; survives Stop(), and with sleep deprivation switched off we have no business writing SunHelm's
+    ; state at all.
+    If Self.GetOwningQuest().IsRunning()
+        Needs.SyncBedrollSleepFlag()
+    EndIf
 EndEvent
 
 Event OnSleepStop(bool abInterrupted)

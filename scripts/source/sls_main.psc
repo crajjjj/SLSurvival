@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.715
+	Version = 0.716
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -811,6 +811,9 @@ Function VersionCheck()
 	EndIf
 	If Version < 0.715
 		UpdateVersion(0.715)
+	EndIf
+	If Version < 0.716
+		UpdateVersion(0.716)
 	EndIf
 EndFunction
 
