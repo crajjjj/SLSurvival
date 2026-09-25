@@ -1045,6 +1045,9 @@ event OnPageReset(string page)
 		Int AnyNeedsMod = OPTION_FLAG_DISABLED
 		Int BellyScaleRndFlag = OPTION_FLAG_DISABLED
 		Int BellyScaleIneedFlag = OPTION_FLAG_DISABLED
+		Int ShsFlag = OPTION_FLAG_DISABLED
+		Int BellyScaleShsFlag = OPTION_FLAG_DISABLED
+		Quest ShsQuest = _SLS_IntShsPatch.GetInterface() ; None without the optional SunHelm patch
 
 		If Game.GetModByName("RealisticNeedsandDiseases.esp") != 255
 			RndFlag = OPTION_FLAG_NONE
@@ -1055,18 +1058,25 @@ event OnPageReset(string page)
 		If Game.GetModByName("EatingSleepingDrinking.esp") != 255
 			EatingSleepingDrinkingFlag = OPTION_FLAG_NONE
 		EndIf
-		If RndFlag == OPTION_FLAG_NONE || IneedFlag == OPTION_FLAG_NONE
+		; SunHelm is only driven through the optional patch, so SunHelm alone enables nothing
+		If ShsQuest && Game.GetModByName("SunHelmSurvival.esp") != 255
+			ShsFlag = OPTION_FLAG_NONE
+		EndIf
+		If RndFlag == OPTION_FLAG_NONE || IneedFlag == OPTION_FLAG_NONE || ShsFlag == OPTION_FLAG_NONE
 			BellyNeedsMod = OPTION_FLAG_NONE
 		EndIf
-		If RndFlag == OPTION_FLAG_NONE || IneedFlag == OPTION_FLAG_NONE || EatingSleepingDrinkingFlag == OPTION_FLAG_NONE
+		If RndFlag == OPTION_FLAG_NONE || IneedFlag == OPTION_FLAG_NONE || EatingSleepingDrinkingFlag == OPTION_FLAG_NONE || ShsFlag == OPTION_FLAG_NONE
 			AnyNeedsMod = OPTION_FLAG_NONE
 		EndIf
-		
+
 		If BellyScaleEnable && RndFlag == OPTION_FLAG_NONE
 			BellyScaleRndFlag = OPTION_FLAG_NONE
 		EndIf
 		If BellyScaleEnable && IneedFlag == OPTION_FLAG_NONE
 			BellyScaleIneedFlag = OPTION_FLAG_NONE
+		EndIf
+		If BellyScaleEnable && ShsFlag == OPTION_FLAG_NONE
+			BellyScaleShsFlag = OPTION_FLAG_NONE
 		EndIf
 	
 		SetCursorFillMode(TOP_TO_BOTTOM)
@@ -1111,7 +1121,16 @@ event OnPageReset(string page)
 		BellyScaleIneed02OID_S = AddSliderOption("$SLS_BellyScaleIneed02", Ineed.BellyScaleIneed02, "{2}", BellyScaleIneedFlag)
 		BellyScaleIneed03OID_S = AddSliderOption("$SLS_BellyScaleIneed03", Ineed.BellyScaleIneed03, "{2}", BellyScaleIneedFlag)
 		AddEmptyOption()
-		
+
+		AddHeaderOption("$SLS_hShsBellyScaling")
+		BellyScaleShs00OID_S = AddSliderOption("$SLS_BellyScaleShs00", _SLS_IntShsPatch.GetBellyScale(ShsQuest, 0), "{2}", BellyScaleShsFlag)
+		BellyScaleShs01OID_S = AddSliderOption("$SLS_BellyScaleShs01", _SLS_IntShsPatch.GetBellyScale(ShsQuest, 1), "{2}", BellyScaleShsFlag)
+		BellyScaleShs02OID_S = AddSliderOption("$SLS_BellyScaleShs02", _SLS_IntShsPatch.GetBellyScale(ShsQuest, 2), "{2}", BellyScaleShsFlag)
+		BellyScaleShs03OID_S = AddSliderOption("$SLS_BellyScaleShs03", _SLS_IntShsPatch.GetBellyScale(ShsQuest, 3), "{2}", BellyScaleShsFlag)
+		BellyScaleShs04OID_S = AddSliderOption("$SLS_BellyScaleShs04", _SLS_IntShsPatch.GetBellyScale(ShsQuest, 4), "{2}", BellyScaleShsFlag)
+		BellyScaleShs05OID_S = AddSliderOption("$SLS_BellyScaleShs05", _SLS_IntShsPatch.GetBellyScale(ShsQuest, 5), "{2}", BellyScaleShsFlag)
+		AddEmptyOption()
+
 	ElseIf(page == "$SLS_pCum")
 		Int CumEffectsFlag = OPTION_FLAG_DISABLED
 		If CumEffectsEnable
@@ -2020,6 +2039,7 @@ event OnPageReset(string page)
 		StorageUtil.SetIntValue(Self, "IntTatsOID", AddToggleOption("Slavetats ", Tats.GetIsInterfaceActive()))
 		StorageUtil.SetIntValue(Self, "IntSgoOID", AddToggleOption("Soulgem Oven 4 IF ", Sgo.GetIsInterfaceActive()))
 		StorageUtil.SetIntValue(Self, "IntStaOID", AddToggleOption("Spank That Ass", Sta.GetIsInterfaceActive()))
+		StorageUtil.SetIntValue(Self, "IntShsOID", AddToggleOption("SunHelm Survival", _SLS_IntShsPatch.GetIsInterfaceActive(_SLS_IntShsPatch.GetInterface())))
 		AddEmptyOption()
 		
 	ElseIf(page == "$SLS_pStatsInfo")
@@ -2329,7 +2349,7 @@ event OnOptionHighlight(int option)
 			SetInfoText("$SLS_BondFurnFatigueMult_Info")
 		ElseIf(option == BondFurnWillOID_S)
 			SetInfoText("$SLS_BondFurnWill_Info")
-		ElseIf option == StorageUtil.GetIntValue(Self, "IntAproposTwoOID") || option == StorageUtil.GetIntValue(Self, "IntAmpOID") || option == StorageUtil.GetIntValue(Self, "IntDdsOID") || option == StorageUtil.GetIntValue(Self, "IntDfOID") || option == StorageUtil.GetIntValue(Self, "IntEsdOID") || option == StorageUtil.GetIntValue(Self, "IntEffOID") || option == StorageUtil.GetIntValue(Self, "IntFhuOID") || option == StorageUtil.GetIntValue(Self, "IntFrostfallOID") || option == StorageUtil.GetIntValue(Self, "IntIneedOID")|| option == StorageUtil.GetIntValue(Self, "IntMaOID") || option == StorageUtil.GetIntValue(Self, "IntPscOID") || option == StorageUtil.GetIntValue(Self, "IntRndOID") || option == StorageUtil.GetIntValue(Self, "IntSlaxOID") || option == StorageUtil.GetIntValue(Self, "IntSlsoOID") || option == StorageUtil.GetIntValue(Self, "IntSlsfOID") || option == StorageUtil.GetIntValue(Self, "IntSlaverunOID") || option == StorageUtil.GetIntValue(Self, "IntTatsOID") || option == StorageUtil.GetIntValue(Self, "IntSgoOID") || option == StorageUtil.GetIntValue(Self, "IntStaOID") || option == StorageUtil.GetIntValue(Self, "IntBisOID") || option == StorageUtil.GetIntValue(Self, "IntSexyMoveOID")
+		ElseIf option == StorageUtil.GetIntValue(Self, "IntAproposTwoOID") || option == StorageUtil.GetIntValue(Self, "IntAmpOID") || option == StorageUtil.GetIntValue(Self, "IntDdsOID") || option == StorageUtil.GetIntValue(Self, "IntDfOID") || option == StorageUtil.GetIntValue(Self, "IntEsdOID") || option == StorageUtil.GetIntValue(Self, "IntEffOID") || option == StorageUtil.GetIntValue(Self, "IntFhuOID") || option == StorageUtil.GetIntValue(Self, "IntFrostfallOID") || option == StorageUtil.GetIntValue(Self, "IntIneedOID")|| option == StorageUtil.GetIntValue(Self, "IntMaOID") || option == StorageUtil.GetIntValue(Self, "IntPscOID") || option == StorageUtil.GetIntValue(Self, "IntRndOID") || option == StorageUtil.GetIntValue(Self, "IntSlaxOID") || option == StorageUtil.GetIntValue(Self, "IntSlsoOID") || option == StorageUtil.GetIntValue(Self, "IntSlsfOID") || option == StorageUtil.GetIntValue(Self, "IntSlaverunOID") || option == StorageUtil.GetIntValue(Self, "IntTatsOID") || option == StorageUtil.GetIntValue(Self, "IntSgoOID") || option == StorageUtil.GetIntValue(Self, "IntStaOID") || option == StorageUtil.GetIntValue(Self, "IntBisOID") || option == StorageUtil.GetIntValue(Self, "IntSexyMoveOID") || option == StorageUtil.GetIntValue(Self, "IntShsOID")
 			SetInfoText("$SLS_IntAproposTwo_Info")
 		ElseIf(option == LicShowApiBlockFormsOID_T)
 			SetInfoText("$SLS_LicShowApiBlockForms_Info")
@@ -2648,6 +2668,19 @@ event OnOptionHighlight(int option)
 			SetInfoText("$SLS_BellyScaleIneed02_Info")
 		ElseIf(option == BellyScaleIneed03OID_S)
 			SetInfoText("$SLS_BellyScaleIneed03_Info")
+
+		ElseIf(option == BellyScaleShs00OID_S)
+			SetInfoText("$SLS_BellyScaleShs00_Info")
+		ElseIf(option == BellyScaleShs01OID_S)
+			SetInfoText("$SLS_BellyScaleShs01_Info")
+		ElseIf(option == BellyScaleShs02OID_S)
+			SetInfoText("$SLS_BellyScaleShs02_Info")
+		ElseIf(option == BellyScaleShs03OID_S)
+			SetInfoText("$SLS_BellyScaleShs03_Info")
+		ElseIf(option == BellyScaleShs04OID_S)
+			SetInfoText("$SLS_BellyScaleShs04_Info")
+		ElseIf(option == BellyScaleShs05OID_S)
+			SetInfoText("$SLS_BellyScaleShs05_Info")
 		EndIf	
 		
 	ElseIf StorageUtil.GetStringValue(Self, "CurrentPage") == "$SLS_pCum" ; <----------------->
@@ -4566,6 +4599,8 @@ Event OnOptionSelect(int option)
 		RestartInterfacePrompt("Slso.esp")
 	ElseIf option == StorageUtil.GetIntValue(Self, "IntStaOID")
 		RestartInterfacePrompt("Spank That Ass.esp")
+	ElseIf option == StorageUtil.GetIntValue(Self, "IntShsOID")
+		RestartInterfacePrompt("SunHelmSurvival.esp")
 	ElseIf option == StorageUtil.GetIntValue(Self, "IntBisOID")
 		RestartInterfacePrompt("Bathing in Skyrim.esp")
 	ElseIf option == StorageUtil.GetIntValue(Self, "IntSexyMoveOID")
@@ -5227,6 +5262,19 @@ Event OnOptionSliderOpen(int option)
 			SetSliderOptions(Value = Ineed.BellyScaleIneed02, Default = 0.3, Min = 0.0, Max = 5.0, Interval = 0.01)
 		ElseIf (option == BellyScaleIneed03OID_S)
 			SetSliderOptions(Value = Ineed.BellyScaleIneed03, Default = 0.0, Min = 0.0, Max = 5.0, Interval = 0.01)
+
+		ElseIf (option == BellyScaleShs00OID_S)
+			SetSliderOptions(Value = _SLS_IntShsPatch.GetBellyScale(_SLS_IntShsPatch.GetInterface(), 0), Default = 1.5, Min = 0.0, Max = 5.0, Interval = 0.01)
+		ElseIf (option == BellyScaleShs01OID_S)
+			SetSliderOptions(Value = _SLS_IntShsPatch.GetBellyScale(_SLS_IntShsPatch.GetInterface(), 1), Default = 1.2, Min = 0.0, Max = 5.0, Interval = 0.01)
+		ElseIf (option == BellyScaleShs02OID_S)
+			SetSliderOptions(Value = _SLS_IntShsPatch.GetBellyScale(_SLS_IntShsPatch.GetInterface(), 2), Default = 0.9, Min = 0.0, Max = 5.0, Interval = 0.01)
+		ElseIf (option == BellyScaleShs03OID_S)
+			SetSliderOptions(Value = _SLS_IntShsPatch.GetBellyScale(_SLS_IntShsPatch.GetInterface(), 3), Default = 0.6, Min = 0.0, Max = 5.0, Interval = 0.01)
+		ElseIf (option == BellyScaleShs04OID_S)
+			SetSliderOptions(Value = _SLS_IntShsPatch.GetBellyScale(_SLS_IntShsPatch.GetInterface(), 4), Default = 0.3, Min = 0.0, Max = 5.0, Interval = 0.01)
+		ElseIf (option == BellyScaleShs05OID_S)
+			SetSliderOptions(Value = _SLS_IntShsPatch.GetBellyScale(_SLS_IntShsPatch.GetInterface(), 5), Default = 0.0, Min = 0.0, Max = 5.0, Interval = 0.01)
 		EndIf
 		
 	ElseIf StorageUtil.GetStringValue(Self, "CurrentPage") == "$SLS_pCum" ; <----------------->
@@ -6069,6 +6117,19 @@ Event OnOptionSliderAccept(int option, float value)
 			Ineed.BellyScaleIneed03 = value
 			SetSliderOptionValue(BellyScaleIneed03OID_S, Ineed.BellyScaleIneed03)
 			UpdateBellyScale()
+
+		ElseIf (option == BellyScaleShs00OID_S)
+			SetShsBellyScaleOption(option, 0, value)
+		ElseIf (option == BellyScaleShs01OID_S)
+			SetShsBellyScaleOption(option, 1, value)
+		ElseIf (option == BellyScaleShs02OID_S)
+			SetShsBellyScaleOption(option, 2, value)
+		ElseIf (option == BellyScaleShs03OID_S)
+			SetShsBellyScaleOption(option, 3, value)
+		ElseIf (option == BellyScaleShs04OID_S)
+			SetShsBellyScaleOption(option, 4, value)
+		ElseIf (option == BellyScaleShs05OID_S)
+			SetShsBellyScaleOption(option, 5, value)
 		EndIf
 		
 	ElseIf StorageUtil.GetStringValue(Self, "CurrentPage") == "$SLS_pCum" ; <----------------->
@@ -6794,6 +6855,16 @@ Function RestartInterfacePrompt(String IntSelect)
 			RestartIntErrorMsg(IntSelect)
 		EndIf
 	
+	ElseIf IntSelect == "SunHelmSurvival.esp"
+		Quest ShsQuest = _SLS_IntShsPatch.GetInterface()
+		If Game.GetModByName(IntSelect) == 255
+			RestartIntErrorMsg(IntSelect)
+		ElseIf !ShsQuest
+			RestartIntErrorMsg("SL Survival Sunhelm Patch.esp")
+		Else
+			RestartInterface(ShsQuest)
+		EndIf
+
 	ElseIf IntSelect == "Slaverun_Reloaded.esp"
 		If Game.GetModByName(IntSelect) != 255
 			RestartInterface(Game.GetFormFromFile(0x03F041, "SL Survival.esp") as Quest)
@@ -6965,6 +7036,13 @@ EndFunction
 
 Function UpdateBellyScale()
 	Gluttony.BellyScaleUpdate()
+EndFunction
+
+Function SetShsBellyScaleOption(Int OptionId, Int Stage, Float Value)
+	Quest ShsQuest = _SLS_IntShsPatch.GetInterface()
+	_SLS_IntShsPatch.SetBellyScale(ShsQuest, Stage, Value)
+	SetSliderOptionValue(OptionId, _SLS_IntShsPatch.GetBellyScale(ShsQuest, Stage))
+	UpdateBellyScale()
 EndFunction
 
 Function ToggleBellyInflation()
@@ -9502,6 +9580,13 @@ Function LoadSettings()
 		Ineed.BellyScaleIneed01 = JsonUtil.GetFloatValue("SL Survival/Settings.json", "Ineed.BellyScaleIneed01", missing = 0.6)
 		Ineed.BellyScaleIneed02 = JsonUtil.GetFloatValue("SL Survival/Settings.json", "Ineed.BellyScaleIneed02", missing = 0.3)
 		Ineed.BellyScaleIneed03 = JsonUtil.GetFloatValue("SL Survival/Settings.json", "Ineed.BellyScaleIneed03", missing = 0.0)
+		Quest ShsQuest = _SLS_IntShsPatch.GetInterface() ; SetBellyScale no-ops without the SunHelm patch
+		_SLS_IntShsPatch.SetBellyScale(ShsQuest, 0, JsonUtil.GetFloatValue("SL Survival/Settings.json", "Shs.BellyScaleShs00", missing = 1.5))
+		_SLS_IntShsPatch.SetBellyScale(ShsQuest, 1, JsonUtil.GetFloatValue("SL Survival/Settings.json", "Shs.BellyScaleShs01", missing = 1.2))
+		_SLS_IntShsPatch.SetBellyScale(ShsQuest, 2, JsonUtil.GetFloatValue("SL Survival/Settings.json", "Shs.BellyScaleShs02", missing = 0.9))
+		_SLS_IntShsPatch.SetBellyScale(ShsQuest, 3, JsonUtil.GetFloatValue("SL Survival/Settings.json", "Shs.BellyScaleShs03", missing = 0.6))
+		_SLS_IntShsPatch.SetBellyScale(ShsQuest, 4, JsonUtil.GetFloatValue("SL Survival/Settings.json", "Shs.BellyScaleShs04", missing = 0.3))
+		_SLS_IntShsPatch.SetBellyScale(ShsQuest, 5, JsonUtil.GetFloatValue("SL Survival/Settings.json", "Shs.BellyScaleShs05", missing = 0.0))
 		WarmBodies = JsonUtil.GetFloatValue("SL Survival/Settings.json", "WarmBodies", missing = -3.0)
 		MilkLeakWet = JsonUtil.GetFloatValue("SL Survival/Settings.json", "MilkLeakWet", missing = 50.0)
 		CumWetMult = JsonUtil.GetFloatValue("SL Survival/Settings.json", "CumWetMult", missing = 1.0)
@@ -10078,6 +10163,15 @@ Function SaveSettings()
 		JsonUtil.SetFloatValue("SL Survival/Settings.json", "Ineed.BellyScaleIneed01", Ineed.BellyScaleIneed01)
 		JsonUtil.SetFloatValue("SL Survival/Settings.json", "Ineed.BellyScaleIneed02", Ineed.BellyScaleIneed02)
 		JsonUtil.SetFloatValue("SL Survival/Settings.json", "Ineed.BellyScaleIneed03", Ineed.BellyScaleIneed03)
+		Quest ShsQuest = _SLS_IntShsPatch.GetInterface()
+		If ShsQuest ; Without the patch GetBellyScale reads 0.0 - don't clobber previously saved values
+			JsonUtil.SetFloatValue("SL Survival/Settings.json", "Shs.BellyScaleShs00", _SLS_IntShsPatch.GetBellyScale(ShsQuest, 0))
+			JsonUtil.SetFloatValue("SL Survival/Settings.json", "Shs.BellyScaleShs01", _SLS_IntShsPatch.GetBellyScale(ShsQuest, 1))
+			JsonUtil.SetFloatValue("SL Survival/Settings.json", "Shs.BellyScaleShs02", _SLS_IntShsPatch.GetBellyScale(ShsQuest, 2))
+			JsonUtil.SetFloatValue("SL Survival/Settings.json", "Shs.BellyScaleShs03", _SLS_IntShsPatch.GetBellyScale(ShsQuest, 3))
+			JsonUtil.SetFloatValue("SL Survival/Settings.json", "Shs.BellyScaleShs04", _SLS_IntShsPatch.GetBellyScale(ShsQuest, 4))
+			JsonUtil.SetFloatValue("SL Survival/Settings.json", "Shs.BellyScaleShs05", _SLS_IntShsPatch.GetBellyScale(ShsQuest, 5))
+		EndIf
 		JsonUtil.SetFloatValue("SL Survival/Settings.json", "WarmBodies", WarmBodies)
 		JsonUtil.SetFloatValue("SL Survival/Settings.json", "MilkLeakWet", MilkLeakWet)
 		JsonUtil.SetFloatValue("SL Survival/Settings.json", "CumWetMult", CumWetMult)
@@ -10626,6 +10720,13 @@ Int BellyScaleIneed00OID_S
 Int BellyScaleIneed01OID_S
 Int BellyScaleIneed02OID_S
 Int BellyScaleIneed03OID_S
+
+Int BellyScaleShs00OID_S
+Int BellyScaleShs01OID_S
+Int BellyScaleShs02OID_S
+Int BellyScaleShs03OID_S
+Int BellyScaleShs04OID_S
+Int BellyScaleShs05OID_S
 
 Int WarmBodiesOID_S
 Int CumWetMultOID_S
