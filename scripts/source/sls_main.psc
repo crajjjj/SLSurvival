@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.716
+	Version = 0.717
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -814,6 +814,13 @@ Function VersionCheck()
 	EndIf
 	If Version < 0.716
 		UpdateVersion(0.716)
+	EndIf
+
+	; 0.717 exposes the SunHelm patch's belly ladder in the MCM. No save migration:
+	; the MCM rebuilds its page on every open and _SLS_Needs re-picks its needs-mod
+	; state on every load, so the new options appear on their own.
+	If Version < 0.717
+		UpdateVersion(0.717)
 	EndIf
 EndFunction
 

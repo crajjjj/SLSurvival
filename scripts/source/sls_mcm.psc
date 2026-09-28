@@ -1045,6 +1045,8 @@ event OnPageReset(string page)
 		Int AnyNeedsMod = OPTION_FLAG_DISABLED
 		Int BellyScaleRndFlag = OPTION_FLAG_DISABLED
 		Int BellyScaleIneedFlag = OPTION_FLAG_DISABLED
+		Int BellyScaleLadderFlag = OPTION_FLAG_DISABLED
+		Int ShsFlag = OPTION_FLAG_DISABLED
 
 		If Game.GetModByName("RealisticNeedsandDiseases.esp") != 255
 			RndFlag = OPTION_FLAG_NONE
@@ -1055,7 +1057,25 @@ event OnPageReset(string page)
 		If Game.GetModByName("EatingSleepingDrinking.esp") != 255
 			EatingSleepingDrinkingFlag = OPTION_FLAG_NONE
 		EndIf
-		If RndFlag == OPTION_FLAG_NONE || IneedFlag == OPTION_FLAG_NONE
+		; Both halves, not just SunHelm: without the optional SLS patch the stock
+		; _SLS_Needs has no Shs branch in PickNeedsState, so it sits in the empty
+		; state and nothing drives a belly for the switch to turn off.
+		If Game.GetModByName("SunHelmSurvival.esp") != 255 && Game.GetModByName("SL Survival Sunhelm Patch.esp") != 255
+			ShsFlag = OPTION_FLAG_NONE
+		EndIf
+		; One cross-script read of the ladder length, reused by the flag and the draw
+		; block below, and cached for BellyRungForOption - OnOptionHighlight calls
+		; that on every mouse-over, where a StorageUtil read is far cheaper than
+		; re-entering _SLS_Needs and waiting on its script lock.
+		Int LadderRungs = Needs.GetBellyRungCount()
+		StorageUtil.SetIntValue(Self, "BellyRungCount", LadderRungs)
+		; Every needs mod the gluttony quest can run against, not just the two with a
+		; hardcoded ladder below: EatingSleepingDrinking and the SunHelm patch both
+		; get a belly, so both need the switch that turns it off. Deliberately keyed
+		; on the plugin rather than on Needs.IsNeedsModActive(), which reports the
+		; needs mod's OWN on/off state and would grey out this switch exactly when a
+		; player wants it.
+		If RndFlag == OPTION_FLAG_NONE || IneedFlag == OPTION_FLAG_NONE || EatingSleepingDrinkingFlag == OPTION_FLAG_NONE || ShsFlag == OPTION_FLAG_NONE
 			BellyNeedsMod = OPTION_FLAG_NONE
 		EndIf
 		If RndFlag == OPTION_FLAG_NONE || IneedFlag == OPTION_FLAG_NONE || EatingSleepingDrinkingFlag == OPTION_FLAG_NONE
@@ -1067,6 +1087,12 @@ event OnPageReset(string page)
 		EndIf
 		If BellyScaleEnable && IneedFlag == OPTION_FLAG_NONE
 			BellyScaleIneedFlag = OPTION_FLAG_NONE
+		EndIf
+		; The generic ladder, served by whatever needs-mod state _SLS_Needs is in -
+		; today that is the SunHelm patch. Reached through _SLS_Needs because this
+		; script cannot hold a property typed to the patch-only _SLS_InterfaceShs.
+		If BellyScaleEnable && LadderRungs > 0
+			BellyScaleLadderFlag = OPTION_FLAG_NONE
 		EndIf
 	
 		SetCursorFillMode(TOP_TO_BOTTOM)
@@ -1083,13 +1109,36 @@ event OnPageReset(string page)
 		BaseBellyScaleOID_S = AddSliderOption("$SLS_BaseBellyScale", Needs.BaseBellyScale, "{1}", BellyNeedsMod)
 		AddEmptyOption()
 		
-		AddHeaderOption("$SLS_hRndBellyScaling")
-		BellyScaleRnd00OID_S = AddSliderOption("$SLS_BellyScaleRnd00", Rnd.BellyScaleRnd00, "{2}", BellyScaleRndFlag)
-		BellyScaleRnd01OID_S = AddSliderOption("$SLS_BellyScaleRnd01", Rnd.BellyScaleRnd01, "{2}", BellyScaleRndFlag)
-		BellyScaleRnd02OID_S = AddSliderOption("$SLS_BellyScaleRnd02", Rnd.BellyScaleRnd02, "{2}", BellyScaleRndFlag)
-		BellyScaleRnd03OID_S = AddSliderOption("$SLS_BellyScaleRnd03", Rnd.BellyScaleRnd03, "{2}", BellyScaleRndFlag)
-		BellyScaleRnd04OID_S = AddSliderOption("$SLS_BellyScaleRnd04", Rnd.BellyScaleRnd04, "{2}", BellyScaleRndFlag)
-		BellyScaleRnd05OID_S = AddSliderOption("$SLS_BellyScaleRnd05", Rnd.BellyScaleRnd05, "{2}", BellyScaleRndFlag)
+		; _SLS_Needs picks ONE needs-mod state, so only one ladder is ever live and
+		; the block is drawn once, in these slots. RND keeps its dedicated sliders
+		; (its rungs sit on _SLS_InterfaceRnd, a type this script may name); any
+		; other state serves its ladder through the generic accessors, which is how
+		; the patch-only SunHelm adapter is reached without naming its type here.
+		If LadderRungs == 0
+			AddHeaderOption("$SLS_hRndBellyScaling")
+			BellyScaleRnd00OID_S = AddSliderOption("$SLS_BellyScaleRnd00", Rnd.BellyScaleRnd00, "{2}", BellyScaleRndFlag)
+			BellyScaleRnd01OID_S = AddSliderOption("$SLS_BellyScaleRnd01", Rnd.BellyScaleRnd01, "{2}", BellyScaleRndFlag)
+			BellyScaleRnd02OID_S = AddSliderOption("$SLS_BellyScaleRnd02", Rnd.BellyScaleRnd02, "{2}", BellyScaleRndFlag)
+			BellyScaleRnd03OID_S = AddSliderOption("$SLS_BellyScaleRnd03", Rnd.BellyScaleRnd03, "{2}", BellyScaleRndFlag)
+			BellyScaleRnd04OID_S = AddSliderOption("$SLS_BellyScaleRnd04", Rnd.BellyScaleRnd04, "{2}", BellyScaleRndFlag)
+			BellyScaleRnd05OID_S = AddSliderOption("$SLS_BellyScaleRnd05", Rnd.BellyScaleRnd05, "{2}", BellyScaleRndFlag)
+		Else
+			; These slots now belong to the generic ladder. The RND ids would
+			; otherwise still hold last draw's values, which are the very ids the
+			; ladder just took - and every handler tests them before the ladder.
+			BellyScaleRnd00OID_S = -1
+			BellyScaleRnd01OID_S = -1
+			BellyScaleRnd02OID_S = -1
+			BellyScaleRnd03OID_S = -1
+			BellyScaleRnd04OID_S = -1
+			BellyScaleRnd05OID_S = -1
+			AddHeaderOption(Needs.GetBellyLadderName())
+			Int BellyRungIdx = 0
+			While BellyRungIdx < LadderRungs
+				StorageUtil.SetIntValue(Self, "BellyRungOID_S" + BellyRungIdx, AddSliderOption(Needs.GetBellyRungLabel(BellyRungIdx), Needs.GetBellyRung(BellyRungIdx), "{2}", BellyScaleLadderFlag))
+				BellyRungIdx += 1
+			EndWhile
+		EndIf
 		
 		SetCursorPosition(1)
 		AddHeaderOption("$SLS_hFatigueAndDrugs")
@@ -2648,6 +2697,8 @@ event OnOptionHighlight(int option)
 			SetInfoText("$SLS_BellyScaleIneed02_Info")
 		ElseIf(option == BellyScaleIneed03OID_S)
 			SetInfoText("$SLS_BellyScaleIneed03_Info")
+		ElseIf(BellyRungForOption(option) >= 0)
+			SetInfoText("$SLS_BellyScaleLadder_Info")
 		EndIf	
 		
 	ElseIf StorageUtil.GetStringValue(Self, "CurrentPage") == "$SLS_pCum" ; <----------------->
@@ -5207,17 +5258,17 @@ Event OnOptionSliderOpen(int option)
 		ElseIf (option == BaseBellyScaleOID_S)
 			SetSliderOptions(Value = Needs.BaseBellyScale, Default = 1.0, Min = 0.0, Max = 1.0, Interval = 1.0)
 		ElseIf (option == BellyScaleRnd00OID_S)
-			SetSliderOptions(Value = Rnd.BellyScaleRnd00, Default = 2.5, Min = 0.0, Max = 5.0, Interval = 0.01)
+			SetSliderOptions(Value = Rnd.BellyScaleRnd00, Default = 1.5, Min = 0.0, Max = 5.0, Interval = 0.01)
 		ElseIf (option == BellyScaleRnd01OID_S)
-			SetSliderOptions(Value = Rnd.BellyScaleRnd01, Default = 1.4, Min = 0.0, Max = 5.0, Interval = 0.01)
+			SetSliderOptions(Value = Rnd.BellyScaleRnd01, Default = 0.4, Min = 0.0, Max = 5.0, Interval = 0.01)
 		ElseIf (option == BellyScaleRnd02OID_S)
-			SetSliderOptions(Value = Rnd.BellyScaleRnd02, Default = 1.3, Min = 0.0, Max = 5.0, Interval = 0.01)
+			SetSliderOptions(Value = Rnd.BellyScaleRnd02, Default = 0.3, Min = 0.0, Max = 5.0, Interval = 0.01)
 		ElseIf (option == BellyScaleRnd03OID_S)
-			SetSliderOptions(Value = Rnd.BellyScaleRnd03, Default = 1.2, Min = 0.0, Max = 5.0, Interval = 0.01)
+			SetSliderOptions(Value = Rnd.BellyScaleRnd03, Default = 0.2, Min = 0.0, Max = 5.0, Interval = 0.01)
 		ElseIf (option == BellyScaleRnd04OID_S)
-			SetSliderOptions(Value = Rnd.BellyScaleRnd04, Default = 1.1, Min = 0.0, Max = 5.0, Interval = 0.01)
+			SetSliderOptions(Value = Rnd.BellyScaleRnd04, Default = 0.1, Min = 0.0, Max = 5.0, Interval = 0.01)
 		ElseIf (option == BellyScaleRnd05OID_S)
-			SetSliderOptions(Value = Rnd.BellyScaleRnd05, Default = 1.0, Min = 0.0, Max = 5.0, Interval = 0.01)
+			SetSliderOptions(Value = Rnd.BellyScaleRnd05, Default = 0.0, Min = 0.0, Max = 5.0, Interval = 0.01)
 			
 		ElseIf (option == BellyScaleIneed00OID_S)
 			SetSliderOptions(Value = Ineed.BellyScaleIneed00, Default = 0.9, Min = 0.0, Max = 5.0, Interval = 0.01)
@@ -5227,6 +5278,9 @@ Event OnOptionSliderOpen(int option)
 			SetSliderOptions(Value = Ineed.BellyScaleIneed02, Default = 0.3, Min = 0.0, Max = 5.0, Interval = 0.01)
 		ElseIf (option == BellyScaleIneed03OID_S)
 			SetSliderOptions(Value = Ineed.BellyScaleIneed03, Default = 0.0, Min = 0.0, Max = 5.0, Interval = 0.01)
+		ElseIf (BellyRungForOption(option) >= 0)
+			Int OpenRung = BellyRungForOption(option)
+			SetSliderOptions(Value = Needs.GetBellyRung(OpenRung), Default = Needs.GetBellyRungDefault(OpenRung), Min = 0.0, Max = 5.0, Interval = 0.01)
 		EndIf
 		
 	ElseIf StorageUtil.GetStringValue(Self, "CurrentPage") == "$SLS_pCum" ; <----------------->
@@ -6030,44 +6084,48 @@ Event OnOptionSliderAccept(int option, float value)
 			UpdateBellyScale()
 		ElseIf (option == BellyScaleRnd00OID_S)
 			Rnd.BellyScaleRnd00 = value
-			SetSliderOptionValue(BellyScaleRnd00OID_S, Rnd.BellyScaleRnd00)
+			SetSliderOptionValue(BellyScaleRnd00OID_S, Rnd.BellyScaleRnd00, "{2}")
 			UpdateBellyScale()
 		ElseIf (option == BellyScaleRnd01OID_S)
 			Rnd.BellyScaleRnd01 = value
-			SetSliderOptionValue(BellyScaleRnd01OID_S, Rnd.BellyScaleRnd01)
+			SetSliderOptionValue(BellyScaleRnd01OID_S, Rnd.BellyScaleRnd01, "{2}")
 			UpdateBellyScale()
 		ElseIf (option == BellyScaleRnd02OID_S)
 			Rnd.BellyScaleRnd02 = value
-			SetSliderOptionValue(BellyScaleRnd02OID_S, Rnd.BellyScaleRnd02)
+			SetSliderOptionValue(BellyScaleRnd02OID_S, Rnd.BellyScaleRnd02, "{2}")
 			UpdateBellyScale()
 		ElseIf (option == BellyScaleRnd03OID_S)
 			Rnd.BellyScaleRnd03 = value
-			SetSliderOptionValue(BellyScaleRnd03OID_S, Rnd.BellyScaleRnd03)
+			SetSliderOptionValue(BellyScaleRnd03OID_S, Rnd.BellyScaleRnd03, "{2}")
 			UpdateBellyScale()
 		ElseIf (option == BellyScaleRnd04OID_S)
 			Rnd.BellyScaleRnd04 = value
-			SetSliderOptionValue(BellyScaleRnd04OID_S, Rnd.BellyScaleRnd04)
+			SetSliderOptionValue(BellyScaleRnd04OID_S, Rnd.BellyScaleRnd04, "{2}")
 			UpdateBellyScale()
 		ElseIf (option == BellyScaleRnd05OID_S)
 			Rnd.BellyScaleRnd05 = value
-			SetSliderOptionValue(BellyScaleRnd05OID_S, Rnd.BellyScaleRnd05)
+			SetSliderOptionValue(BellyScaleRnd05OID_S, Rnd.BellyScaleRnd05, "{2}")
 			UpdateBellyScale()
 			
 		ElseIf (option == BellyScaleIneed00OID_S)
 			Ineed.BellyScaleIneed00 = value
-			SetSliderOptionValue(BellyScaleIneed00OID_S, Ineed.BellyScaleIneed00)
+			SetSliderOptionValue(BellyScaleIneed00OID_S, Ineed.BellyScaleIneed00, "{2}")
 			UpdateBellyScale()
 		ElseIf (option == BellyScaleIneed01OID_S)
 			Ineed.BellyScaleIneed01 = value
-			SetSliderOptionValue(BellyScaleIneed01OID_S, Ineed.BellyScaleIneed01)
+			SetSliderOptionValue(BellyScaleIneed01OID_S, Ineed.BellyScaleIneed01, "{2}")
 			UpdateBellyScale()
 		ElseIf (option == BellyScaleIneed02OID_S)
 			Ineed.BellyScaleIneed02 = value
-			SetSliderOptionValue(BellyScaleIneed02OID_S, Ineed.BellyScaleIneed02)
+			SetSliderOptionValue(BellyScaleIneed02OID_S, Ineed.BellyScaleIneed02, "{2}")
 			UpdateBellyScale()
 		ElseIf (option == BellyScaleIneed03OID_S)
 			Ineed.BellyScaleIneed03 = value
-			SetSliderOptionValue(BellyScaleIneed03OID_S, Ineed.BellyScaleIneed03)
+			SetSliderOptionValue(BellyScaleIneed03OID_S, Ineed.BellyScaleIneed03, "{2}")
+			UpdateBellyScale()
+		ElseIf (BellyRungForOption(option) >= 0)
+			Needs.SetBellyRung(BellyRungForOption(option), value)
+			SetSliderOptionValue(option, value, "{2}")
 			UpdateBellyScale()
 		EndIf
 		
@@ -6965,6 +7023,65 @@ EndFunction
 
 Function UpdateBellyScale()
 	Gluttony.BellyScaleUpdate()
+EndFunction
+
+; Which generic-ladder slider an option id belongs to, or -1. Reads the rung count
+; from the cache OnPageReset writes rather than from _SLS_Needs: OnOptionHighlight
+; calls this on every mouse-over that falls past the ElseIf chain above it, and
+; _SLS_Needs' script lock is held for a full second by OnControlDown. Only the
+; rungs actually drawn are compared, so the option ids a previous page draw left
+; behind cannot match.
+Int Function BellyRungForOption(Int aiOption)
+	Int Rungs = StorageUtil.GetIntValue(Self, "BellyRungCount", Missing = 0)
+	Int i = 0
+	While i < Rungs
+		If aiOption == StorageUtil.GetIntValue(Self, "BellyRungOID_S" + i, Missing = -1)
+			Return i
+		EndIf
+		i += 1
+	EndWhile
+	Return -1
+EndFunction
+
+; The generic ladder round-trips through Settings.json under its own key prefix,
+; so a needs mod whose rungs live on a patch-only adapter still exports and
+; imports like every other setting. Keyed by rung index rather than by property
+; name, because this script cannot name the properties.
+Function SaveBellyLadder()
+	Int Rungs = Needs.GetBellyRungCount()
+	If Rungs == 0
+		; Nothing live to export. Clear rather than return, so a file exported under
+		; a needs mod that has since been removed stops advertising its ladder.
+		JsonUtil.UnsetIntValue("SL Survival/Settings.json", "BellyLadder.Rungs")
+		JsonUtil.UnsetStringValue("SL Survival/Settings.json", "BellyLadder.Name")
+		Return
+	EndIf
+	JsonUtil.SetStringValue("SL Survival/Settings.json", "BellyLadder.Name", Needs.GetBellyLadderName())
+	JsonUtil.SetIntValue("SL Survival/Settings.json", "BellyLadder.Rungs", Rungs)
+	Int i = 0
+	While i < Rungs
+		JsonUtil.SetFloatValue("SL Survival/Settings.json", "BellyLadder.Rung" + i, Needs.GetBellyRung(i))
+		i += 1
+	EndWhile
+EndFunction
+
+Function LoadBellyLadder()
+	Int Rungs = Needs.GetBellyRungCount()
+	; Only import a ladder from the SAME needs mod. A Settings.json exported under
+	; a different one describes different hunger stages, and two adapters can agree
+	; on rung count while meaning nothing alike - so the ladder name is the identity
+	; and the count is only a bounds check on top of it.
+	If Rungs == 0 || JsonUtil.GetIntValue("SL Survival/Settings.json", "BellyLadder.Rungs", missing = 0) != Rungs
+		Return
+	EndIf
+	If JsonUtil.GetStringValue("SL Survival/Settings.json", "BellyLadder.Name", missing = "") != Needs.GetBellyLadderName()
+		Return
+	EndIf
+	Int i = 0
+	While i < Rungs
+		Needs.SetBellyRung(i, JsonUtil.GetFloatValue("SL Survival/Settings.json", "BellyLadder.Rung" + i, missing = Needs.GetBellyRungDefault(i)))
+		i += 1
+	EndWhile
 EndFunction
 
 Function ToggleBellyInflation()
@@ -9502,6 +9619,7 @@ Function LoadSettings()
 		Ineed.BellyScaleIneed01 = JsonUtil.GetFloatValue("SL Survival/Settings.json", "Ineed.BellyScaleIneed01", missing = 0.6)
 		Ineed.BellyScaleIneed02 = JsonUtil.GetFloatValue("SL Survival/Settings.json", "Ineed.BellyScaleIneed02", missing = 0.3)
 		Ineed.BellyScaleIneed03 = JsonUtil.GetFloatValue("SL Survival/Settings.json", "Ineed.BellyScaleIneed03", missing = 0.0)
+		LoadBellyLadder()
 		WarmBodies = JsonUtil.GetFloatValue("SL Survival/Settings.json", "WarmBodies", missing = -3.0)
 		MilkLeakWet = JsonUtil.GetFloatValue("SL Survival/Settings.json", "MilkLeakWet", missing = 50.0)
 		CumWetMult = JsonUtil.GetFloatValue("SL Survival/Settings.json", "CumWetMult", missing = 1.0)
@@ -10078,6 +10196,7 @@ Function SaveSettings()
 		JsonUtil.SetFloatValue("SL Survival/Settings.json", "Ineed.BellyScaleIneed01", Ineed.BellyScaleIneed01)
 		JsonUtil.SetFloatValue("SL Survival/Settings.json", "Ineed.BellyScaleIneed02", Ineed.BellyScaleIneed02)
 		JsonUtil.SetFloatValue("SL Survival/Settings.json", "Ineed.BellyScaleIneed03", Ineed.BellyScaleIneed03)
+		SaveBellyLadder()
 		JsonUtil.SetFloatValue("SL Survival/Settings.json", "WarmBodies", WarmBodies)
 		JsonUtil.SetFloatValue("SL Survival/Settings.json", "MilkLeakWet", MilkLeakWet)
 		JsonUtil.SetFloatValue("SL Survival/Settings.json", "CumWetMult", CumWetMult)

@@ -504,6 +504,39 @@ Float Function GetBellyScale()
     Return -2.0
 EndFunction
 
+; --- Generic belly ladder, reached by the MCM -------------------------------
+; sls_mcm cannot hold a property typed to _SLS_InterfaceShs: that adapter ships
+; only with this patch, and a property whose type is missing stops the whole
+; MCM script from loading. So the per-hunger-stage ladder is reached through
+; this script instead - always present, and replaced wholesale by the patch.
+;
+; Rung 0 is the fullest stomach, rung (Count - 1) the emptiest. Count 0 means
+; the active needs mod exposes no ladder, and the MCM draws no sliders for it.
+; A label is a $-prefixed translation key, owned by the state that knows its
+; own hunger stage names.
+Int Function GetBellyRungCount()
+    Return 0
+EndFunction
+
+String Function GetBellyLadderName()
+    Return ""
+EndFunction
+
+Float Function GetBellyRung(Int aiRung)
+    Return 0.0
+EndFunction
+
+Float Function GetBellyRungDefault(Int aiRung)
+    Return 0.0
+EndFunction
+
+Function SetBellyRung(Int aiRung, Float afValue)
+EndFunction
+
+String Function GetBellyRungLabel(Int aiRung)
+    Return ""
+EndFunction
+
 Float Function GetLastHungerUpdateTime()
     Return 0.0
 EndFunction
@@ -581,7 +614,15 @@ State Rnd ; RND ================================================================
     EndFunction
     
     Float Function GetBellyScale()
-        Return BaseBellyScale + Rnd.GetBellyScale()
+        ; -1.0 is the adapter's "stage is being swapped, ask again" sentinel. Adding the
+        ; base to it makes it look like an ordinary scale, and the gluttony script's
+        ; retry test (ScaleAmount == -1.0) then never matches - it publishes the sum
+        ; instead of waiting, snapping the belly flat mid-swap.
+        Float Raw = Rnd.GetBellyScale()
+        If Raw == -1.0
+            Return -1.0
+        EndIf
+        Return BaseBellyScale + Raw
     EndFunction
     
     Float Function GetLastHungerUpdateTime()
@@ -663,7 +704,15 @@ State iNeed ; iNeed ============================================================
     EndFunction
     
     Float Function GetBellyScale()
-        Return BaseBellyScale + Ineed.GetBellyScale()
+        ; -1.0 is the adapter's "stage is being swapped, ask again" sentinel. Adding the
+        ; base to it makes it look like an ordinary scale, and the gluttony script's
+        ; retry test (ScaleAmount == -1.0) then never matches - it publishes the sum
+        ; instead of waiting, snapping the belly flat mid-swap.
+        Float Raw = Ineed.GetBellyScale()
+        If Raw == -1.0
+            Return -1.0
+        EndIf
+        Return BaseBellyScale + Raw
     EndFunction
     
     Float Function GetLastHungerUpdateTime()
@@ -742,7 +791,15 @@ State Esd ; EatingSleepingDrinking =============================================
     EndFunction
     
     Float Function GetBellyScale()
-        Return BaseBellyScale + EatSleepDrink.GetBellyScale()
+        ; -1.0 is the adapter's "stage is being swapped, ask again" sentinel. Adding the
+        ; base to it makes it look like an ordinary scale, and the gluttony script's
+        ; retry test (ScaleAmount == -1.0) then never matches - it publishes the sum
+        ; instead of waiting, snapping the belly flat mid-swap.
+        Float Raw = EatSleepDrink.GetBellyScale()
+        If Raw == -1.0
+            Return -1.0
+        EndIf
+        Return BaseBellyScale + Raw
     EndFunction
     
     Float Function GetLastHungerUpdateTime()
@@ -825,7 +882,15 @@ State Shs ; SunHelmSurvival ====================================================
     EndFunction
     
     Float Function GetBellyScale()
-        Return BaseBellyScale + Shs.GetBellyScale()
+        ; -1.0 is the adapter's "stage is being swapped, ask again" sentinel. Adding the
+        ; base to it makes it look like an ordinary scale, and the gluttony script's
+        ; retry test (ScaleAmount == -1.0) then never matches - it publishes the sum
+        ; instead of waiting, snapping the belly flat mid-swap.
+        Float Raw = Shs.GetBellyScale()
+        If Raw == -1.0
+            Return -1.0
+        EndIf
+        Return BaseBellyScale + Raw
     EndFunction
     
     Float Function GetLastHungerUpdateTime()
@@ -854,6 +919,89 @@ State Shs ; SunHelmSurvival ====================================================
     
     String Function GetAioFatigue()
         Return Shs.GetAioFatigue()
+    EndFunction
+
+    ; SunHelm's own six hunger stages, in its own order and wording
+    ; (_SunHelmMain.psc): 0 Well Fed .. 5 Starving. Rung 0 is the fullest
+    ; stomach, which is also the biggest belly.
+    Int Function GetBellyRungCount()
+        Return 6
+    EndFunction
+
+    String Function GetBellyLadderName()
+        Return "$SLS_hShsBellyScaling"
+    EndFunction
+
+    Float Function GetBellyRung(Int aiRung)
+        If aiRung == 0
+            Return Shs.BellyScaleShs00
+        ElseIf aiRung == 1
+            Return Shs.BellyScaleShs01
+        ElseIf aiRung == 2
+            Return Shs.BellyScaleShs02
+        ElseIf aiRung == 3
+            Return Shs.BellyScaleShs03
+        ElseIf aiRung == 4
+            Return Shs.BellyScaleShs04
+        ElseIf aiRung == 5
+            Return Shs.BellyScaleShs05
+        EndIf
+        Return 0.0
+    EndFunction
+
+    ; The shipped property defaults, so the MCM's right-click reset restores what
+    ; the patch actually ships. Mirrors the literals on _SLS_InterfaceShs.psc's
+    ; BellyScaleShs00..05 property declarations - spelled out rather than derived
+    ; from their current arithmetic progression, which would silently stop matching
+    ; the moment one of them is retuned.
+    Float Function GetBellyRungDefault(Int aiRung)
+        If aiRung == 0
+            Return 1.5
+        ElseIf aiRung == 1
+            Return 1.2
+        ElseIf aiRung == 2
+            Return 0.9
+        ElseIf aiRung == 3
+            Return 0.6
+        ElseIf aiRung == 4
+            Return 0.3
+        ElseIf aiRung == 5
+            Return 0.0
+        EndIf
+        Return 0.0
+    EndFunction
+
+    Function SetBellyRung(Int aiRung, Float afValue)
+        If aiRung == 0
+            Shs.BellyScaleShs00 = afValue
+        ElseIf aiRung == 1
+            Shs.BellyScaleShs01 = afValue
+        ElseIf aiRung == 2
+            Shs.BellyScaleShs02 = afValue
+        ElseIf aiRung == 3
+            Shs.BellyScaleShs03 = afValue
+        ElseIf aiRung == 4
+            Shs.BellyScaleShs04 = afValue
+        ElseIf aiRung == 5
+            Shs.BellyScaleShs05 = afValue
+        EndIf
+    EndFunction
+
+    String Function GetBellyRungLabel(Int aiRung)
+        If aiRung == 0
+            Return "$SLS_BellyScaleShs00"
+        ElseIf aiRung == 1
+            Return "$SLS_BellyScaleShs01"
+        ElseIf aiRung == 2
+            Return "$SLS_BellyScaleShs02"
+        ElseIf aiRung == 3
+            Return "$SLS_BellyScaleShs03"
+        ElseIf aiRung == 4
+            Return "$SLS_BellyScaleShs04"
+        ElseIf aiRung == 5
+            Return "$SLS_BellyScaleShs05"
+        EndIf
+        Return ""
     EndFunction
 EndState
 

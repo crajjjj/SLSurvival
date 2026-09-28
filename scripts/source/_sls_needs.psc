@@ -498,6 +498,40 @@ Float Function GetBellyScale()
 	Return -2.0
 EndFunction
 
+; --- Generic belly ladder, reached by the MCM -------------------------------
+; sls_mcm cannot hold a property typed to _SLS_InterfaceShs: that adapter ships
+; only with the optional SunHelm patch, and a property whose type is missing
+; stops the whole MCM script from loading. So the per-hunger-stage ladder is
+; reached through this script instead - always present, and replaced wholesale
+; by the patch, which overrides these in its own State Shs.
+;
+; Rung 0 is the fullest stomach, rung (Count - 1) the emptiest. Count 0 means
+; the active needs mod exposes no ladder, and the MCM draws no sliders for it.
+; A label is a $-prefixed translation key, owned by the state that knows its
+; own hunger stage names.
+Int Function GetBellyRungCount()
+	Return 0
+EndFunction
+
+String Function GetBellyLadderName()
+	Return ""
+EndFunction
+
+Float Function GetBellyRung(Int aiRung)
+	Return 0.0
+EndFunction
+
+Float Function GetBellyRungDefault(Int aiRung)
+	Return 0.0
+EndFunction
+
+Function SetBellyRung(Int aiRung, Float afValue)
+EndFunction
+
+String Function GetBellyRungLabel(Int aiRung)
+	Return ""
+EndFunction
+
 Float Function GetLastHungerUpdateTime()
 	Return 0.0
 EndFunction
@@ -575,7 +609,15 @@ State Rnd ; RND ================================================================
 	EndFunction
 	
 	Float Function GetBellyScale()
-		Return BaseBellyScale + Rnd.GetBellyScale()
+		; -1.0 is the adapter's "stage is being swapped, ask again" sentinel. Adding the
+		; base to it makes it look like an ordinary scale, and the gluttony script's
+		; retry test (ScaleAmount == -1.0) then never matches - it publishes the sum
+		; instead of waiting, snapping the belly flat mid-swap.
+		Float Raw = Rnd.GetBellyScale()
+		If Raw == -1.0
+			Return -1.0
+		EndIf
+		Return BaseBellyScale + Raw
 	EndFunction
 	
 	Float Function GetLastHungerUpdateTime()
@@ -657,7 +699,15 @@ State iNeed ; iNeed ============================================================
 	EndFunction
 	
 	Float Function GetBellyScale()
-		Return BaseBellyScale + Ineed.GetBellyScale()
+		; -1.0 is the adapter's "stage is being swapped, ask again" sentinel. Adding the
+		; base to it makes it look like an ordinary scale, and the gluttony script's
+		; retry test (ScaleAmount == -1.0) then never matches - it publishes the sum
+		; instead of waiting, snapping the belly flat mid-swap.
+		Float Raw = Ineed.GetBellyScale()
+		If Raw == -1.0
+			Return -1.0
+		EndIf
+		Return BaseBellyScale + Raw
 	EndFunction
 	
 	Float Function GetLastHungerUpdateTime()
@@ -736,7 +786,15 @@ State Esd ; EatingSleepingDrinking =============================================
 	EndFunction
 	
 	Float Function GetBellyScale()
-		Return BaseBellyScale + EatSleepDrink.GetBellyScale()
+		; -1.0 is the adapter's "stage is being swapped, ask again" sentinel. Adding the
+		; base to it makes it look like an ordinary scale, and the gluttony script's
+		; retry test (ScaleAmount == -1.0) then never matches - it publishes the sum
+		; instead of waiting, snapping the belly flat mid-swap.
+		Float Raw = EatSleepDrink.GetBellyScale()
+		If Raw == -1.0
+			Return -1.0
+		EndIf
+		Return BaseBellyScale + Raw
 	EndFunction
 	
 	Float Function GetLastHungerUpdateTime()
