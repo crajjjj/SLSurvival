@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.717
+	Version = 0.718
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -821,6 +821,12 @@ Function VersionCheck()
 	; state on every load, so the new options appear on their own.
 	If Version < 0.717
 		UpdateVersion(0.717)
+	EndIf
+
+	; 0.718 reads oral contact through the SexLab P+ 2.19 interaction API when that P+ is
+	; installed (_SLS_IntSlpp). Script-only, nothing to migrate.
+	If Version < 0.718
+		UpdateVersion(0.718)
 	EndIf
 EndFunction
 

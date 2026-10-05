@@ -2,7 +2,7 @@
 
 Large Skyrim SE gameplay/survival overhaul mod. Pure **Papyrus** (`.psc` → `.pex`), no SKSE plugin of its own. ~812 source scripts. Heavily integrates with dozens of optional LoversLab/survival mods through a consistent adapter layer (see *Adapter Architecture* — it is the most important thing in this project).
 
-Current version: **0.717** (`meta.ini`).
+Current version: **0.718** (`meta.ini`).
 
 ## Git Commits
 Do **not** include a `Co-Authored-By` trailer in commit messages. Commits should look authored solely by the user (matches the convention in the user's other Skyrim mods).
@@ -62,6 +62,9 @@ Why the split: a script-level **property** typed to an external script resolves 
 
 ### Gotcha: external scripts get renamed across versions
 `_SLS_IntXxx` casts the external mod's MCM/config quest to a specific script name. If the user has a **newer version** of that mod where the script was renamed, the cast silently returns `None`, you get a `warning: Assigning None to a non-object variable "::temp1"` in the Papyrus log, and the integration breaks quietly (reads return 0, writes no-op). Real example fixed in this repo: `_SLS_IntCf` cast to `CFConfigMenu` (old CF) but CF v4 ships `CreatureFrameworkConfig`. Fix = update the cast to the installed mod's script name **and** guard the cast (`If (q as Type)`) so a future mismatch can't corrupt state. When touching an `_SLS_IntXxx`, verify the cast target against the script actually attached to the form in `dependencies/<that mod>/Scripts/Source/`.
+
+### Gotcha: SexLab P+ has two interaction APIs
+P+ 2.19 removed the 2.17.1 - 2.18 collision API (`CTYPE_*`, `HasInteractionType`, `GetPartnerByType`) in favour of per-actor InterType flags. `_SLS_IntSlpp` carries both paths and picks one by the `SexLabUtil` DLL version (`HasInterTypeApi()`, 2.19.0.0 = 34799616). The 2.19 functions are declared as stubs at the end of the bundled `dependencies/SexLab Framework PPLUS/Source/Scripts/SexLabThread.psc`, which is otherwise a 2.18-era header: keep that block when refreshing the header, and use literal 2.19 InterType indices in the 2.19 path, because the header's property values are still 2.18's.
 
 ## Naming Conventions
 

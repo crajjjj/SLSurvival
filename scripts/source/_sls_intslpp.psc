@@ -14,6 +14,24 @@ Bool Function GetIsInstalled() Global
 	Return SKSE.GetPluginVersion("SexLabUtil") >= 34668560
 EndFunction
 
+; P+ 2.19 replaced its collision detector and with it the interaction API: CTYPE_*,
+; HasInteractionType and GetPartnerByType are gone, and contact is read per actor through
+; InterType flags. 2.19.0.0 packed the same way as above = 34799616. The older API stays
+; supported because 2.17.1 - 2.18.x is what released P+ builds still ship.
+Bool Function HasInterTypeApi() Global
+	Return SKSE.GetPluginVersion("SexLabUtil") >= 34799616
+EndFunction
+
+; P+ 2.19+ only. True when akPartner is one of the actors akPosition holds aiInterType with.
+; aiInterType is akPosition's OWN flag (the 2.19 lookups have no giver/receiver argument order).
+Bool Function IsInterTypePartner(SexLabThread t, Actor akPosition, Actor akPartner, Int aiInterType) Global
+	Actor[] Partners = t.GetPartnersByInteractionType(akPosition, aiInterType)
+	If !Partners
+		Return False
+	EndIf
+	Return Partners.Find(akPartner) >= 0
+EndFunction
+
 ; --- Pair-precise P+ queries. GetThread backs the enjoyment wrappers below; GetOralState
 ; --- verifies the orifice SexLabApplyCumFX reports (P+ falls back to scene tags when a scene
 ; --- registered no collision data). GetOralPartner has no caller yet - kept as a building block
@@ -36,6 +54,15 @@ Int Function GetOralState(SexlabFramework Sexlab, Int tid, Actor akSucker, Actor
 	If !t || !t.IsInteractionRegistered()
 		Return -1
 	EndIf
+	If HasInterTypeApi()
+		; The same three contacts as the pre-2.19 test below, as the sucker's own flags. Literal
+		; indices of the 2.19 InterType enum: the bundled SexLabThread header gives those property
+		; names their 2.18 values.
+		If IsInterTypePartner(t, akSucker, akPartner, 17) || IsInterTypePartner(t, akSucker, akPartner, 19) || IsInterTypePartner(t, akSucker, akPartner, 15) ; aOral, aDeepthroat, aLickingShaft
+			Return 1
+		EndIf
+		Return 0
+	EndIf
 	; Mirror P+'s own oral test in sslThreadModel.ApplyCumFX - "any_oral = pOral || pDeepthroat ||
 	; pLickingShaft". These are independent collision flags, so CTYPE_Oral alone would report 0 for a
 	; deepthroat/shaft-licking load that P+ reports as oral, and the caller would downgrade a real
@@ -51,6 +78,9 @@ EndFunction
 Actor Function GetOralPartner(SexlabFramework Sexlab, Int tid, Actor akSucker) Global
 	SexLabThread t = GetThread(Sexlab, tid)
 	If t && t.IsInteractionRegistered()
+		If HasInterTypeApi()
+			Return t.GetPartnerByInteractionType(akSucker, 17) ; aOral
+		EndIf
 		Return t.GetPartnerByType(akSucker, t.CTYPE_Oral)
 	EndIf
 	Return None

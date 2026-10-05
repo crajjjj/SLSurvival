@@ -443,3 +443,21 @@ Function SetConfigsVRIK(bool abEnabled=true, bool abOverrideConfig=false, int ai
 	float afDistHideHead=-1.0, float afDistNearClip=-1.0, int aiLockHmdToBody=-1, \
 	float afLockHmdDistance=-1.0, float afLockHmdTolerance=-1.0, float afLockHmdSpeed=-1.0)
 EndFunction
+
+; ------------------------------------------------------- ;
+; --- P+ 2.19 interaction API (SLS compile stubs)     --- ;
+; ------------------------------------------------------- ;
+;/
+	NOT part of the P+ version the rest of this file was taken from. P+ 2.19 replaced the collision
+	detector and removed the "Collision Type-Guessing" block above (CTYPE_*, HasInteractionType,
+	GetPartnerByType, ...). These are the 2.19 counterparts, declared here only so _SLS_IntSlpp can
+	compile both code paths; it picks one at runtime by the SexLabUtil DLL version, so a function
+	the installed P+ lacks is never called.
+	The lookup is keyed by akPosition's own InterType, and the indices are those of the 2.19 C++
+	InterType enum (aLickingShaft 15, aOral 17, aDeepthroat 19) - not the 2.18 values the
+	properties above carry.
+/;
+Actor Function GetPartnerByInteractionType(Actor akPosition, int InterTypes)
+EndFunction
+Actor[] Function GetPartnersByInteractionType(Actor akPosition, int InterTypes)
+EndFunction
