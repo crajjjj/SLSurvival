@@ -951,20 +951,20 @@ State Shs ; SunHelmSurvival ====================================================
 
     ; The shipped property defaults, so the MCM's right-click reset restores what
     ; the patch actually ships. Mirrors the literals on _SLS_InterfaceShs.psc's
-    ; BellyScaleShs00..05 property declarations - spelled out rather than derived
-    ; from their current arithmetic progression, which would silently stop matching
-    ; the moment one of them is retuned.
+    ; BellyScaleShs00..05 property declarations - spelled out per rung rather than
+    ; derived from a pattern, which would silently stop matching the moment one of
+    ; them is retuned.
     Float Function GetBellyRungDefault(Int aiRung)
         If aiRung == 0
-            Return 1.5
-        ElseIf aiRung == 1
-            Return 1.2
-        ElseIf aiRung == 2
-            Return 0.9
-        ElseIf aiRung == 3
-            Return 0.6
-        ElseIf aiRung == 4
             Return 0.3
+        ElseIf aiRung == 1
+            Return 0.0
+        ElseIf aiRung == 2
+            Return 0.0
+        ElseIf aiRung == 3
+            Return 0.0
+        ElseIf aiRung == 4
+            Return 0.0
         ElseIf aiRung == 5
             Return 0.0
         EndIf

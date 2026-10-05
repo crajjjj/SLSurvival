@@ -353,9 +353,13 @@ Quest SnQuest
 
 Float HoursSleptAtFatigueZero = 0.0
 
-Float Property BellyScaleIneed00 = 0.9 Auto Hidden
-Float Property BellyScaleIneed01 = 0.6 Auto Hidden
-Float Property BellyScaleIneed02 = 0.3 Auto Hidden
+; Added to the base belly scale. By default only the fullest stage shows, and only a little.
+; iNeed has no overeating stage, so Satiated carries it; the hungry stages leave the belly
+; alone. sls_mcm repeats these literals for the slider reset and the settings import - keep
+; the three in step.
+Float Property BellyScaleIneed00 = 0.3 Auto Hidden
+Float Property BellyScaleIneed01 = 0.0 Auto Hidden
+Float Property BellyScaleIneed02 = 0.0 Auto Hidden
 Float Property BellyScaleIneed03 = 0.0 Auto Hidden
 
 MagicEffect Property _SNBuffHungerFX Auto Hidden ; Satiated

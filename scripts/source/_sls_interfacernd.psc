@@ -735,11 +735,14 @@ EndFunction
 SLS_Mcm Property Menu Auto
 SLS_Init Property Init Auto
 
-Float Property BellyScaleRnd00 = 1.5 Auto Hidden
-Float Property BellyScaleRnd01 = 0.4 Auto Hidden
-Float Property BellyScaleRnd02 = 0.3 Auto Hidden
-Float Property BellyScaleRnd03 = 0.2 Auto Hidden
-Float Property BellyScaleRnd04 = 0.1 Auto Hidden
+; Added to the base belly scale. By default only overeating (Glutted) shows, and only a
+; little: an ordinary hunger level leaves the belly alone. sls_mcm repeats these literals for
+; the slider reset and the settings import - keep the three in step.
+Float Property BellyScaleRnd00 = 0.3 Auto Hidden
+Float Property BellyScaleRnd01 = 0.0 Auto Hidden
+Float Property BellyScaleRnd02 = 0.0 Auto Hidden
+Float Property BellyScaleRnd03 = 0.0 Auto Hidden
+Float Property BellyScaleRnd04 = 0.0 Auto Hidden
 Float Property BellyScaleRnd05 = 0.0 Auto Hidden
 
 ; Vanilla Properties

@@ -391,10 +391,12 @@ GlobalVariable Property _SHCurrentFatigueLevel Auto Hidden
 GlobalVariable Property _SHBedrollSleep Auto Hidden
 FormList Property _SHBedrollList Auto Hidden
 
-; Belly scale values
-Float Property BellyScaleShs00 = 1.5 Auto Hidden
-Float Property BellyScaleShs01 = 1.2 Auto Hidden
-Float Property BellyScaleShs02 = 0.9 Auto Hidden
-Float Property BellyScaleShs03 = 0.6 Auto Hidden
-Float Property BellyScaleShs04 = 0.3 Auto Hidden
+; Belly scale values, added to the base belly scale. By default only overeating (Well Fed)
+; shows, and only a little: an ordinary hunger level leaves the belly alone.
+; _SLS_Needs.GetBellyRungDefault repeats these literals - keep the two in step.
+Float Property BellyScaleShs00 = 0.3 Auto Hidden
+Float Property BellyScaleShs01 = 0.0 Auto Hidden
+Float Property BellyScaleShs02 = 0.0 Auto Hidden
+Float Property BellyScaleShs03 = 0.0 Auto Hidden
+Float Property BellyScaleShs04 = 0.0 Auto Hidden
 Float Property BellyScaleShs05 = 0.0 Auto Hidden
