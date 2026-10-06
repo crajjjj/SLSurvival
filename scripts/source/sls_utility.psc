@@ -807,6 +807,10 @@ Function InitFondleableVoices()
 	EndWhile
 EndFunction
 
+Bool Function IsUbeInstalled()
+	Return Game.GetModByName("UBE_AllRace.esp") != 255
+EndFunction
+
 ; True for an actor whose race comes from UBE_AllRace.esp. UBE meshes use their own UV layout,
 ; so overlays drawn for the vanilla/CBBE layout do not line up on them.
 Bool Function IsUbeActor(Actor akTarget)

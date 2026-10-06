@@ -457,11 +457,12 @@ Int Function BeginRemoveOverlay(Actor akActor, String Texture)
 	EndIf
 	String AreaFolder = GetTextureArea(akActor, Gender, Texture)
 	
-	Bool IsUbe = Util.IsUbeActor(akActor)
-	Bool Ube = UseUbeWound(IsUbe, Gender, AreaFolder, Texture)
+	Bool UbeInstalled = Util.IsUbeInstalled()
+	Bool Ube = UbeInstalled && UseUbeWound(Util.IsUbeActor(akActor), Gender, AreaFolder, Texture)
 	Int Slot = Util.RemoveOverlay(akActor, WoundTexture(Gender, AreaFolder, Texture, Ube), Area = AreaFolder)
-	If Slot == -1 && IsUbe
-		; Applied from the other texture set: a save from before the UBE set, or the set was removed.
+	If Slot == -1 && UbeInstalled
+		; It may have been applied from the other texture set: the actor changed race since (a
+		; werewolf or vampire lord form counts), or the UBE set was added or removed.
 		Slot = Util.RemoveOverlay(akActor, WoundTexture(Gender, AreaFolder, Texture, !Ube), Area = AreaFolder)
 	EndIf
 	Return Slot
@@ -527,10 +528,10 @@ Function UpdateAlpha(Actor akActor, String Gender, String[] FaceTexList, String 
 		If FaceTexList.Find(Texture) > -1
 			AreaFolder = "Face"
 		EndIf
-		Bool IsUbe = Util.IsUbeActor(akActor)
-		Bool Ube = UseUbeWound(IsUbe, Gender, AreaFolder, Texture)
+		Bool UbeInstalled = Util.IsUbeInstalled()
+		Bool Ube = UbeInstalled && UseUbeWound(Util.IsUbeActor(akActor), Gender, AreaFolder, Texture)
 		String WoundPath = WoundTexture(Gender, AreaFolder, Texture, Ube)
-		If IsUbe && !Util.HasOverlay(akActor, WoundPath, AreaFolder)
+		If UbeInstalled && !Util.HasOverlay(akActor, WoundPath, AreaFolder)
 			; Still on the other texture set (see BeginRemoveOverlay). Take that one off;
 			; Util.UpdateAlpha puts the wound back from the current set.
 			Util.RemoveOverlay(akActor, WoundTexture(Gender, AreaFolder, Texture, !Ube), AreaFolder)
