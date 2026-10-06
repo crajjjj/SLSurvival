@@ -41,6 +41,7 @@ Beyond the core stack, SLS integrates with **dozens of optional** survival and L
     - **Bikini Armor Break (TAWoBA)** — armor-break configs/meshes; requires The Amazing World of Bikini Armors REMASTERED.
     - **Animal Friend Teammates** — tamed animals follow and fight as teammates (off by default; can be unreliable).
     - **Battle Wound / Bruise Textures** — extra bruise body-overlay textures for the wound system.
+    - **UBE Battle Wound Textures**: UBE-layout copies of the wound and bruise overlays, used automatically for characters of a UBE 2.0 race.
 4. **Run FNIS or Nemesis** after installing SLS (and any time you add or remove animation mods). Skipping this leaves animations broken.
 5. Launch the game through your mod manager.
 

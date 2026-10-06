@@ -444,7 +444,7 @@ Int Function BeginAddOverlay(Actor akActor, String Texture, Int TraumaCountMax)
 	EndIf
 	
 	If Slot > -1
-		Return Util.BeginOverlay(akActor, Alpha = StartingAlpha, TextureToApply = "\\SL Survival\\BattleWounds\\" + Gender + "\\" + AreaFolder + "\\" + Texture, Area = AreaFolder, SlotToUse = Slot)
+		Return Util.BeginOverlay(akActor, Alpha = StartingAlpha, TextureToApply = WoundTexture(Gender, AreaFolder, Texture, UseUbeWound(Util.IsUbeActor(akActor), Gender, AreaFolder, Texture)), Area = AreaFolder, SlotToUse = Slot)
 	EndIf
 	Debug.Trace("_SLS_: BeginAddOverlay(): Could not locate an empty slot in area: " + AreaFolder + " on actor: " + akActor.GetLeveledActorBase().GetName() + " - " + akActor)
 	Return -1
@@ -457,7 +457,28 @@ Int Function BeginRemoveOverlay(Actor akActor, String Texture)
 	EndIf
 	String AreaFolder = GetTextureArea(akActor, Gender, Texture)
 	
-	Return Util.RemoveOverlay(akActor, "\\SL Survival\\BattleWounds\\" + Gender + "\\" + AreaFolder + "\\" + Texture, Area = AreaFolder)
+	Bool IsUbe = Util.IsUbeActor(akActor)
+	Bool Ube = UseUbeWound(IsUbe, Gender, AreaFolder, Texture)
+	Int Slot = Util.RemoveOverlay(akActor, WoundTexture(Gender, AreaFolder, Texture, Ube), Area = AreaFolder)
+	If Slot == -1 && IsUbe
+		; Applied from the other texture set: a save from before the UBE set, or the set was removed.
+		Slot = Util.RemoveOverlay(akActor, WoundTexture(Gender, AreaFolder, Texture, !Ube), Area = AreaFolder)
+	EndIf
+	Return Slot
+EndFunction
+
+; Texture of a wound in the form NiOverride gets it. Ube picks the UBE-layout copy.
+String Function WoundTexture(String Gender, String AreaFolder, String Texture, Bool Ube)
+	If Ube
+		Return "\\SL Survival\\BattleWounds_UBE\\" + Gender + "\\" + AreaFolder + "\\" + Texture
+	EndIf
+	Return "\\SL Survival\\BattleWounds\\" + Gender + "\\" + AreaFolder + "\\" + Texture
+EndFunction
+
+; UBE-race actors take a wound from BattleWounds_UBE when that copy is installed (it is an
+; optional install). Checked per file, so a set with gaps falls back to the standard texture.
+Bool Function UseUbeWound(Bool IsUbe, String Gender, String AreaFolder, String Texture)
+	Return IsUbe && MiscUtil.FileExists("Data/textures/SL Survival/BattleWounds_UBE/" + Gender + "/" + AreaFolder + "/" + Texture)
 EndFunction
 
 String Function GetTextureArea(Actor akActor, String Gender, String Texture)
@@ -506,7 +527,15 @@ Function UpdateAlpha(Actor akActor, String Gender, String[] FaceTexList, String 
 		If FaceTexList.Find(Texture) > -1
 			AreaFolder = "Face"
 		EndIf
-		Util.UpdateAlpha(akActor, Alpha, "\\SL Survival\\BattleWounds\\" + Gender + "\\" + AreaFolder + "\\" + Texture, AreaFolder)
+		Bool IsUbe = Util.IsUbeActor(akActor)
+		Bool Ube = UseUbeWound(IsUbe, Gender, AreaFolder, Texture)
+		String WoundPath = WoundTexture(Gender, AreaFolder, Texture, Ube)
+		If IsUbe && !Util.HasOverlay(akActor, WoundPath, AreaFolder)
+			; Still on the other texture set (see BeginRemoveOverlay). Take that one off;
+			; Util.UpdateAlpha puts the wound back from the current set.
+			Util.RemoveOverlay(akActor, WoundTexture(Gender, AreaFolder, Texture, !Ube), AreaFolder)
+		EndIf
+		Util.UpdateAlpha(akActor, Alpha, WoundPath, AreaFolder)
 	EndIf
 EndFunction
 

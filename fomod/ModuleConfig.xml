@@ -96,6 +96,16 @@
                                 <type name="Optional" />
                             </typeDescriptor>
                         </plugin>
+
+                        <plugin name="UBE Battle Wound Textures">
+                            <description>UBE-layout copies of the wound and bruise overlays, for characters of a UBE 2.0 race. SL Survival picks them per actor; everyone else keeps the standard textures. Only useful with UBE 2.0 installed.</description>
+                            <files>
+                                <folder source="optional\BattleWoundsUBE\textures" destination="textures" priority="1" />
+                            </files>
+                            <typeDescriptor>
+                                <type name="Optional" />
+                            </typeDescriptor>
+                        </plugin>
                     </plugins>
                 </group>
             </optionalFileGroups>

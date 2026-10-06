@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.718
+	Version = 0.719
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -827,6 +827,12 @@ Function VersionCheck()
 	; installed (_SLS_IntSlpp). Script-only, nothing to migrate.
 	If Version < 0.718
 		UpdateVersion(0.718)
+	EndIf
+
+	; 0.719 draws wounds on UBE-race actors from the optional UBE texture set. No migration
+	; step: _SLS_Trauma moves a wound over the next time it updates that wound's alpha.
+	If Version < 0.719
+		UpdateVersion(0.719)
 	EndIf
 EndFunction
 

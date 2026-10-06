@@ -807,6 +807,23 @@ Function InitFondleableVoices()
 	EndWhile
 EndFunction
 
+; True for an actor whose race comes from UBE_AllRace.esp. UBE meshes use their own UV layout,
+; so overlays drawn for the vanilla/CBBE layout do not line up on them.
+Bool Function IsUbeActor(Actor akTarget)
+	If !akTarget
+		Return false
+	EndIf
+	Int UbeIndex = Game.GetModByName("UBE_AllRace.esp")
+	If UbeIndex == 255
+		Return false
+	EndIf
+	Race TargetRace = akTarget.GetRace()
+	If !TargetRace
+		Return false
+	EndIf
+	Return Math.LogicalAnd(Math.RightShift(TargetRace.GetFormID(), 24), 0xFF) == UbeIndex
+EndFunction
+
 Int Function BeginOverlay(Actor akTarget, Float Alpha, String TextureToApply, String Area, Int SlotToUse = -1)
 	Bool Gender = akTarget.GetLeveledActorBase().GetSex() as Bool
 	Debug.Trace("_SLS_: Applying overlay " + TextureToApply + " to " + akTarget.GetBaseObject().GetName())
