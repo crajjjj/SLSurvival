@@ -27,6 +27,26 @@ _SLS_InterfaceEatSleepDrink Property EatSleepDrink Auto
 _SLS_InterfaceFrostfall Property FrostInterface Auto
 _SLS_InterfaceDevious Property Devious Auto
 _SLS_InterfaceSpankThatAss Property Sta Auto
+; Filled by the optional SunHelm patch plugin (SL Survival Sunhelm Patch.esp); None without it
+_SLS_InterfaceShs Property Shs Auto
+
+; Creation Club Survival Mode, looked up in IsCcsEnabled (no plugin edits needed)
+Quest CcsHungerQuest
+Quest CcsExhaustionQuest
+GlobalVariable CcsModeEnabled
+GlobalVariable CcsHungerValue
+GlobalVariable CcsExhaustionValue
+Float Property CcsFatigueScale = 2.0 Auto Hidden ; Survival Mode exhaustion runs to 960: SLS fatigue amounts x2, like SunHelm's 480 scale
+
+; Survival Mode belly ladder, added to the base belly scale, one rung per hunger stage (00 Well Fed .. 05
+; Ravenous). Like the other needs mods' ladders, by default only the fullest stage shows, and only a little.
+; GetBellyRungDefault in State Ccs repeats these literals - keep the two in step.
+Float Property BellyScaleCcs00 = 0.3 Auto Hidden
+Float Property BellyScaleCcs01 = 0.0 Auto Hidden
+Float Property BellyScaleCcs02 = 0.0 Auto Hidden
+Float Property BellyScaleCcs03 = 0.0 Auto Hidden
+Float Property BellyScaleCcs04 = 0.0 Auto Hidden
+Float Property BellyScaleCcs05 = 0.0 Auto Hidden
 
 Bool DoSleepDeprivMessage = true
 String LastConditions ; Breakdown from the most recent GetSleepPenalty() call, minus the flavor statement
@@ -52,9 +72,45 @@ Function PickNeedsState()
 		GoToState("iNeed")
 	ElseIf Game.GetModByName("EatingSleepingDrinking.esp") != 255
 		GoToState("Esd")
+	ElseIf Game.GetModByName("SunHelmSurvival.esp") != 255 && Shs ; needs the optional SunHelm patch plugin
+		GoToState("Shs")
+	ElseIf Game.GetModByName("ccqdrsse001-survivalmode.esl") != 255
+		; On the plugin, not the switch: a new game runs this before the player answers Survival Mode's
+		; prompt. Every Ccs function checks the switch itself and acts like the empty state while it is off.
+		GoToState("Ccs")
 	Else
 		GoToState("")
 	EndIf
+EndFunction
+
+; Creation Club Survival Mode is in the plugin list on AE whether or not it is switched on, so the switch decides,
+; not the plugin. Fetches the forms on first use; True only while Survival Mode is running.
+Bool Function IsCcsEnabled()
+	If Game.GetModByName("ccqdrsse001-survivalmode.esl") == 255
+		Return false
+	EndIf
+	If !CcsModeEnabled
+		CcsModeEnabled = Game.GetFormFromFile(0x000826, "ccqdrsse001-survivalmode.esl") as GlobalVariable ; Survival_ModeEnabled
+		CcsHungerValue = Game.GetFormFromFile(0x00081A, "ccqdrsse001-survivalmode.esl") as GlobalVariable ; Survival_HungerNeedValue
+		CcsExhaustionValue = Game.GetFormFromFile(0x000816, "ccqdrsse001-survivalmode.esl") as GlobalVariable ; Survival_ExhaustionNeedValue
+		CcsHungerQuest = Game.GetFormFromFile(0x000894, "ccqdrsse001-survivalmode.esl") as Quest ; Survival_NeedHungerQuest
+		CcsExhaustionQuest = Game.GetFormFromFile(0x000899, "ccqdrsse001-survivalmode.esl") as Quest ; Survival_NeedExhaustionQuest
+	EndIf
+	Return CcsModeEnabled && CcsModeEnabled.GetValueInt() == 1 && CcsHungerQuest && CcsExhaustionQuest
+EndFunction
+
+; Stage 0..5 of a Survival Mode need from its current value
+Int Function GetCcsStage(Quest NeedQuest, GlobalVariable NeedValue)
+	Float[] Stages = _SLS_IntCcs.GetStageValues(NeedQuest)
+	Float Value = NeedValue.GetValue()
+	Int i = 5
+	While i > 0
+		If Value >= Stages[i]
+			Return i
+		EndIf
+		i -= 1
+	EndWhile
+	Return 0
 EndFunction
 
 Event OnControlDown(string control)
@@ -455,6 +511,9 @@ String Function GetDeviousString(Int NumDevices, Float MasochismAttitude)
 	EndIf
 EndFunction
 
+Function SyncBedrollSleepFlag() ; No-op unless the needs mod has a bedroll latch to correct (SunHelm)
+EndFunction
+
 ; Empty state functions ============================================================
 Bool Function IsNeedsModActive()
 	Return false
@@ -499,11 +558,9 @@ Float Function GetBellyScale()
 EndFunction
 
 ; --- Generic belly ladder, reached by the MCM -------------------------------
-; sls_mcm cannot hold a property typed to _SLS_InterfaceShs: that adapter ships
-; only with the optional SunHelm patch, and a property whose type is missing
-; stops the whole MCM script from loading. So the per-hunger-stage ladder is
-; reached through this script instead - always present, and replaced wholesale
-; by the patch, which overrides these in its own State Shs.
+; The MCM reaches the per-hunger-stage ladder through this script, not through
+; the needs adapters: only the state picked here knows which needs mod is
+; active, and a state that has a ladder (Shs, Ccs) overrides these.
 ;
 ; Rung 0 is the fullest stomach, rung (Count - 1) the emptiest. Count 0 means
 ; the active needs mod exposes no ladder, and the MCM draws no sliders for it.
@@ -823,5 +880,437 @@ State Esd ; EatingSleepingDrinking =============================================
 	
 	String Function GetAioFatigue()
 		Return EatSleepDrink.GetAioFatigue()
+	EndFunction
+EndState
+
+State Shs ; SunHelmSurvival, only with the optional SunHelm patch plugin ========================================
+	Bool Function IsNeedsModActive()
+		Return Shs.IsNeedsModActive()
+	EndFunction
+
+	Function EatCum(Float Amount)
+		ModHunger(Amount * 15.0 * CumFoodMult)
+	EndFunction
+
+	Function DrinkCum(Float Amount)
+		ModThirst(Amount * 25.0 * CumDrinkMult * SaltyCum)
+	EndFunction
+
+	Function ModHunger(Float Amount)
+		Shs.Eat(Amount as Int)
+	EndFunction
+
+	Function ModThirst(Float Amount)
+		Shs.Drink(Amount as Int)
+	EndFunction
+
+	Float Function GetFatigue()
+		Return Shs.GetFatigue()
+	EndFunction
+
+	Function CorrectFatigue(Float SleepPenalty, Float StartingFatigue, Float HoursSlept)
+		Shs.CorrectFatigue(SleepPenalty, StartingFatigue, HoursSlept)
+	EndFunction
+
+	Function SyncBedrollSleepFlag()
+		Shs.SyncBedrollSleepFlag()
+	EndFunction
+
+	Function ModFatigue(Float Amount)
+		FatigueBeforeModding = Shs.GetFatigue()
+		Shs.ModFatigue(Amount as Int)
+	EndFunction
+
+	Bool Function IsDesperate() ; Condition used to determine if player will auto swallow cum
+		Return Shs.IsDesperate()
+	EndFunction
+
+	Function GetBegIsHungy()
+		BegIsHungry = Shs.GetBegIsHungry()
+	EndFunction
+
+	Function GetBegIsThirsty()
+		BegIsThirsty = Shs.GetBegIsThirsty()
+	EndFunction
+
+	Float Function GetBellyScale()
+		; -1.0 is the adapter's "stage is being swapped, ask again" sentinel. Adding the
+		; base to it makes it look like an ordinary scale, and the gluttony script's
+		; retry test (ScaleAmount == -1.0) then never matches - it publishes the sum
+		; instead of waiting, snapping the belly flat mid-swap.
+		Float Raw = Shs.GetBellyScale()
+		If Raw == -1.0
+			Return -1.0
+		EndIf
+		Return BaseBellyScale + Raw
+	EndFunction
+
+	Float Function GetLastHungerUpdateTime()
+		Return Shs.GetLastHungerUpdateTime()
+	EndFunction
+
+	String Function GetConditionsStatement(Float SleepPenalty)
+		Return Shs.GetConditionsStatement(SleepPenalty)
+	EndFunction
+
+	Float Function GetHungerSleepPenalty()
+		Return Shs.GetHungerSleepPenalty()
+	EndFunction
+
+	Float Function GetThirstSleepPenalty()
+		Return Shs.GetThirstSleepPenalty()
+	EndFunction
+
+	String Function GetAioHunger()
+		Return Shs.GetAioHunger()
+	EndFunction
+
+	String Function GetAioThirst()
+		Return Shs.GetAioThirst()
+	EndFunction
+
+	String Function GetAioFatigue()
+		Return Shs.GetAioFatigue()
+	EndFunction
+
+	; SunHelm's own six hunger stages, in its own order and wording
+	; (_SunHelmMain.psc): 0 Well Fed .. 5 Starving. Rung 0 is the fullest
+	; stomach, which is also the biggest belly.
+	Int Function GetBellyRungCount()
+		Return 6
+	EndFunction
+
+	String Function GetBellyLadderName()
+		Return "$SLS_hShsBellyScaling"
+	EndFunction
+
+	Float Function GetBellyRung(Int aiRung)
+		If aiRung == 0
+			Return Shs.BellyScaleShs00
+		ElseIf aiRung == 1
+			Return Shs.BellyScaleShs01
+		ElseIf aiRung == 2
+			Return Shs.BellyScaleShs02
+		ElseIf aiRung == 3
+			Return Shs.BellyScaleShs03
+		ElseIf aiRung == 4
+			Return Shs.BellyScaleShs04
+		ElseIf aiRung == 5
+			Return Shs.BellyScaleShs05
+		EndIf
+		Return 0.0
+	EndFunction
+
+	; The shipped property defaults, so the MCM's right-click reset restores what
+	; the patch actually ships. Mirrors the literals on _SLS_InterfaceShs.psc's
+	; BellyScaleShs00..05 property declarations - spelled out per rung rather than
+	; derived from a pattern, which would silently stop matching the moment one of
+	; them is retuned.
+	Float Function GetBellyRungDefault(Int aiRung)
+		If aiRung == 0
+			Return 0.3
+		ElseIf aiRung == 1
+			Return 0.0
+		ElseIf aiRung == 2
+			Return 0.0
+		ElseIf aiRung == 3
+			Return 0.0
+		ElseIf aiRung == 4
+			Return 0.0
+		ElseIf aiRung == 5
+			Return 0.0
+		EndIf
+		Return 0.0
+	EndFunction
+
+	Function SetBellyRung(Int aiRung, Float afValue)
+		If aiRung == 0
+			Shs.BellyScaleShs00 = afValue
+		ElseIf aiRung == 1
+			Shs.BellyScaleShs01 = afValue
+		ElseIf aiRung == 2
+			Shs.BellyScaleShs02 = afValue
+		ElseIf aiRung == 3
+			Shs.BellyScaleShs03 = afValue
+		ElseIf aiRung == 4
+			Shs.BellyScaleShs04 = afValue
+		ElseIf aiRung == 5
+			Shs.BellyScaleShs05 = afValue
+		EndIf
+	EndFunction
+
+	String Function GetBellyRungLabel(Int aiRung)
+		If aiRung == 0
+			Return "$SLS_BellyScaleShs00"
+		ElseIf aiRung == 1
+			Return "$SLS_BellyScaleShs01"
+		ElseIf aiRung == 2
+			Return "$SLS_BellyScaleShs02"
+		ElseIf aiRung == 3
+			Return "$SLS_BellyScaleShs03"
+		ElseIf aiRung == 4
+			Return "$SLS_BellyScaleShs04"
+		ElseIf aiRung == 5
+			Return "$SLS_BellyScaleShs05"
+		EndIf
+		Return ""
+	EndFunction
+EndState
+
+State Ccs ; Creation Club Survival Mode ======================================================================
+	; Survival Mode has hunger, exhaustion and cold but no thirst: drinking and thirst calls do nothing here.
+	; Hunger 0..1000: Well Fed / Satisfied / Peckish / Hungry / Starving / Ravenous.
+	; Exhaustion 0..960: Well Rested / Rested / Slightly Tired / Tired / Weary / Debilitated.
+	Bool Function IsNeedsModActive()
+		Return IsCcsEnabled()
+	EndFunction
+
+	Function EatCum(Float Amount)
+		ModHunger(Amount * 15.0 * CumFoodMult)
+	EndFunction
+
+	Function DrinkCum(Float Amount)
+	EndFunction
+
+	Function ModHunger(Float Amount) ; positive = food, like the other needs adapters
+		If !IsCcsEnabled()
+			Return
+		EndIf
+		If Amount > 0.0
+			_SLS_IntCcs.DecreaseHunger(CcsHungerQuest, Amount)
+		ElseIf Amount < 0.0
+			_SLS_IntCcs.IncreaseHunger(CcsHungerQuest, -Amount)
+		EndIf
+	EndFunction
+
+	Function ModThirst(Float Amount)
+	EndFunction
+
+	Float Function GetFatigue() ; SLS fatigue units: Survival Mode exhaustion / CcsFatigueScale
+		If !IsCcsEnabled()
+			Return 0.0
+		EndIf
+		Return CcsExhaustionValue.GetValue() / CcsFatigueScale
+	EndFunction
+
+	Function ModFatigue(Float Amount) ; + more tired, - less tired
+		If !IsCcsEnabled()
+			Return
+		EndIf
+		FatigueBeforeModding = GetFatigue()
+		If Amount > 0.0
+			_SLS_IntCcs.IncreaseExhaustion(CcsExhaustionQuest, Amount * CcsFatigueScale)
+		ElseIf Amount < 0.0
+			_SLS_IntCcs.DecreaseExhaustion(CcsExhaustionQuest, -Amount * CcsFatigueScale)
+		EndIf
+	EndFunction
+
+	Function CorrectFatigue(Float SleepPenalty, Float StartingFatigue, Float HoursSlept)
+		; Same structure as the SunHelm/RND adapters: runs ~5s after Survival Mode's own sleep restore and pulls
+		; exhaustion back up to the floor the sleep conditions imply.
+		If !IsCcsEnabled()
+			Return
+		EndIf
+		Float[] Levels = _SLS_IntCcs.GetStageValues(CcsExhaustionQuest)
+		Float TargetFatigue
+		If SleepPenalty <= 0.2
+			TargetFatigue = (SleepPenalty / 0.2) * Levels[1] ; up to 'Rested'
+		ElseIf SleepPenalty <= 0.4
+			TargetFatigue = (SleepPenalty / 0.4) * Levels[2] ; 'Slightly Tired'
+		ElseIf SleepPenalty <= 0.6
+			TargetFatigue = (SleepPenalty / 0.6) * Levels[3] ; 'Tired'
+		ElseIf SleepPenalty <= 0.8
+			TargetFatigue = (SleepPenalty / 0.8) * Levels[4] ; 'Weary'
+		Else
+			TargetFatigue = (SleepPenalty / 1.0) * ((Levels[4] + Levels[5]) / 2.0) ; between 'Weary' and 'Debilitated'
+		EndIf
+		TargetFatigue = TargetFatigue / CcsFatigueScale
+
+		Float CurrentFatigue = GetFatigue()
+		If StartingFatigue > TargetFatigue ; more tired than the cap when sleep began - cap the rest gained
+			If CurrentFatigue < TargetFatigue
+				ModFatigue(TargetFatigue - CurrentFatigue)
+			EndIf
+		Else ; fresher than the floor - bad conditions slowly wear the player down toward it
+			Float Delta = (TargetFatigue + StartingFatigue) - CurrentFatigue
+			ModFatigue((Delta / 8.0) * HoursSlept) ; 8 hours of sleep to reach the target
+		EndIf
+	EndFunction
+
+	Bool Function IsDesperate() ; Condition used to determine if player will auto swallow cum
+		Return IsCcsEnabled() && GetCcsStage(CcsHungerQuest, CcsHungerValue) >= 5
+	EndFunction
+
+	Function GetBegIsHungy()
+		BegIsHungry = IsCcsEnabled() && GetCcsStage(CcsHungerQuest, CcsHungerValue) >= 3 ; 'Hungry' or worse
+	EndFunction
+
+	Function GetBegIsThirsty()
+		BegIsThirsty = false
+	EndFunction
+
+	Float Function GetBellyScale()
+		If !IsCcsEnabled()
+			Return -2.0
+		EndIf
+		Return BaseBellyScale + GetBellyRung(GetCcsStage(CcsHungerQuest, CcsHungerValue))
+	EndFunction
+
+	Int Function GetBellyRungCount()
+		If !IsCcsEnabled()
+			Return 0
+		EndIf
+		Return 6
+	EndFunction
+
+	String Function GetBellyLadderName()
+		Return "$SLS_hCcsBellyScaling"
+	EndFunction
+
+	Float Function GetBellyRung(Int aiRung)
+		If aiRung == 0
+			Return BellyScaleCcs00
+		ElseIf aiRung == 1
+			Return BellyScaleCcs01
+		ElseIf aiRung == 2
+			Return BellyScaleCcs02
+		ElseIf aiRung == 3
+			Return BellyScaleCcs03
+		ElseIf aiRung == 4
+			Return BellyScaleCcs04
+		ElseIf aiRung == 5
+			Return BellyScaleCcs05
+		EndIf
+		Return 0.0
+	EndFunction
+
+	Float Function GetBellyRungDefault(Int aiRung) ; the BellyScaleCcs00..05 declaration literals
+		If aiRung == 0
+			Return 0.3
+		EndIf
+		Return 0.0
+	EndFunction
+
+	Function SetBellyRung(Int aiRung, Float afValue)
+		If aiRung == 0
+			BellyScaleCcs00 = afValue
+		ElseIf aiRung == 1
+			BellyScaleCcs01 = afValue
+		ElseIf aiRung == 2
+			BellyScaleCcs02 = afValue
+		ElseIf aiRung == 3
+			BellyScaleCcs03 = afValue
+		ElseIf aiRung == 4
+			BellyScaleCcs04 = afValue
+		ElseIf aiRung == 5
+			BellyScaleCcs05 = afValue
+		EndIf
+	EndFunction
+
+	String Function GetBellyRungLabel(Int aiRung)
+		If aiRung == 0
+			Return "$SLS_BellyScaleCcs00"
+		ElseIf aiRung == 1
+			Return "$SLS_BellyScaleCcs01"
+		ElseIf aiRung == 2
+			Return "$SLS_BellyScaleCcs02"
+		ElseIf aiRung == 3
+			Return "$SLS_BellyScaleCcs03"
+		ElseIf aiRung == 4
+			Return "$SLS_BellyScaleCcs04"
+		ElseIf aiRung == 5
+			Return "$SLS_BellyScaleCcs05"
+		EndIf
+		Return ""
+	EndFunction
+
+	Float Function GetLastHungerUpdateTime() ; game days, like Utility.GetCurrentGameTime()
+		If !IsCcsEnabled()
+			Return 0.0
+		EndIf
+		Return _SLS_IntCcs.GetLastUpdateHours(CcsHungerQuest) / 24.0
+	EndFunction
+
+	String Function GetConditionsStatement(Float SleepPenalty)
+		If !IsCcsEnabled()
+			Return ""
+		EndIf
+		String ConditionString = "Maximum rest in these conditions is: "
+		If SleepPenalty <= 0.2
+			Return ConditionString + "Rested. "
+		ElseIf SleepPenalty <= 0.4
+			Return ConditionString + "Slightly tired. "
+		ElseIf SleepPenalty <= 0.6
+			Return ConditionString + "Tired. "
+		ElseIf SleepPenalty <= 0.8
+			Return ConditionString + "Weary. "
+		EndIf
+		Return ConditionString + "Debilitated. "
+	EndFunction
+
+	Float Function GetHungerSleepPenalty() ; keys may be added to SleepDepriv.json, the defaults mirror the SunHelm ones
+		If !IsCcsEnabled()
+			Return 0.0
+		EndIf
+		Int Stage = GetCcsStage(CcsHungerQuest, CcsHungerValue)
+		String File = "SL Survival/SleepDepriv.json"
+		If Stage == 0
+			Return JsonUtil.GetFloatValue(File, "hunger_ccs_wellfed", -0.05)
+		ElseIf Stage == 1
+			Return JsonUtil.GetFloatValue(File, "hunger_ccs_satisfied", -0.025)
+		ElseIf Stage == 2
+			Return JsonUtil.GetFloatValue(File, "hunger_ccs_peckish", 0.0)
+		ElseIf Stage == 3
+			Return JsonUtil.GetFloatValue(File, "hunger_ccs_hungry", 0.1)
+		ElseIf Stage == 4
+			Return JsonUtil.GetFloatValue(File, "hunger_ccs_starving", 0.15)
+		EndIf
+		Return JsonUtil.GetFloatValue(File, "hunger_ccs_ravenous", 0.3)
+	EndFunction
+
+	Float Function GetThirstSleepPenalty()
+		Return 0.0
+	EndFunction
+
+	String Function GetAioHunger()
+		If !IsCcsEnabled()
+			Return ""
+		EndIf
+		Int Stage = GetCcsStage(CcsHungerQuest, CcsHungerValue)
+		If Stage == 0
+			Return "Well fed"
+		ElseIf Stage == 1
+			Return "Satisfied"
+		ElseIf Stage == 2
+			Return "Peckish"
+		ElseIf Stage == 3
+			Return "Hungry"
+		ElseIf Stage == 4
+			Return "Starving"
+		EndIf
+		Return "Ravenous"
+	EndFunction
+
+	String Function GetAioThirst()
+		Return ""
+	EndFunction
+
+	String Function GetAioFatigue()
+		If !IsCcsEnabled()
+			Return ""
+		EndIf
+		Int Stage = GetCcsStage(CcsExhaustionQuest, CcsExhaustionValue)
+		If Stage == 0
+			Return "Well rested"
+		ElseIf Stage == 1
+			Return "Rested"
+		ElseIf Stage == 2
+			Return "Slightly tired"
+		ElseIf Stage == 3
+			Return "Tired"
+		ElseIf Stage == 4
+			Return "Weary"
+		EndIf
+		Return "Debilitated"
 	EndFunction
 EndState

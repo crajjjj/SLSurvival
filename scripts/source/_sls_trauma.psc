@@ -334,6 +334,52 @@ Function RemoveAllTraumasFromActor(Actor akActor)
 	EndWhile
 EndFunction
 
+; "Survival Ass Slapping" leaves a fading spank mark: with the SlaveTats Pack a woman gets one of three hand-print
+; marks ("Body - Spanked N (F)"), anyone else the wound set's Left/Right Spank. Repeating a mark refreshes it instead of stacking.
+Function AddSpankTrauma(Actor akActor)
+	If !TraumaEnable || !akActor || StorageUtil.FormListFind(Self, "_SLS_ActorWipList", akActor) != -1
+		Return
+	EndIf
+	StorageUtil.FormListAdd(Self, "_SLS_ActorWipList", akActor, AllowDuplicate = false)
+	If StorageUtil.CountObjStringListPrefix(akActor, "_SLS_TexListAvailable") <= 0
+		SetupActor(akActor)
+	EndIf
+	String Side = "Left"
+	If Utility.RandomInt(0, 1) == 1
+		Side = "Right"
+	EndIf
+	String Texture = "Body - " + Side + " Spank.dds"
+	Int TraumaCountMax = PlayerTraumaCountMax
+	; hand-print marks of the optional SlaveTats pack "SL Survival Spanked", three variants; the same variant again
+	; refreshes it. Without SlaveTats or that pack, women get the trauma pack's Left/Right Spank like men.
+	If akActor.GetLeveledActorBase().GetSex() == 1
+		If Util.UseSlaveTats() && MiscUtil.FileExists("data/textures/actors/character/slavetats/SL Survival Spanked.json")
+			Texture = "Body - Spanked " + Utility.RandomInt(1, 3) + " (F).dds"
+		Else
+			Texture = "Body - " + Side + " Spank (F).dds"
+		EndIf
+	EndIf
+	If akActor != PlayerRef
+		If akActor.IsInFaction(PotentialFollowerFaction)
+			TraumaCountMax = FollowerTraumaCountMax
+		Else
+			TraumaCountMax = NpcTraumaCountMax
+		EndIf
+	EndIf
+	Int Active = StorageUtil.StringListFind(akActor, "_SLS_ActiveTraumas", Texture)
+	If Active != -1 ; already marked: start its fade over
+		StorageUtil.FloatListSet(akActor, "_SLS_ActiveTraumasBeginTimes", Active, Utility.GetCurrentGameTime())
+		StorageUtil.SetFloatValue(akActor, "_SLS_LastTrauma", Utility.GetCurrentGameTime())
+		UpdateActor(akActor)
+	ElseIf BeginAddOverlay(akActor, Texture, TraumaCountMax) > -1
+		StorageUtil.StringListRemove(akActor, "_SLS_TexListAvailable", Texture)
+		StorageUtil.StringListInsert(akActor, "_SLS_ActiveTraumas", 0, Texture)
+		StorageUtil.FloatListInsert(akActor, "_SLS_ActiveTraumasBeginTimes", 0, Utility.GetCurrentGameTime())
+		StorageUtil.SetFloatValue(akActor, "_SLS_LastTrauma", Utility.GetCurrentGameTime())
+	EndIf
+	StorageUtil.FormListRemove(Self, "_SLS_ActorWipList", akActor, AllInstances = false)
+EndFunction
+
 Function AddRandomTrauma(Actor akActor)
 	If StorageUtil.FormListFind(Self, "_SLS_ActorWipList", akActor) == -1
 		StorageUtil.FormListAdd(Self, "_SLS_ActorWipList", akActor, AllowDuplicate = false)
@@ -406,7 +452,9 @@ Int Function RemoveTraumaAtIndex(Actor akActor, Int Index)
 	String Trauma = StorageUtil.StringListGet(akActor, "_SLS_ActiveTraumas", Index)
 	StorageUtil.StringListRemoveAt(akActor, "_SLS_ActiveTraumas", Index)
 	StorageUtil.FloatListRemoveAt(akActor, "_SLS_ActiveTraumasBeginTimes", Index)
+	If StringUtil.Find(Trauma, "Spanked ") == -1
 	StorageUtil.StringListAdd(akActor, "_SLS_TexListAvailable", Trauma)
+	EndIf
 	Int Slot = BeginRemoveOverlay(akActor, Trauma)
 	
 	If StorageUtil.StringListCount(akActor, "_SLS_ActiveTraumas") <= 0 && !StorageUtil.FormlistHas(_SLS_TraumaAssignedQuest, "_SLS_TraumaActors", akActor)

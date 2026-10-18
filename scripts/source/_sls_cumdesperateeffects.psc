@@ -45,7 +45,7 @@ Event OnMenuOpen(String MenuName)
 				AllInOneKey.ToggleTongue(Utility.RandomInt(0, 15))
 			EndIf
 			If !sslBaseExpression.IsMouthOpen(PlayerRef)
-				CumSwallow.OnKeyDown(0)
+				GetCumSwallow().OnKeyDown(0)
 			EndIf
 		EndIf
 	EndIf
@@ -113,7 +113,7 @@ Event OnMenuClose(String MenuName)
 		AllInOneKey.ToggleTongue(0)
 	EndIf
 	If sslBaseExpression.IsMouthOpen(PlayerRef)
-		CumSwallow.OnKeyDown(1) ; Dont send zero
+		GetCumSwallow().OnKeyDown(1) ; Dont send zero
 	EndIf
 EndEvent
 
@@ -173,3 +173,12 @@ _SLS_CumSwallow Property CumSwallow Auto
 _SLS_CumDesperationVoices Property Voices Auto
 _SLS_AllInOneKey Property AllInOneKey Auto
 _SLS_InterfaceSos Property Sos Auto
+
+; The CumSwallow alias property fails to bind on a new game ("is not the right type") and stays None, so the
+; daydream effects never opened/closed the mouth. Resolve the alias at runtime instead.
+_SLS_CumSwallow Function GetCumSwallow()
+	If !CumSwallow
+		CumSwallow = (Game.GetFormFromFile(0x03DAB2, "SL Survival.esp") as Quest).GetAlias(0) as _SLS_CumSwallow ; _SLS_CumSwallowQuest.PlayerAlias
+	EndIf
+	Return CumSwallow
+EndFunction

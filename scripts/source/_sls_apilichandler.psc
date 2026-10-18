@@ -23,6 +23,9 @@ Function AddLicToQueue(Int LicenceType, Int TermDuration, Form Issuer, Form Give
 EndFunction
 
 Function BeginProcQueue()
+	; IssueLicence waits 2 s after every licence before its bikini-curse check, which made the four
+	; Snowberry start licences trickle in over ~8 s. Issue the whole queue back to back and check once.
+	LicUtil.BatchIssuing = true
 	While StorageUtil.FormListCount(Self, "Sender") > 0
 		Int LicenceType = StorageUtil.IntListPop(Self, "LicenceType")
 		Int TermDuration = StorageUtil.IntListPop(Self, "TermDuration")
@@ -42,6 +45,9 @@ Function BeginProcQueue()
 			Api.SendLicenceIssuedEvent(Licence, LicenceType, TermDuration, Sender)
 		EndIf
 	EndWhile
+	LicUtil.BatchIssuing = false
+	Utility.Wait(2.0)
+	LicUtil.CheckForBikiniCurse()
 EndFunction
 
 Bool Function CheckIssueLicenceParameters(Int LicenceType, Int TermDuration, Form Issuer, Bool DeductGold, Form Sender)

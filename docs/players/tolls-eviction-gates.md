@@ -11,6 +11,8 @@ Because [gold has weight](needs.md) in SLS and coin is hard to come by, tolls pr
 !!! tip "Plan your route"
     Tolls make the cheapest path between two places matter. Consolidate errands into fewer city visits instead of passing gates repeatedly.
 
+A gate SLS locks against you has an Adept ("Average") lock.
+
 ## Inn eviction & room prices
 
 Rooms are no longer a one-off cost. SLS can **evict** you from an inn room and enforce ongoing **inn room prices**, so shelter becomes a running expense. Fall behind and you are back on the street. The nightly rates are set on the dedicated **Inn Room Prices** MCM page.

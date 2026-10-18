@@ -6,7 +6,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 EndEvent
 
 Event OnUpdate()
-	Frostfall.ModExposure(Menu.WarmBodies)
+	Frostfall.ModExposure(-Menu.WarmBodies) ; negative = warmer (FrostUtil.ModPlayerExposure)
 	If Self
 		RegisterForSingleUpdate(3.0)
 	EndIf

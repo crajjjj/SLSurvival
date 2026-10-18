@@ -7,8 +7,10 @@ Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Util.SendDoSpecificNpcSpankEvent(Timeout = 3.0, AllowNpcInFurniture = true, akActor = akspeaker, DialogWait = false)
-_SLS_HelloSpankCooloffQuest.Stop()
-_SLS_HelloSpankCooloffQuest.Start()
+; This INFO never had the quest property filled (the other three spank greetings do)
+Quest Cooloff = Game.GetFormFromFile(0x0974C9, "SL Survival.esp") as Quest ; _SLS_HelloSpankCooloffQuest
+Cooloff.Stop()
+Cooloff.Start()
 ;END CODE
 EndFunction
 ;END FRAGMENT

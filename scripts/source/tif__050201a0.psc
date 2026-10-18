@@ -8,9 +8,11 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Utility.Wait(3.0)
 Debug.SendAnimationEvent(akSpeaker, "IdleTake")
-_SLS_AssSlapMarker.Play(PlayerRef)
+Actor Player = Game.GetPlayer() ; The PlayerRef property is not filled on this INFO, so sounds and the mark went to None
+_SLS_AssSlapMarker.Play(Player)
 Utility.Wait(0.1)
-_SLS_AssSlapGruntMarker.Play(PlayerRef)
+_SLS_AssSlapGruntMarker.Play(Player)
+(Game.GetFormFromFile(0x0F37A1, "SL Survival.esp") as _SLS_Trauma).AddSpankTrauma(Player) ; leave a fading spank mark
 ;END CODE
 EndFunction
 ;END FRAGMENT

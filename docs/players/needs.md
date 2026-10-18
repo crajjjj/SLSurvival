@@ -4,13 +4,15 @@ SexLab Survival does not ship a full hunger/thirst/warmth system of its own. Ins
 
 ## What SLS integrates with
 
-SLS detects and drives the needs mod you have installed — you do not pick one in SLS, it follows what is in your load order:
+SLS detects and drives the needs mod you have installed. You do not pick one in SLS, it follows what is in your load order:
 
 - **iNeed**
 - **Realistic Needs and Diseases (RND)**
 - **Eating Sleeping Drinking**
-- **Frostfall** — cold/warmth, with its own config surfaced under the **Frostfall & Simply Knock** MCM page
-- **SunHelm Survival** — supported through the **optional FOMOD patch** (the "SunHelm Survival Patch" component), not the base install
+- **Frostfall**: cold/warmth, with its own config surfaced under the **Frostfall & Simply Knock** MCM page
+- **SunHelm Survival**: needs the "SunHelm Survival Patch" FOMOD option, whose plugin connects SLS's SunHelm adapter
+- **Creation Club Survival Mode**: hunger, exhaustion and cold, counted only while Survival Mode is switched on (it has no thirst). Without Frostfall it also stands in for the cold and warmth hooks
+- **WetFunction NG**: wetness, for the leak and drenched-licence mechanics that used to need Frostfall
 
 See [Mod Integrations](integrations.md) for the authoritative list of supported needs mods and what each one unlocks.
 

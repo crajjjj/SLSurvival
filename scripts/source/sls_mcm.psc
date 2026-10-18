@@ -54,14 +54,18 @@ Event OnConfigInit()
 	AddRemoveChainCollars(LicMagicChainCollars)
 	ToggleAhegao()
 	PapyrusUtilCheck()
+	RegisterForMenu("RaceSex Menu")
+	ApplyGenderGate() ; female-only content off for a male player
 EndEvent
 
 Function PlayerLoadsGame()
+	RegisterForMenu("RaceSex Menu")
 	; See OnConfigOpen: a dropped OnConfigInit leaves this save's MCM permanently blank and the
 	; mod's defaults unset - re-run it on load if that state is detected. No-op on healthy saves.
 	If Pages.Length == 0
 		OnConfigInit()
 	EndIf
+	ApplyGenderGate() ; after the self-heal above, so it never stores unset defaults as the player's values
 	If Game.GetModByName(JsonUtil.GetStringValue("SL Survival/BikiniArmors.json", "bikinimodname", missing = "TheAmazingWorldOfBikiniArmor.esp")) != 255
 		_SLS_BikiniArmorsEntryPointVendorCity.SetNthCount(0, BikiniDropsVendorCity)
 		_SLS_BikiniArmorsEntryPointVendorTown.SetNthCount(0, BikiniDropsVendorTown)
@@ -1047,6 +1051,7 @@ event OnPageReset(string page)
 		Int BellyScaleIneedFlag = OPTION_FLAG_DISABLED
 		Int BellyScaleLadderFlag = OPTION_FLAG_DISABLED
 		Int ShsFlag = OPTION_FLAG_DISABLED
+		Int CcsFlag = OPTION_FLAG_DISABLED
 
 		If Game.GetModByName("RealisticNeedsandDiseases.esp") != 255
 			RndFlag = OPTION_FLAG_NONE
@@ -1057,11 +1062,16 @@ event OnPageReset(string page)
 		If Game.GetModByName("EatingSleepingDrinking.esp") != 255
 			EatingSleepingDrinkingFlag = OPTION_FLAG_NONE
 		EndIf
-		; Both halves, not just SunHelm: without the optional SLS patch the stock
-		; _SLS_Needs has no Shs branch in PickNeedsState, so it sits in the empty
-		; state and nothing drives a belly for the switch to turn off.
+		; Both halves, not just SunHelm: without the optional SLS patch plugin the
+		; Shs adapter property on _SLS_Needs is unfilled, PickNeedsState leaves it in
+		; the empty state and nothing drives a belly for the switch to turn off.
 		If Game.GetModByName("SunHelmSurvival.esp") != 255 && Game.GetModByName("SL Survival Sunhelm Patch.esp") != 255
 			ShsFlag = OPTION_FLAG_NONE
+		EndIf
+		; Survival Mode's plugin is loaded on every AE install, switched on or not, so
+		; its own switch decides here: while it is off nothing drives a belly.
+		If Needs.IsCcsEnabled()
+			CcsFlag = OPTION_FLAG_NONE
 		EndIf
 		; One cross-script read of the ladder length, reused by the flag and the draw
 		; block below, and cached for BellyRungForOption - OnOptionHighlight calls
@@ -1070,15 +1080,16 @@ event OnPageReset(string page)
 		Int LadderRungs = Needs.GetBellyRungCount()
 		StorageUtil.SetIntValue(Self, "BellyRungCount", LadderRungs)
 		; Every needs mod the gluttony quest can run against, not just the two with a
-		; hardcoded ladder below: EatingSleepingDrinking and the SunHelm patch both
-		; get a belly, so both need the switch that turns it off. Deliberately keyed
-		; on the plugin rather than on Needs.IsNeedsModActive(), which reports the
-		; needs mod's OWN on/off state and would grey out this switch exactly when a
-		; player wants it.
-		If RndFlag == OPTION_FLAG_NONE || IneedFlag == OPTION_FLAG_NONE || EatingSleepingDrinkingFlag == OPTION_FLAG_NONE || ShsFlag == OPTION_FLAG_NONE
+		; hardcoded ladder below: EatingSleepingDrinking, the SunHelm patch and
+		; Survival Mode all get a belly, so all need the switch that turns it off.
+		; Deliberately keyed on the plugin rather than on Needs.IsNeedsModActive(),
+		; which reports the needs mod's OWN on/off state and would grey out this
+		; switch exactly when a player wants it (Survival Mode is the exception, see
+		; CcsFlag above).
+		If RndFlag == OPTION_FLAG_NONE || IneedFlag == OPTION_FLAG_NONE || EatingSleepingDrinkingFlag == OPTION_FLAG_NONE || ShsFlag == OPTION_FLAG_NONE || CcsFlag == OPTION_FLAG_NONE
 			BellyNeedsMod = OPTION_FLAG_NONE
 		EndIf
-		If RndFlag == OPTION_FLAG_NONE || IneedFlag == OPTION_FLAG_NONE || EatingSleepingDrinkingFlag == OPTION_FLAG_NONE
+		If RndFlag == OPTION_FLAG_NONE || IneedFlag == OPTION_FLAG_NONE || EatingSleepingDrinkingFlag == OPTION_FLAG_NONE || ShsFlag == OPTION_FLAG_NONE || CcsFlag == OPTION_FLAG_NONE
 			AnyNeedsMod = OPTION_FLAG_NONE
 		EndIf
 		
@@ -1089,8 +1100,8 @@ event OnPageReset(string page)
 			BellyScaleIneedFlag = OPTION_FLAG_NONE
 		EndIf
 		; The generic ladder, served by whatever needs-mod state _SLS_Needs is in -
-		; today that is the SunHelm patch. Reached through _SLS_Needs because this
-		; script cannot hold a property typed to the patch-only _SLS_InterfaceShs.
+		; today SunHelm (with the patch plugin) or Survival Mode. Reached through
+		; _SLS_Needs because only it knows which needs mod is active.
 		If BellyScaleEnable && LadderRungs > 0
 			BellyScaleLadderFlag = OPTION_FLAG_NONE
 		EndIf
@@ -1112,8 +1123,8 @@ event OnPageReset(string page)
 		; _SLS_Needs picks ONE needs-mod state, so only one ladder is ever live and
 		; the block is drawn once, in these slots. RND keeps its dedicated sliders
 		; (its rungs sit on _SLS_InterfaceRnd, a type this script may name); any
-		; other state serves its ladder through the generic accessors, which is how
-		; the patch-only SunHelm adapter is reached without naming its type here.
+		; other state (SunHelm, Survival Mode) serves its ladder through the generic
+		; accessors.
 		If LadderRungs == 0
 			AddHeaderOption("$SLS_hRndBellyScaling")
 			BellyScaleRnd00OID_S = AddSliderOption("$SLS_BellyScaleRnd00", Rnd.BellyScaleRnd00, "{2}", BellyScaleRndFlag)
@@ -7189,7 +7200,118 @@ Function ToggleLicences(Bool Enabled)
 	
 	ToggleCurfew(LicUtil.LicCurfewEnable)
 	Eviction.UpdateEvictions(DoImmediately = true)
+	If !GenderGateBusy
 	Debug.Messagebox("Licence change complete")
+	EndIf
+EndFunction
+
+
+; ==================================================================================================================
+; SL Survival was written for a female player only and never checks the player's sex, so a male
+; player got spanked, cat-called, tolled at the gates, cursed for "bikini" boots and so on. For a male player every
+; female-only system is switched off through the mod's own toggles (the values the player had are remembered) and
+; switched back when the player is female again (RaceMenu). Survival parts stay: needs, sleep, stashes, eviction.
+; Opt out: SKSE\Plugins\StorageUtilData\SL Survival\GenderGate.json "enabled": 0.
+; ==================================================================================================================
+Bool GenderGateBusy = false
+
+Event OnMenuClose(String MenuName)
+	If MenuName == "RaceSex Menu"
+		ApplyGenderGate()
+	EndIf
+EndEvent
+
+Function ApplyGenderGate()
+	If GenderGateBusy
+		Return
+	EndIf
+	Bool WantGate = PlayerRef.GetActorBase().GetSex() == 0 && JsonUtil.GetIntValue("SL Survival/GenderGate.json", "enabled", missing = 1) != 0
+	Bool IsGated = StorageUtil.GetIntValue(Self, "_SLS_GG_Active", Missing = 0) == 1
+	If WantGate == IsGated
+		Return
+	EndIf
+	GenderGateBusy = true
+	GlobalVariable NpcComments = Game.GetFormFromFile(0x0DF88F, "SL Survival.esp") as GlobalVariable ; _SLS_NpcComments
+	If WantGate
+		Debug.Trace("_SLS_: Gender gate: male player - switching female-only systems off")
+		StorageUtil.SetIntValue(Self, "_SLS_GG_AssSlap", AssSlappingEvents as Int)
+		StorageUtil.SetIntValue(Self, "_SLS_GG_ProxSpank", ProxSpankNpcType)
+		StorageUtil.SetIntValue(Self, "_SLS_GG_NpcComments", NpcComments.GetValueInt())
+		StorageUtil.SetFloatValue(Self, "_SLS_GG_CatCallVol", CatCallVol)
+		StorageUtil.SetIntValue(Self, "_SLS_GG_GuardComments", GuardComments as Int)
+		StorageUtil.SetIntValue(Self, "_SLS_GG_Tolls", Init.TollEnable as Int)
+		StorageUtil.SetIntValue(Self, "_SLS_GG_TollDodging", TollDodging as Int)
+		StorageUtil.SetIntValue(Self, "_SLS_GG_Lockdown", DoorLockDownT as Int)
+		StorageUtil.SetIntValue(Self, "_SLS_GG_GuardArmor", GuardBehavArmorEquip as Int)
+		StorageUtil.SetIntValue(Self, "_SLS_GG_GuardWeap", GuardBehavWeapEquip as Int)
+		StorageUtil.SetIntValue(Self, "_SLS_GG_GateCurfew", CurfewEnable as Int)
+		StorageUtil.SetIntValue(Self, "_SLS_GG_Licences", Init.LicencesEnable as Int)
+		StorageUtil.SetIntValue(Self, "_SLS_GG_IneqSkills", InequalitySkills as Int)
+		StorageUtil.SetIntValue(Self, "_SLS_GG_IneqBuySell", InequalityBuySell as Int)
+		StorageUtil.SetIntValue(Self, "_SLS_GG_BikiniCurse", LicUtil.BikiniCurseEnable as Int)
+		StorageUtil.SetIntValue(Self, "_SLS_GG_BikiniExp", BikiniExpT as Int)
+		StorageUtil.SetIntValue(Self, "_SLS_GG_Cover", CoverMyselfMechanics as Int)
+		StorageUtil.SetIntValue(Self, "_SLS_GG_HalfNaked", HalfNakedEnable as Int)
+		StorageUtil.SetIntValue(Self, "_SLS_GG_Begging", _SLS_BeggingDialogT.GetValueInt())
+		AssSlappingEvents = false
+		ProxSpankNpcType = 5
+		NpcComments.SetValueInt(0)
+		CatCallVol = 0.0
+		GuardComments = false
+		Init.TollEnable = false
+		TollDodging = false
+		DoorLockDownT = false
+		CurfewEnable = false
+		Init.LicencesEnable = false
+		InequalitySkills = false
+		InequalityBuySell = false
+		LicUtil.BikiniCurseEnable = false
+		BikiniExpT = false
+		CoverMyselfMechanics = false
+		HalfNakedEnable = false
+		_SLS_BeggingDialogT.SetValueInt(0)
+	Else
+		Debug.Trace("_SLS_: Gender gate: female player - restoring female-only systems")
+		AssSlappingEvents = StorageUtil.GetIntValue(Self, "_SLS_GG_AssSlap", 1) as Bool
+		ProxSpankNpcType = StorageUtil.GetIntValue(Self, "_SLS_GG_ProxSpank", 1)
+		NpcComments.SetValueInt(StorageUtil.GetIntValue(Self, "_SLS_GG_NpcComments", 1))
+		CatCallVol = StorageUtil.GetFloatValue(Self, "_SLS_GG_CatCallVol", 20.0)
+		GuardComments = StorageUtil.GetIntValue(Self, "_SLS_GG_GuardComments", 1) as Bool
+		Init.TollEnable = StorageUtil.GetIntValue(Self, "_SLS_GG_Tolls", 1) as Bool
+		TollDodging = StorageUtil.GetIntValue(Self, "_SLS_GG_TollDodging", 1) as Bool
+		DoorLockDownT = StorageUtil.GetIntValue(Self, "_SLS_GG_Lockdown", 1) as Bool
+		CurfewEnable = StorageUtil.GetIntValue(Self, "_SLS_GG_GateCurfew", 1) as Bool
+		Init.LicencesEnable = StorageUtil.GetIntValue(Self, "_SLS_GG_Licences", 1) as Bool
+		InequalitySkills = StorageUtil.GetIntValue(Self, "_SLS_GG_IneqSkills", 1) as Bool
+		InequalityBuySell = StorageUtil.GetIntValue(Self, "_SLS_GG_IneqBuySell", 1) as Bool
+		LicUtil.BikiniCurseEnable = StorageUtil.GetIntValue(Self, "_SLS_GG_BikiniCurse", 1) as Bool
+		BikiniExpT = StorageUtil.GetIntValue(Self, "_SLS_GG_BikiniExp", 1) as Bool
+		CoverMyselfMechanics = StorageUtil.GetIntValue(Self, "_SLS_GG_Cover", 1) as Bool
+		HalfNakedEnable = StorageUtil.GetIntValue(Self, "_SLS_GG_HalfNaked", 0) as Bool
+		_SLS_BeggingDialogT.SetValueInt(StorageUtil.GetIntValue(Self, "_SLS_GG_Begging", 1))
+	EndIf
+	ToggleAssSlapping()
+	ToggleProxSpank()
+	ToggleNpcComments()
+	ToggleCatCalling()
+	ToggleGuardComments()
+	ToggleTollDodging()
+	If !WantGate ; ToggleTollDodging clears these two when evasion is off - put the player's values back
+		GuardBehavArmorEquip = StorageUtil.GetIntValue(Self, "_SLS_GG_GuardArmor", 0) as Bool
+		GuardBehavWeapEquip = StorageUtil.GetIntValue(Self, "_SLS_GG_GuardWeap", 1) as Bool
+	EndIf
+	RefreshTollObjects()
+	ToggleTollGateLocks()
+	ToggleLicences(Init.LicencesEnable)
+	ToggleTollGateGuards()
+	ToggleIneqSkills()
+	ToggleIneqBuySell()
+	ToggleBikiniCurse()
+	ToggleBikiniExp()
+	ToggleCoverMechanics()
+	ToggleHalfNakedCover()
+	StorageUtil.SetIntValue(Self, "_SLS_GG_Active", WantGate as Int)
+	GenderGateBusy = false
 EndFunction
 
 Function ToggleTollGateGuards()
@@ -8767,15 +8889,15 @@ Function ToggleIneqStrongFemaleFollowers()
 	FolList[17] = Game.GetFormFromFile(0x013485, "Skyrim.esm") as Actor ; Delphine
 	
 	; Dawnguard
-	FolList[18] = Game.GetFormFromFile(0x015C14, "Skyrim.esm") as Actor ; Beleval
-	FolList[19] = Game.GetFormFromFile(0x015C17, "Skyrim.esm") as Actor ; Ingjard
-	FolList[20] = Game.GetFormFromFile(0x002B74, "Skyrim.esm") as Actor ; Serana
+	FolList[18] = Game.GetFormFromFile(0x015C14, "Dawnguard.esm") as Actor ; Beleval
+	FolList[19] = Game.GetFormFromFile(0x015C17, "Dawnguard.esm") as Actor ; Ingjard
+	FolList[20] = Game.GetFormFromFile(0x002B74, "Dawnguard.esm") as Actor ; Serana
 	
 	; Dragonborn
-	FolList[21] = Game.GetFormFromFile(0x017A0D, "Skyrim.esm") as Actor ; Frea
+	FolList[21] = Game.GetFormFromFile(0x017A0D, "Dragonborn.esm") as Actor ; Frea
 	
 	; Hearthfire
-	FolList[22] = Game.GetFormFromFile(0x005216, "Skyrim.esm") as Actor ; Rayya
+	FolList[22] = Game.GetFormFromFile(0x005216, "HearthFires.esm") as Actor ; Rayya
 	
 	Int i = FolList.Length
 	While i > 0
@@ -9060,6 +9182,13 @@ EndFunction
 Bool Function CanEnableSnowberry()
 	If Game.GetModByName("Skyrim Unbound.esp") != 255 ; Unbound
 		If (Game.GetFormFromFile(0x000D62, "Skyrim Unbound.esp") as Quest).GetCurrentStageID() < 100
+			Return true
+		EndIf
+	ElseIf Game.GetModByName("AlternatePerspective.esp") != 255 ; Alternate Perspective
+		; Still at the start only while the player is in AP's start cell. AP moves MQ101 to low stages on several of its
+		; starts (3 = woke up in the Helgen inn, 6/7 = messenger time skip), so an MQ101 range kept the game "not started"
+		; for minutes after the player was already walking around a city.
+		If PlayerRef.GetParentCell() == Game.GetFormFromFile(0x2C1D00, "AlternatePerspective.esp") as Cell
 			Return true
 		EndIf
 	ElseIf MQ101.GetCurrentStageID() < 240 ; Alternate Start / Vanilla

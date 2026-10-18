@@ -829,6 +829,10 @@ Bool Function IsUbeActor(Actor akTarget)
 EndFunction
 
 Int Function BeginOverlay(Actor akTarget, Float Alpha, String TextureToApply, String Area, Int SlotToUse = -1)
+	If UseSlaveTats() && _SLS_IntSlavetats.AddTattoo(akTarget, "SL Survival", TatName(TextureToApply, Area), Alpha)
+		Debug.Trace("_SLS_: Applied SlaveTats overlay " + TatName(TextureToApply, Area) + " to " + akTarget.GetBaseObject().GetName())
+		Return 0
+	EndIf
 	Bool Gender = akTarget.GetLeveledActorBase().GetSex() as Bool
 	Debug.Trace("_SLS_: Applying overlay " + TextureToApply + " to " + akTarget.GetBaseObject().GetName())
 	Return ReadyOverlay(akTarget, Gender, Area, SlotToUse, TextureToApply, Alpha)
@@ -915,6 +919,12 @@ Function ApplyOverlayAtNodeWithColors(Actor akTarget, Bool Gender, String Node, 
 EndFunction
 
 Function UpdateAlpha(Actor akTarget, Float Alpha, String TextureToUpdate, String Area) ; Unused
+	If UseSlaveTats() && _SLS_IntSlavetats.HasTattoo(akTarget, "SL Survival", TatName(TextureToUpdate, Area))
+		; SlaveTats keeps alpha per applied tattoo: re-apply with the new value
+		_SLS_IntSlavetats.RemoveTattoo(akTarget, "SL Survival", TatName(TextureToUpdate, Area))
+		_SLS_IntSlavetats.AddTattoo(akTarget, "SL Survival", TatName(TextureToUpdate, Area), Alpha)
+		Return
+	EndIf
 	Int Slot = GetOverlaySlot(akTarget, TextureToUpdate, Area)
 	If Slot == -1
 		BeginOverlay(akTarget, Alpha, TextureToUpdate, Area)
@@ -932,6 +942,9 @@ Function UpdateAlpha(Actor akTarget, Float Alpha, String TextureToUpdate, String
 EndFunction
 
 Int Function GetEmptySlot(Actor akTarget, Bool Gender, String Area)
+	If UseSlaveTats()
+		Return _SLS_IntSlavetats.GetAvailableSlots(akTarget, Area) ; SlaveTats owns the slots: its next free one, or -1
+	EndIf
 	Int i = GetNumSlots(Area)
 	String TexPath
 	While i > 0
@@ -947,6 +960,9 @@ Int Function GetEmptySlot(Actor akTarget, Bool Gender, String Area)
 EndFunction
 
 Int Function CountEmptySlots(Actor akTarget, String Area)
+	If UseSlaveTats()
+		Return _SLS_IntSlavetats.CountFreeSlots(akTarget, Area)
+	EndIf
 	Bool Gender = akTarget.GetLeveledActorBase().GetSex() as Bool
 	Int Count
 	Int i = GetNumSlots(Area)
@@ -978,6 +994,9 @@ Int Function GetOverlaySlot(Actor akTarget, String TextureToUpdate, String Area)
 EndFunction
 
 Bool Function HasOverlay(Actor akTarget, String TextureToUpdate, String Area)
+	If UseSlaveTats() && _SLS_IntSlavetats.HasTattoo(akTarget, "SL Survival", TatName(TextureToUpdate, Area))
+		Return true
+	EndIf
 	If GetOverlaySlot(akTarget, TextureToUpdate, Area) >= 0
 		Return true
 	EndIf
@@ -985,6 +1004,19 @@ Bool Function HasOverlay(Actor akTarget, String TextureToUpdate, String Area)
 EndFunction
 
 Int Function RemoveOverlay(Actor akTarget, String TextureToRemove, String Area)
+	Int TatResult = -1
+	If UseSlaveTats() && _SLS_IntSlavetats.HasTattoo(akTarget, "SL Survival", TatName(TextureToRemove, Area))
+		_SLS_IntSlavetats.RemoveTattoo(akTarget, "SL Survival", TatName(TextureToRemove, Area))
+		TatResult = 0
+	EndIf
+	Int LegacySlot = RemoveOverlayLegacy(akTarget, TextureToRemove, Area) ; overlays a save still carries from before
+	If TatResult == 0
+		Return 0
+	EndIf
+	Return LegacySlot
+EndFunction
+
+Int Function RemoveOverlayLegacy(Actor akTarget, String TextureToRemove, String Area)
 	Debug.Trace("_SLS_: RemoveOverlay : " + TextureToRemove + " called on " + akTarget.GetLeveledActorBase().GetName() + " from area: " + Area)
 	Bool Gender = akTarget.GetActorBase().GetSex() as Bool
 	String TexPath
@@ -999,6 +1031,25 @@ Int Function RemoveOverlay(Actor akTarget, String TextureToRemove, String Area)
 		j += 1
 	EndWhile
 	Return -1
+EndFunction
+
+; SlaveTatsNG + the SLS SlaveTats pack present? Checked per call, cheap (plugin version + file)
+Bool Function UseSlaveTats()
+	Return SKSE.GetPluginVersion("SlaveTatsNG") > 0 && Game.GetModByName("SlaveTats.esp") != 255 && MiscUtil.FileExists("data/textures/actors/character/slavetats/SL Survival.json")
+EndFunction
+
+; "\SL Survival\BattleWounds\Female\Body\Body - Left Spank (F).dds" + "Body" -> "Body - Left Spank (F) [Body]"
+String Function TatName(String Texture, String Area)
+	Int Pos = StringUtil.Find(Texture, "\\")
+	While Pos != -1
+		Texture = StringUtil.Substring(Texture, Pos + 1)
+		Pos = StringUtil.Find(Texture, "\\")
+	EndWhile
+	Int Dot = StringUtil.Find(Texture, ".dds")
+	If Dot != -1
+		Texture = StringUtil.Substring(Texture, 0, Dot)
+	EndIf
+	Return Texture + " [" + Area + "]"
 EndFunction
 
 Function ClearOverlaySlot(Actor akTarget, Bool Gender, String Node)

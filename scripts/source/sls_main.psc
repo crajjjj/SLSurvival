@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.719
+	Version = 0.720
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -833,6 +833,13 @@ Function VersionCheck()
 	; step: _SLS_Trauma moves a wound over the next time it updates that wound's alpha.
 	If Version < 0.719
 		UpdateVersion(0.719)
+	EndIf
+
+	; 0.720 merges the SL Survival Repack 0.716.1-alpha1 fixes and integrations (Survival Mode,
+	; WetFunction NG, SLSF Reloaded, SlaveTats, the male-player gate). No migration: each
+	; integration picks its state on every load and the gate runs from the MCM's load hook.
+	If Version < 0.720
+		UpdateVersion(0.720)
 	EndIf
 EndFunction
 

@@ -2,7 +2,7 @@
 
 Large Skyrim SE gameplay/survival overhaul mod. Pure **Papyrus** (`.psc` → `.pex`), no SKSE plugin of its own. ~812 source scripts. Heavily integrates with dozens of optional LoversLab/survival mods through a consistent adapter layer (see *Adapter Architecture* — it is the most important thing in this project).
 
-Current version: **0.719** (`meta.ini`).
+Current version: **0.720** (`meta.ini`).
 
 ## Git Commits
 Do **not** include a `Co-Authored-By` trailer in commit messages. Commits should look authored solely by the user (matches the convention in the user's other Skyrim mods).
@@ -65,6 +65,12 @@ Why the split: a script-level **property** typed to an external script resolves 
 
 ### Gotcha: SexLab P+ has two interaction APIs
 P+ 2.19 removed the 2.17.1 - 2.18 collision API (`CTYPE_*`, `HasInteractionType`, `GetPartnerByType`) in favour of per-actor InterType flags. `_SLS_IntSlpp` carries both paths and picks one by the `SexLabUtil` DLL version (`HasInterTypeApi()`, 2.19.0.0 = 34799616). The 2.19 functions are declared as stubs at the end of the bundled `dependencies/SexLab Framework PPLUS/Source/Scripts/SexLabThread.psc`, which is otherwise a 2.18-era header: keep that block when refreshing the header, and use literal 2.19 InterType indices in the 2.19 path, because the header's property values are still 2.18's.
+
+### Gotcha: the plugin carries no vanilla-record copies (SkyPatcher)
+Since 0.720 `SL Survival.esp` no longer overrides the vanilla records SLS only adds to: the 21 playable and vampire races (Inequality ability), 97 merchant/treasure chests, 6 VendorGold lists, the travelling merchant, plus stale copies of Iron Dagger, WEQuestNode and an empty Riften cell. Those were LE-era copies that reverted USSEP/DLC edits because SLS loads late. The additions live in `SKSE/Plugins/SkyPatcher/{race,container,leveledList,npc}/SLS SkyPatcher Patch/SL Survival.esp.ini`, applied to whichever record wins, so SkyPatcher is a requirement. Add to a vanilla list there, never by overriding the record in the plugin. The cut was byte surgery on the 0.716 plugin (every other record byte-identical, masters unchanged), not a re-save; prefer the same for future plugin cleanups over a tool re-serialisation. `seq/SL Survival.seq` lists the plugin's own start-game-enabled quests: regenerate it when one is added.
+
+### Gotcha: SunHelm lives in the core scripts
+The SunHelm adapter (`_SLS_IntShs`/`_SLS_InterfaceShs`) and `_SLS_Needs`'s `State Shs` ship in the base scripts since 0.720; the optional SunHelm patch is only `SL Survival Sunhelm Patch.esp` (fills `_SLS_Needs.Shs`, adds `_SLS_InterfaceShsQuest`) plus its `SleepDepriv.json`. `PickNeedsState` takes `Shs` only when that property is filled. Creation Club Survival Mode (`State Ccs`, `_SLS_IntCcs`) is picked on its plugin, which every AE install has: each Ccs function checks the Survival Mode switch itself and acts like the empty state while it is off, because a new game picks the state before the player answers Survival Mode's prompt. `dependencies/WetFunction NG` is a hand-written compile-only header (signatures read off a compiled call site), not the mod's source.
 
 ## Naming Conventions
 
@@ -131,9 +137,12 @@ SL Survival.esp        Main plugin (forms, quests, dialogue, CK-filled propertie
 SL Survival.bsa        Packed assets (standalone build only; the patch ships loose scripts)
 skyrimse.ppj           Papyrus project (import list, packaging config)
 scripts/               Compiled *.pex (loose; the patch ships these, overriding the original)
-scripts/source/        *.psc sources (812) — edit here
+scripts/source/        *.psc sources (~820), edit here
 interface/             MCM translations, UI
-seq/  sound/  meshes/  textures/   Game assets
+seq/                   SL Survival.seq (shipped: the original's predates a third of the start-game quests)
+sound/  meshes/  textures/   Game assets (inherited from the original mod, not shipped by the patch)
+SKSE/Plugins/          StorageUtilData JSON, SkyPatcher INIs, AudioUtil config (shipped)
+optional/              FOMOD optional patches, one folder each (see fomod/ModuleConfig.xml)
 dependencies/          Bundled *.psc sources for every imported mod (compile-time only)
 docs/                  MkDocs player guide + internals (published to GitHub Pages)
 mkdocs.yml             MkDocs Material site config (nav, theme, extensions)

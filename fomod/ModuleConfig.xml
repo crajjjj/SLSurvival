@@ -8,7 +8,8 @@
 
     Layout in the packaged archive:
       SL Survival.esp                    (base - always installed, replaces the original's esp)
-      scripts\, interface\, SKSE\        (base loose assets - always installed, override the original)
+      scripts\, interface\, SKSE\, seq\  (base loose assets - always installed, override the original;
+                                          SKSE\Plugins\SkyPatcher needs SkyPatcher, see docs)
       optional\<PatchName>\...           (one folder per optional patch; loose files)
       fomod\info.xml, fomod\ModuleConfig.xml
 
@@ -27,6 +28,7 @@
         <folder source="scripts" destination="scripts" priority="0" />
         <folder source="interface" destination="interface" priority="0" />
         <folder source="SKSE" destination="SKSE" priority="0" />
+        <folder source="seq" destination="seq" priority="0" />
     </requiredInstallFiles>
 
     <installSteps order="Explicit">
@@ -45,9 +47,8 @@
                         </plugin>
 
                         <plugin name="SunHelm Survival Patch">
-                            <description>Integrates SL Survival's needs/fatigue/sleep with SunHelm Survival (adds the _SLS_IntShs/_SLS_InterfaceShs adapter and a SunHelm-aware _SLS_Needs/_SLS_SleepDeprivation, plus the SL Survival Sunhelm Patch.esp). REQUIRES SunHelm Survival (SunHelmSurvival.esp). Leave unchecked if you use iNeed/Frostfall/etc. instead.</description>
+                            <description>Integrates SL Survival's needs/fatigue/sleep with SunHelm Survival: installs SL Survival Sunhelm Patch.esp, which connects the SunHelm adapter in the base scripts, plus SunHelm-keyed sleep-deprivation settings. REQUIRES SunHelm Survival (SunHelmSurvival.esp). Leave unchecked if you use iNeed, RND, Eating Sleeping Drinking or Creation Club Survival Mode instead - those are detected automatically.</description>
                             <files>
-                                <folder source="optional\SunHelm\scripts" destination="scripts" priority="1" />
                                 <folder source="optional\SunHelm\skse" destination="skse" priority="1" />
                                 <file source="optional\SunHelm\SL Survival Sunhelm Patch.esp" destination="SL Survival Sunhelm Patch.esp" priority="1" />
                             </files>
@@ -91,6 +92,16 @@
                             <description>Extra battle-wound (bruise) body overlay textures used by SL Survival's wound system.</description>
                             <files>
                                 <folder source="optional\BattleWounds\textures" destination="textures" priority="1" />
+                            </files>
+                            <typeDescriptor>
+                                <type name="Optional" />
+                            </typeDescriptor>
+                        </plugin>
+
+                        <plugin name="SlaveTats Pack">
+                            <description>SL Survival's own overlays (wounds and bruises, spank marks, magic-silence collar, bikini curse, cum desperation) as a SlaveTats pack, with UBE variants for the female overlays and three hand-print spank marks (from slavetats_spanked) for "Survival Ass Slapping". With it SL Survival applies its overlays through SlaveTats instead of its own NiOverride slots. Pack by RustyOldSword. REQUIRES SlaveTats NG (SlaveTats.esp + the SlaveTatsNG SKSE plugin); without them the base scripts keep using their own overlays.</description>
+                            <files>
+                                <folder source="optional\SlaveTatsPack\textures" destination="textures" priority="1" />
                             </files>
                             <typeDescriptor>
                                 <type name="Optional" />

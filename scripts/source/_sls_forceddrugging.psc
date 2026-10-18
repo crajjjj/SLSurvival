@@ -224,7 +224,9 @@ EndState
 
 State Sensitivity
 	Form Function GetDrug(Actor akTarget)
-		Return _SLS_SensitivityPotList.GetAt(Utility.RandomInt(0, _SLS_SensitivityPotList.GetSize() - 1))
+		; The formlist property is not filled in the plugin, so this always returned None
+		Formlist PotList = Game.GetFormFromFile(0x12365E, "SL Survival.esp") as Formlist ; _SLS_SensitivityPotList
+		Return PotList.GetAt(Utility.RandomInt(0, PotList.GetSize() - 1))
 	EndFunction
 EndState
 

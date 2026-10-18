@@ -41,6 +41,9 @@ Being able to *buy* a permit is itself gated. The **Licence Style** setting (on 
 !!! note "Thane titles only matter under the two Thaneship styles"
     Earning a thaneship unlocks licence access **only** when the style is set to **Thaneship Choice** or **Thaneship Random**. Under **Default** every type is already open, and under **Unlock** you pay to unlock instead — so becoming a thane has no effect on licences in either of those.
 
+!!! note "Snowberry start licences"
+    With the opt-in Snowberry option, a new character starts with a set of licences. They arrive a few seconds into the game, also on Alternate Perspective starts. The set always includes the Armor licence (never a lone Bikini licence, which would trigger the bikini curse), and a Property licence when you start in a house of your own.
+
 !!! tip "Bikini before armour"
     The **Bikini licence first** option (Thaneship styles only) forces the bikini permit to be awarded before the full armour permit — under *Choice* you must pick bikini first before full armour can be chosen; under *Random* full armour only enters the pool once you already hold the bikini licence.
 

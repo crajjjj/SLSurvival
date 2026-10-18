@@ -92,16 +92,10 @@ Function TeleportToEscortMarker()
 	Utility.Wait(1.0)
 	FadeToBlack.Apply()
 	Utility.Wait(3.0)
-	PlayerRef.MoveTo(LocTrack.GetForcedEscortTpMarker())
+	ObjectReference Marker = LocTrack.GetForcedEscortTpMarker()
+	PlayerRef.MoveTo(Marker)
 	Utility.Wait(1.0)
-	ObjectReference Escort
-	While Escort == None && _SLS_EscortsList.GetSize() > 0
-		Escort = _SLS_EscortsList.GetAt(Utility.RandomInt(0, _SLS_EscortsList.GetSize() - 1)) as ObjectReference
-		If (Escort as Actor).IsDead()
-			_SLS_EscortsList.RemoveAddedForm(Escort)
-			Escort = None
-		EndIf
-	EndWhile
+	ObjectReference Escort = PickEscort(Marker)
 	If Escort
 		Escort.MoveTo(PlayerRef)
 		Utility.Wait(0.5)
@@ -117,6 +111,42 @@ Function TeleportToEscortMarker()
 	Else
 		Debug.Messagebox("Assign escort failed: No followers found. Most likely you have no set up escorts.")
 	EndIf
+EndFunction
+
+; A random living escort, preferring one from the hold the player is taken to (a Whiterun mercenary for the
+; Whiterun guards), so the escort is someone who could plausibly be hired there. Entries whose plugin is gone
+; read as None and are skipped; the old random-retry loop spun forever on them.
+ObjectReference Function PickEscort(ObjectReference Marker)
+	Location MarkerLoc = Marker.GetCurrentLocation()
+	Keyword LocTypeHold = Game.GetFormFromFile(0x016771, "Skyrim.esm") as Keyword
+	Actor LocalPick
+	Actor AnyPick
+	Int LocalCount = 0
+	Int AnyCount = 0
+	Int i = _SLS_EscortsList.GetSize()
+	While i > 0
+		i -= 1
+		Actor Candidate = _SLS_EscortsList.GetAt(i) as Actor
+		If Candidate && Candidate.IsDead()
+			_SLS_EscortsList.RemoveAddedForm(Candidate)
+		ElseIf Candidate && !Candidate.IsDisabled() && !Candidate.IsPlayerTeammate()
+			AnyCount += 1
+			If Utility.RandomInt(1, AnyCount) == 1
+				AnyPick = Candidate
+			EndIf
+			Location CandidateLoc = Candidate.GetCurrentLocation()
+			If MarkerLoc && CandidateLoc && CandidateLoc.IsSameLocation(MarkerLoc, LocTypeHold)
+				LocalCount += 1
+				If Utility.RandomInt(1, LocalCount) == 1
+					LocalPick = Candidate
+				EndIf
+			EndIf
+		EndIf
+	EndWhile
+	If LocalPick
+		Return LocalPick
+	EndIf
+	Return AnyPick
 EndFunction
 
 ;/

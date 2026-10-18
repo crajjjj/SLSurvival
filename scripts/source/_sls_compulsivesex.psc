@@ -2,7 +2,7 @@ Scriptname _SLS_CompulsiveSex extends Quest
 
 Event OnInit()
 	If Self.IsRunning()
-		If Game.GetModByName("SLSO.esp") != 255
+		If Game.GetModByName("SLSO.esp") != 255 || _SLS_IntSlpp.GetIsInstalled() ; P+ has SLSO built in
 			RegisterForEvents()
 			StorageUtil.SetIntValue(None, "_SLS_CompulsiveSexTutorial", 1)
 		Else
@@ -37,9 +37,11 @@ EndEvent
 Function BeginAutoFucking(int tid, bool HasPlayer, Bool ManualStart)
 	If HasPlayer || ManualStart
 		CurrentTid = Sexlab.FindPlayerController()
+		; Under P+ the enjoyment is raised through its thread API - there is no SLSO key to tap
+		UsePPlus = Game.GetModByName("SLSO.esp") == 255 && _SLS_IntSlpp.GetIsInstalled()
 		SlsoEnjoyKey = JsonUtil.GetIntValue("/SLSO/Config.json", "hotkey_bonusenjoyment")
 		;SlsoUtilityKey = JsonUtil.GetIntValue("/SLSO/Config.json", "hotkey_utility")
-		If SlsoEnjoyKey > 0; && SlsoUtilityKey > 0
+		If SlsoEnjoyKey > 0 || UsePPlus; && SlsoUtilityKey > 0
 			Bool DoIt = false
 			;Debug.Messagebox("Level: " + Util.GetSkoomaJunkieLevel(PlayerRef, IsWithdrawing = true))
 			If !ManualStart
@@ -118,7 +120,11 @@ Event OnUpdate()
 			;Debug.Trace("_SLS_: OnUpdate(): " + SlsoEnjoyKey)
 			;Debug.Notification("Fucking: " + SlsoEnjoyKey)
 			;Debug.Messagebox("IsKeyPressed: " + Input.IsKeyPressed(SlsoUtilityKey))
+			If UsePPlus
+				_SLS_IntSlpp.ModEnjoyment(Sexlab, CurrentTid, PlayerRef, PPlusEnjoymentPerTick)
+			Else
 			Input.TapKey(SlsoEnjoyKey)
+			EndIf
 			
 		Else ;  Player somehow is not having sex anymore. Terminate updates. 
 			SexStopped()
@@ -178,6 +184,8 @@ Bool Property IsCompulsiveFuck = false Auto Hidden
 Bool Property IsFucking = false Auto Hidden
 
 Int SlsoEnjoyKey
+Bool UsePPlus = false
+Int Property PPlusEnjoymentPerTick = 2 Auto Hidden ; one SLSO bonus-enjoyment key tap, on P+'s 0-100 scale
 Int SlsoUtilityKey
 Int CurrentTid
 

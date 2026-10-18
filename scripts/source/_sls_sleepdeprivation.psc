@@ -5,8 +5,12 @@ Float StartingFatigue
 Float SleepStartTime
 
 Event OnInit()
-	If Game.GetModByName("iNeed.esp") == 255 && Game.GetModByName("RealisticNeedsandDiseases.esp") == 255 && Game.GetModByName("EatingSleepingDrinking.esp") == 255 ; Don't bother starting if there's no needs mod installed
+	; Don't bother starting if no supported needs mod is installed. Creation Club Survival Mode counts once its
+	; plugin is loaded: it may be switched on after this quest starts (the new game prompt), and every Needs call
+	; no-ops while it is off.
+	If Game.GetModByName("iNeed.esp") == 255 && Game.GetModByName("RealisticNeedsandDiseases.esp") == 255 && Game.GetModByName("EatingSleepingDrinking.esp") == 255 && Game.GetModByName("SunHelmSurvival.esp") == 255 && Game.GetModByName("ccqdrsse001-survivalmode.esl") == 255
 		Self.GetOwningQuest().Stop()
+		Return
 	EndIf
 	RegisterForSleep()
 EndEvent
@@ -25,6 +29,15 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	SleepStartTime = Utility.GetCurrentGameTime()
 	StartingFatigue = Needs.GetFatigue()
 	SleepPenalty = Needs.GetSleepPenalty(ShowConditions = false, IsSleeping = true)
+	; Correct SunHelm's bedroll latch against the furniture actually being slept in - it is set by an
+	; activate perk and only cleared on a completed sleep, so it otherwise carries a stale bedroll
+	; onto the next sleep. Safe to run before or after SunHelm's own sleep-start hook: nothing reads
+	; the flag until its OnSleepStop. Gated on the quest like OnSleepStop is - RegisterForSleep
+	; survives Stop(), and with sleep deprivation switched off we have no business writing SunHelm's
+	; state at all.
+	If Self.GetOwningQuest().IsRunning()
+		Needs.SyncBedrollSleepFlag()
+	EndIf
 EndEvent
 
 Event OnSleepStop(bool abInterrupted)

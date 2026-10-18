@@ -12,6 +12,7 @@ Utility.Wait(0.1)
 _SLS_AssSlapMarker.Play(PlayerRef)
 Utility.Wait(0.1)
 _SLS_AssSlapGruntMarker.Play(PlayerRef)
+(Game.GetFormFromFile(0x0F37A1, "SL Survival.esp") as _SLS_Trauma).AddSpankTrauma(PlayerRef) ; leave a fading spank mark
 (Game.GetFormFromFile(0x07EF9A, "SL Survival.esp") as _SLS_InterfaceDeviousFollowers).DecResistWithSeverity(Amount = 1.0, DoNotify = true, Severity = "0")
 ;END CODE
 EndFunction

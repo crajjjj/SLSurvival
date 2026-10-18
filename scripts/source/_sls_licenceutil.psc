@@ -375,8 +375,10 @@ ObjectReference Function IssueLicence(Actor Issuer, Int LicenceType = -1, Int Li
 		EndIf
 	EndIf
 	
+	If !BatchIssuing ; a batch (API queue) waits and checks the bikini curse once at the end
 	Utility.Wait(2.0)
 	CheckForBikiniCurse()
+	EndIf
 	Return Licence
 EndFunction
 
@@ -3281,6 +3283,7 @@ Bool Property NeedsMandRestraints = false Auto Hidden Conditional
 Bool Property CheckFollowers = true Auto Hidden
 Bool Property ForceCheckDF = true Auto Hidden
 Bool Property OwnsProperty = false Auto Hidden
+Bool Property BatchIssuing = false Auto Hidden ; set by _SLS_ApiLicHandler while it drains its queue
 Bool Property BountyMustBePaid = true Auto Hidden Conditional
 Bool Property BuyBack = false Auto Hidden
 Bool Property FolTakeClothes = true Auto Hidden

@@ -136,6 +136,8 @@ $compiler = "C:\SteamLibrary\steamapps\common\Skyrim Special Edition\Papyrus Com
 - Output `.pex` lands in `scripts/`. A clean result reads `0 error(s), 0 warning(s)`.
 - `TESV_Papyrus_Flags.flg` resolves via the vanilla `@SkyrimScripts` import path, not the project root.
 - Packaging is done via the `.ppj` — only when packaging a release. The patch build uses `Package="false"` (no BSA; loose scripts) + `Zip="true"`; a standalone build would set `Package="true"` to pack `SL Survival.bsa`.
+- `SL Survival.esp` carries no copies of vanilla records SLS only adds to (playable and vampire races, merchant and treasure chests, vendor gold lists, the travelling merchant): those additions live in the SkyPatcher INIs under `SKSE/Plugins/SkyPatcher/*/SLS SkyPatcher Patch/`, which apply them to whichever record wins the load order. Add to a vanilla list through those INIs, not by overriding the record in the plugin.
+- `seq/SL Survival.seq` lists the plugin's own start-game-enabled quests (file-local FormIDs). Regenerate it (xEdit: Other, Create SEQ File) whenever a start-game-enabled quest is added.
 
 ### Editing these docs
 

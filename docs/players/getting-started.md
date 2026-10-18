@@ -26,6 +26,10 @@ SLS is built on a core stack of framework mods. All of these must be installed a
 | FNIS **or** Nemesis | Animation behaviour generation (run one after install) |
 | SkyUI / MCM | Required for the SLS configuration menu |
 | PapyrusUtil / StorageUtil | Data storage backend SLS relies on |
+| SkyPatcher | Adds SLS's items to vanilla merchant and treasure chests and vendor stock lists, and the Inequality ability to the playable races, on top of whichever version of those records wins in your load order |
+
+!!! note "Why SkyPatcher"
+    `SL Survival.esp` used to carry old copies of 128 vanilla records (playable and vampire races, merchant and treasure chests, vendor gold lists and a few others). Because SLS loads late, those copies silently reverted USSEP, Dragonborn and other mods' changes to them. Since 0.720 the plugin no longer carries them, and SkyPatcher adds back only what SLS put there. Without SkyPatcher, SLS still runs, but those items and the Inequality race ability are missing.
 
 Beyond the core stack, SLS integrates with **dozens of optional** survival and LoversLab mods. Each integration activates only if that mod is present, so missing ones are safely ignored. See [Mod Integrations](integrations.md) for the full list of what each optional mod unlocks.
 
@@ -36,8 +40,9 @@ Beyond the core stack, SLS integrates with **dozens of optional** survival and L
 
 1. Use a **mod manager** — Mod Organizer 2 (MO2) is recommended. Manual installation is not supported.
 2. Install all core dependencies above (and any optional integrations you want) first.
-3. Install Monoman1's original **[SexLab Survival](https://www.loverslab.com/topic/99955-sexlab-survival/)** (from the thread posts) — it supplies the textures, meshes and sound. Then install **this patch** and place it **below the original** (higher priority) so its updated scripts and plugin win. The patch's base files (`SL Survival.esp`, loose scripts, MCM translations, SKSE data) are always installed; the **FOMOD installer** then offers a "Select Any" group of optional patches — check the ones matching your setup:
-    - **SunHelm Survival Patch** — needs/fatigue/sleep integration; requires SunHelm Survival. Leave unchecked if you use iNeed/Frostfall/RND instead.
+3. Install Monoman1's original **[SexLab Survival](https://www.loverslab.com/topic/99955-sexlab-survival/)** (from the thread posts): it supplies the textures, meshes and sound. Then install **this patch** and place it **below the original** (higher priority) so its updated scripts and plugin win. The patch's base files (`SL Survival.esp`, loose scripts, MCM translations, SKSE data, the SEQ file) are always installed; the **FOMOD installer** then offers a "Select Any" group of optional patches. Check the ones matching your setup:
+    - **SunHelm Survival Patch**: needs/fatigue/sleep integration; requires SunHelm Survival. Leave unchecked if you use iNeed, RND, Eating Sleeping Drinking or Creation Club Survival Mode instead; those are detected without a patch.
+    - **SlaveTats Pack**: SLS's own overlays as a SlaveTats pack, with UBE variants and hand-print spank marks; requires SlaveTats NG.
     - **Bikini Armor Break (TAWoBA)** — armor-break configs/meshes; requires The Amazing World of Bikini Armors REMASTERED.
     - **Animal Friend Teammates** — tamed animals follow and fight as teammates (off by default; can be unreliable).
     - **Battle Wound / Bruise Textures** — extra bruise body-overlay textures for the wound system.
@@ -55,6 +60,12 @@ SLS is script-heavy and registers a lot of content on startup.
 - On a fresh save, wait for the **MCM to register** — this can take a minute or two. You'll normally see a notification when SexLab Survival is added to the MCM.
 - **Configure the MCM before playing.** Set your options first; some systems assume you've reviewed their settings. See the [MCM Reference](mcm-reference.md) for a page-by-page overview.
 - Give the game a moment to settle after loading before diving into gameplay, especially on the first load.
+
+## Playing a male character
+
+SLS was written for a female player character. For a male player it switches its female-only systems off through their own MCM toggles: ass slapping and spanking, NPC and guard comments, cat calls, tolls, toll evasion, town lockdown and the gate curfew, licences, Inequality, the bikini curse and bikini experience, the cover-myself mechanics and begging. The survival side (needs, sleep, stashes, eviction) stays on. The values you had are remembered and come back when the player is female again, for example after changing sex in RaceMenu. The check runs on a new game, on every load and whenever RaceMenu closes.
+
+To turn this off and keep every system as configured, set `"enabled"` to `0` in `SKSE\Plugins\StorageUtilData\SL Survival\GenderGate.json`.
 
 ## Troubleshooting: "SexLab Survival doesn't appear in the MCM"
 

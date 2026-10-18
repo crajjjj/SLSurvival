@@ -15,7 +15,9 @@ You don't need any of these. Install the ones you want and SLS adapts.
 | iNeed | Hunger/thirst needs drive SLS consequences |
 | Realistic Needs and Diseases (RND) | Needs source SLS reads |
 | Eating Sleeping Drinking | Needs source SLS reads |
-| SunHelm Survival | Needs/fatigue/sleep integration — installed via the **optional FOMOD patch** (not the base scripts) |
+| SunHelm Survival | Needs/fatigue/sleep integration. Needs the **SunHelm Survival Patch** FOMOD option, which installs the patch plugin that connects SLS's SunHelm adapter |
+| Creation Club Survival Mode | Hunger, exhaustion and cold, while Survival Mode is switched on: swallowed cum feeds you, drugs and bondage furniture tire you, sleeping conditions (the cold included) cap your rest, hunger drives the belly and begging, and sex, skooma and milk warm you. Survival Mode has no thirst, so thirst options do nothing with it |
+| WetFunction NG | Cum and milk leaks make you wet, and getting drenched can ruin carried licences and counts for the kennel bucket (Frostfall-only before) |
 | Campfire | Enables camping actions in the SLS survival wheel menu |
 | Hunterborn | Hunting/harvest integration (hunter's cache) |
 
@@ -37,11 +39,13 @@ You don't need any of these. Install the ones you want and SLS adapts.
 | Advanced Nudity Detection (AND) | Naked/exposed detection uses AND's rendered-coverage verdict (transparent and skimpy outfits count) for cat calls and the cover-myself mechanics, including the bra/underwear tier and pubic visibility |
 | Modesty Toggle | Lets Cover Myself own the nude cover animations. Without it the OAR covering movesets keep playing over your choice, so uncover never visibly works — see [Cover Myself](#cover-myself-and-the-nude-cover-animations) |
 | SexLab Separate Orgasm (SLSO) | Orgasm framework used by the "must orgasm" rules |
+| SexLab P+ | Takes SLSO's place where P+ has it built in, Compulsive Sex included (it raises enjoyment through P+ instead of tapping SLSO's key) |
 | SexLab - Sexual Fame [SLSF] | Sexual-fame reputation feeds SLS |
+| SLSF Reloaded | Whore, slut, submissive, bestiality and airhead fame at your current location; the old SLSF `.esm` is not needed |
 | Apropos 2 | Wear-and-tear scene descriptions |
 | SexLab Dialogues | Extra dialogue/rest effect |
 | Creature Framework | Creature mod framework support |
-| SlaveTats (and tattoo add-ons) | Tattoo/overlay integration for SLS-applied body marks |
+| SlaveTats (and tattoo add-ons) | Tattoo/overlay integration for SLS-applied body marks. With SlaveTats NG and the **SlaveTats Pack** FOMOD option, SLS applies its own overlays (wounds, spank marks, collar, curse marks) through SlaveTats, with UBE variants and hand-print spank marks |
 
 ## Body, cum & scaling
 

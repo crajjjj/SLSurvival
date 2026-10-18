@@ -15,7 +15,7 @@
 
 A large Skyrim SE gameplay and survival overhaul — needs, licences, tolls, misogyny, and dozens of optional LoversLab / survival mod integrations, all behind a resilient adapter layer. **Pure Papyrus**, no SKSE plugin of its own.
 
-**Original author:** Monoman1.
+**Original author:** Monoman1. Fixes and integrations from RustyOldSword's SexLab Survival Repack are merged in since 0.720.
 
 > ⚠️ **Adult (18+) mod.** Built on the SexLab framework and other LoversLab mods; not available on the Nexus. This repository holds the mod's **source and reference documentation** — it describes software behaviour and contains no pornographic media.
 

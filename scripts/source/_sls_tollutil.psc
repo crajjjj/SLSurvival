@@ -484,7 +484,7 @@ Function OnTollDoorAttach(Bool IsInteriorDoor, ReferenceAlias ThisDoorAlias)
 					
 					If !ThisDoor.IsLocked()
 						Debug.Trace("SLS_: Locking door: " + ThisDoor)
-						ThisDoor.SetLockLevel(100)
+						ThisDoor.SetLockLevel(TollGateLockLevel)
 						ThisDoor.Lock(true, true)
 					EndIf
 				EndIf
@@ -544,7 +544,7 @@ Function TollDoorLockStateChange(ObjectReference ThisDoor, Bool IsInteriorDoor)
 			Debug.Trace("SLS_: StateChange - " + ThisDoor + ". Interior: " + IsInteriorDoor + ". Locked: " + ThisDoor.IsLocked())
 			If !ThisDoor.IsLocked()
 				Debug.Trace("SLS_: Locking door: " + ThisDoor)
-				ThisDoor.SetLockLevel(100)
+				ThisDoor.SetLockLevel(TollGateLockLevel)
 				ThisDoor.Lock(true, true)
 			EndIf
 		EndIf
@@ -568,7 +568,7 @@ Function ToggleDoorLocks(ObjectReference TollDoor, Bool LockThem) ; false - Unlo
 		While i < DoorList.GetSize()
 			DoorSelect = DoorList.GetAt(i) as ObjectReference
 			If LockThem
-				TollDoor.SetLockLevel(100)
+				TollDoor.SetLockLevel(TollGateLockLevel)
 			EndIf
 			TollDoor.Lock(LockThem, true)
 			i += 1
@@ -737,3 +737,6 @@ SLS_Main Property Main Auto
 SLS_Utility Property Util Auto
 _SLS_TollOrgasm Property TollOrgasm Auto
 _SLS_LocTrackCentral Property LocTrackCentral Auto
+
+; Lock level of a locked toll gate. It was 100 (Master), which most characters cannot pick; 50 = Average (Adept)
+Int Property TollGateLockLevel = 50 AutoReadOnly

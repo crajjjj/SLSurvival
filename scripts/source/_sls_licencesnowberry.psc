@@ -2,13 +2,13 @@ Scriptname _SLS_LicenceSnowberry extends Quest
 
 Event OnInit()
 	If Self.IsRunning()
-		RegisterForSingleUpdate(30.0)
+		RegisterForSingleUpdate(3.0) ; 30 s made the start licences arrive up to half a minute late
 	EndIf
 EndEvent
 
 Event OnUpdate()
 	If Menu.CanEnableSnowberry()
-		RegisterForSingleUpdate(30.0)
+		RegisterForSingleUpdate(3.0)
 	Else
 		GiveLicences()
 	EndIf
@@ -20,13 +20,15 @@ Function GiveLicences()
 	If LicUtil.LicMagicEnable
 		Api.On_SLS_IssueLicence(LicenceType = 0, TermDuration = 0, Issuer = TheDude, GiveLicTo = PlayerRef, DeductGold = false, Sender = Self) ; Magic licence
 	EndIf
-	If LicUtil.LicBikiniEnable
-		Api.On_SLS_IssueLicence(LicenceType = 3, TermDuration = 0, Issuer = TheDude, GiveLicTo = PlayerRef, DeductGold = false, Sender = Self) ; Bikini licence
-	Else
+	; Always the regular armor licence: a bikini licence on its own puts the bikini curse on the player
 		Api.On_SLS_IssueLicence(LicenceType = 2, TermDuration = 0, Issuer = TheDude, GiveLicTo = PlayerRef, DeductGold = false, Sender = Self) ; Armor licence
-	EndIf
 	If LicUtil.LicClothesEnable == 1
 		Api.On_SLS_IssueLicence(LicenceType = 4, TermDuration = 0, Issuer = TheDude, GiveLicTo = PlayerRef, DeductGold = false, Sender = Self) ; Clothes licence
+	EndIf
+	; Starts that put the player in their own house (house key in the inventory) also get the property licence,
+	; otherwise the house is taken away right after the start
+	If LicUtil.LicPropertyEnable && LicUtil.OwnsProperty
+		Api.On_SLS_IssueLicence(LicenceType = 8, TermDuration = 0, Issuer = TheDude, GiveLicTo = PlayerRef, DeductGold = false, Sender = Self) ; Property licence
 	EndIf
 	Menu.SnowberryEnable = false
 EndFunction

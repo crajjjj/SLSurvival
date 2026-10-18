@@ -41,7 +41,7 @@ EndFunction
 
 Event OnEndState()
 	Utility.Wait(5.0) ; Wait before entering active state to help avoid making function calls to scripts that may not have initialized yet.
-	McmQuest = Game.GetFormFromFile(0x000D63,"CreatureFramework.esm") as Quest
+	McmQuest = Game.GetFormFromFile(0x00CF02,"CreatureFramework.esm") as Quest ; CFQuestConfiguration (was 0xD63, a FormID CF never had)
 	ArousalThresholdActual = GetArousalThreshold()
 EndEvent
 
