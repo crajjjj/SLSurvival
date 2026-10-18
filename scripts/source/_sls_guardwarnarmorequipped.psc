@@ -142,8 +142,11 @@ Bool Function CheckIsDetected()
 	If _SLS_GuardWarnTypeAndCooldown.GetValueInt() == 0 ; Check is another warning in progress or in cooldown
 		_SLS_PlayerIsAIDriven.SetValueInt((PlayerRef.GetCurrentPackage() != None) as Int)
 		_SLS_GuardWarnArmorEquippedDetectQuest.Stop()
-		_SLS_GuardWarnArmorEquippedDetectQuest.Start()
-		Actor Guard = (_SLS_GuardWarnArmorEquippedDetectQuest.GetNthAlias(0) as ReferenceAlias).GetReference() as Actor
+		Actor Guard
+		If SLS_Utility.GuardDetectionPossible(_SLS_GuardWarnArmorEquippedDetectQuest) ; no restart when no guard could fill the alias
+			_SLS_GuardWarnArmorEquippedDetectQuest.Start()
+			Guard = (_SLS_GuardWarnArmorEquippedDetectQuest.GetNthAlias(0) as ReferenceAlias).GetReference() as Actor
+		EndIf
 		If Guard ; Detected
 			_SLS_GuardWarnTypeAndCooldown.SetValueInt(1)
 			If Guard.IsInFaction(_SLS_GuardBehaviourWarningFact)

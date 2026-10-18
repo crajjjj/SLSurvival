@@ -1652,6 +1652,35 @@ Function SendChainQuestsEvent(Quest QuestToStop, Quest QuestToStart)
 	EndIf
 EndFunction
 
+; Could a restart of a guard-warning detection quest fill its guard alias? The alias conditions
+; include "this guard detects the player", so mostly nobody can. With SLSurvival.dll they are
+; checked natively first and the quest is restarted only when a guard passes them (the restart
+; still decides, a reservation elsewhere can keep that guard out); without it, always true.
+Bool Function GuardDetectionPossible(Quest akDetectQuest) Global
+	If !_SLS_Native.IsLoaded()
+		Return true
+	EndIf
+	Actor[] Fill = _SLS_Native.FillQuestAliases(akDetectQuest)
+	Return Fill[0] != None
+EndFunction
+
+; The actors akSearchQuest's aliases hold after a fresh fill, in alias order. With SLSurvival.dll
+; the fill is worked out natively and the quest never runs; without it, by restarting the quest.
+Actor[] Function FillSearchQuest(Quest akSearchQuest) Global
+	If _SLS_Native.IsLoaded()
+		Return _SLS_Native.FillQuestAliases(akSearchQuest)
+	EndIf
+	akSearchQuest.Stop()
+	akSearchQuest.Start()
+	Int i = akSearchQuest.GetNumAliases()
+	Actor[] Fill = PapyrusUtil.ActorArray(i)
+	While i > 0
+		i -= 1
+		Fill[i] = (akSearchQuest.GetNthAlias(i) as ReferenceAlias).GetReference() as Actor
+	EndWhile
+	Return Fill
+EndFunction
+
 Function SendBeginGuardWarnPunishEvent(Quest QuestToStop, Actor Guard)
 	Int ChainQuests = ModEvent.Create("_SLS_Int_BeginGuardWarnPunishEvent")
 	If (ChainQuests)

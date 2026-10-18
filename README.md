@@ -9,11 +9,11 @@
   <a href="https://github.com/crajjjj/SLSurvival/actions/workflows/docs.yml"><img src="https://github.com/crajjjj/SLSurvival/actions/workflows/docs.yml/badge.svg" alt="Deploy docs"></a>
   <a href="https://github.com/crajjjj/SLSurvival/releases/latest"><img src="https://img.shields.io/github/v/release/crajjjj/SLSurvival?label=release" alt="Latest release"></a>
   <img src="https://img.shields.io/badge/Skyrim-SE%2FAE-orange" alt="Skyrim SE/AE">
-  <img src="https://img.shields.io/badge/scripting-pure%20Papyrus-8A2BE2" alt="Pure Papyrus">
+  <img src="https://img.shields.io/badge/scripting-Papyrus%20%2B%20SKSE-8A2BE2" alt="Papyrus plus SKSE">
   <img src="https://img.shields.io/badge/content-18%2B-black" alt="18+ content">
 </p>
 
-A large Skyrim SE gameplay and survival overhaul — needs, licences, tolls, misogyny, and dozens of optional LoversLab / survival mod integrations, all behind a resilient adapter layer. **Pure Papyrus**, no SKSE plugin of its own.
+A large Skyrim SE gameplay and survival overhaul — needs, licences, tolls, misogyny, and dozens of optional LoversLab / survival mod integrations, all behind a resilient adapter layer. Written in **Papyrus**, with a small SKSE plugin (`SLSurvival.dll`) for the heaviest searches; SLS falls back to Papyrus without it.
 
 **Original author:** Monoman1. Fixes and integrations from RustyOldSword's SexLab Survival Repack are merged in since 0.800.
 

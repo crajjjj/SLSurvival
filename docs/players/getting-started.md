@@ -27,6 +27,7 @@ SLS is built on a core stack of framework mods. All of these must be installed a
 | SkyUI / MCM | Required for the SLS configuration menu |
 | PapyrusUtil / StorageUtil | Data storage backend SLS relies on |
 | SkyPatcher | Adds SLS's items to vanilla merchant and treasure chests and vendor stock lists, and the Inequality ability to the playable races, on top of whichever version of those records wins in your load order |
+| Address Library for SKSE Plugins | Recommended: lets SLS's own `SLSurvival.dll` load, which takes over the heaviest searches (guards spotting you, licence inventory checks). Without it SLS does that work in Papyrus, only slower |
 
 !!! note "Why SkyPatcher"
     `SL Survival.esp` used to carry old copies of 128 vanilla records (playable and vampire races, merchant and treasure chests, vendor gold lists and a few others). Because SLS loads late, those copies silently reverted USSEP, Dragonborn and other mods' changes to them. Since 0.800 the plugin no longer carries them, and SkyPatcher adds back only what SLS put there. Without SkyPatcher, SLS still runs, but those items and the Inequality race ability are missing.

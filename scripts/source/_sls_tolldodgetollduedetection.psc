@@ -10,14 +10,12 @@ Event OnUpdate()
 	If !Self.IsRunning() ; Quest.Stop() doesn't unregister a pending update - don't flag toll due after leaving the city
 		Return
 	EndIf
-	_SLS_TollDodgeGuardSearch.Stop()
-	_SLS_TollDodgeGuardSearch.Start()
-	
-	Int i = _SLS_TollDodgeGuardSearch.GetNumAliases()
+	Actor[] Guards = SLS_Utility.FillSearchQuest(_SLS_TollDodgeGuardSearch)
+	Int i = Guards.Length
 	Actor Guard
 	While i > 0
 		i -= 1
-		Guard = (_SLS_TollDodgeGuardSearch.GetNthAlias(i) as ReferenceAlias).GetReference() as Actor
+		Guard = Guards[i]
 		If Guard
 			If PlayerRef.IsDetectedBy(Guard) && Guard.HasLos(PlayerRef)
 				Debug.Notification("The guards have spotted me. They'll expect the toll be paid before I leave";/ + Guard.GetBaseObject().GetName()/;)

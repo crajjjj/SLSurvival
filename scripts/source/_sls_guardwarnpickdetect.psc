@@ -27,8 +27,11 @@ Bool Function IsDetectedLockpicking()
 		_SLS_PlayerIsAIDriven.SetValueInt((PlayerRef.GetCurrentPackage() != None) as Int)
 		_SLS_GuardWarnDoApproach.SetValueInt(0) ; Disable approach until it can be determined whether to do initial warning or punishment. Avoids guards greeting you with nothing to say if started close to a guard (timing issue)
 		_SLS_GuardWarnPickDetectionQuest.Stop()
-		_SLS_GuardWarnPickDetectionQuest.Start()
-		Actor Guard = (_SLS_GuardWarnPickDetectionQuest.GetNthAlias(0) as ReferenceAlias).GetReference() as Actor
+		Actor Guard
+		If SLS_Utility.GuardDetectionPossible(_SLS_GuardWarnPickDetectionQuest) ; no restart when no guard could fill the alias
+			_SLS_GuardWarnPickDetectionQuest.Start()
+			Guard = (_SLS_GuardWarnPickDetectionQuest.GetNthAlias(0) as ReferenceAlias).GetReference() as Actor
+		EndIf
 		If Guard ; Detected
 			_SLS_GuardWarnTypeAndCooldown.SetValueInt(3)
 			If Guard.IsInFaction(_SLS_GuardBehaviourWarningFact)

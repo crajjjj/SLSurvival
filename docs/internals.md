@@ -1,6 +1,6 @@
 # Internals
 
-A single reference for how SexLab Survival is built — for anyone reading the source, patching it, or wiring in a new optional mod. SLS is **pure Papyrus**: no SKSE plugin of its own, just Creation Kit forms plus ~800 `.psc` scripts and one plugin.
+A single reference for how SexLab Survival is built — for anyone reading the source, patching it, or wiring in a new optional mod. SLS is written in **Papyrus**: Creation Kit forms plus ~820 `.psc` scripts and one plugin, with a small SKSE plugin (`SLSurvival.dll`, source in `plugin/`) for the heaviest searches.
 
 ## What ships
 
@@ -13,6 +13,7 @@ A single reference for how SexLab Survival is built — for anyone reading the s
 | `skyrimse.ppj` | Papyrus project file: the full 54-folder import list and packaging config. |
 | `fomod/` | The FOMOD installer definition (optional patches). |
 | `dependencies/` | Bundled `.psc` sources for every imported external mod — **compile-time only**. |
+| `SKSE/Plugins/SLSurvival.dll` | Native helpers, built from `plugin/` (see below). Optional at runtime: every caller keeps its Papyrus path. |
 
 !!! warning "Current release ships loose (a patch); the BSA note applies only to a standalone build"
     The current release is a **patch** over Monoman1's original SexLab Survival and ships **loose scripts (no BSA)** — the original's loose scripts would override a BSA and revert every fix, so ours must be loose to win. If you ever build a **standalone** BSA instead, it **must** be named `SL Survival.bsa` (matching `SL Survival.esp`), not `SLSurvival.bsa`, or the engine won't mount it — no scripts load and the MCM silently vanishes.
@@ -138,6 +139,22 @@ $compiler = "C:\SteamLibrary\steamapps\common\Skyrim Special Edition\Papyrus Com
 - Packaging is done via the `.ppj` — only when packaging a release. The patch build uses `Package="false"` (no BSA; loose scripts) + `Zip="true"`; a standalone build would set `Package="true"` to pack `SL Survival.bsa`.
 - `SL Survival.esp` carries no copies of vanilla records SLS only adds to (playable and vampire races, merchant and treasure chests, vendor gold lists, the travelling merchant): those additions live in the SkyPatcher INIs under `SKSE/Plugins/SkyPatcher/*/SLS SkyPatcher Patch/`, which apply them to whichever record wins the load order. Add to a vanilla list through those INIs, not by overriding the record in the plugin.
 - `seq/SL Survival.seq` lists the plugin's own start-game-enabled quests (file-local FormIDs). Regenerate it (xEdit: Other, Create SEQ File) whenever a start-game-enabled quest is added.
+
+### The SKSE plugin (`plugin/`)
+
+`SLSurvival.dll` takes over the two Papyrus paths that cost the most per run:
+
+| Native (`_SLS_Native`) | Replaces |
+|------|------|
+| `FillQuestAliases(Quest)` | Restarting a guard search quest just to see who fills its aliases: every 1.5 s while a toll is due or guards hunt a toll dodger, every 3 s while the player carries a weapon or armour a town forbids. It evaluates the aliases' own conditions from the plugin, closest first, without starting the quest. |
+| `HasContraband(target, kind, ...)` | The licence checks' walk over the whole inventory, once per licence type, on entering a restricted town, at gate checks and after dropping or selling contraband. Same rules, one call. |
+
+SLS does not need the DLL. Every caller checks `_SLS_Native.IsLoaded()` and keeps its Papyrus path, so a missing DLL (or a missing Address Library) only costs speed. Two rules for anyone changing it:
+
+- Each native mirrors a Papyrus rule set (`HasContraband` mirrors `_SLS_LicenceUtil`'s `ActorHasArmor`, `HasWeapon`, `HasMagicItem` and `HasClothes`). Change one, change its twin.
+- Never change a released native's signature: the VM rejects a call whose argument count differs, and scripts compiled against the old one send the old count forever. Add a new native and raise `GetAPIVersion()`.
+
+Build it with `plugin\build.ps1` (xmake 3.0+, Visual Studio 2022, and the CommonLibSSE-NG submodule: `git submodule update --init --recursive`). The script stamps the mod version from `fomod/info.xml` (0.800 becomes DLL version 0.8.0) and copies the DLL to `SKSE/Plugins/`.
 
 ### Editing these docs
 

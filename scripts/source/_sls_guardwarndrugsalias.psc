@@ -81,8 +81,11 @@ Function DidDrugs()
 		_SLS_PlayerIsAIDriven.SetValueInt((PlayerRef.GetCurrentPackage() != None) as Int)
 		_SLS_GuardWarnDoApproach.SetValueInt(0)
 		_SLS_GuardWarnDrugDetectionQuest.Stop()
-		_SLS_GuardWarnDrugDetectionQuest.Start()
-		Actor Guard = GuardAlias.GetReference() as Actor
+		Actor Guard
+		If SLS_Utility.GuardDetectionPossible(_SLS_GuardWarnDrugDetectionQuest) ; no restart when no guard could fill the alias
+			_SLS_GuardWarnDrugDetectionQuest.Start()
+			Guard = GuardAlias.GetReference() as Actor
+		EndIf
 		If Guard ; Detected
 			_SLS_GuardWarnTypeAndCooldown.SetValueInt(2)
 			If Guard.IsInFaction(_SLS_GuardBehaviourWarningFact)

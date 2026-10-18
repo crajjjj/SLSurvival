@@ -128,8 +128,11 @@ Bool Function CheckIsDetected()
 	If _SLS_GuardWarnTypeAndCooldown.GetValueInt() == 0
 		_SLS_PlayerIsAIDriven.SetValueInt((PlayerRef.GetCurrentPackage() != None) as Int)
 		_SLS_GuardWarnWeapEquippedDetectQuest.Stop()
-		_SLS_GuardWarnWeapEquippedDetectQuest.Start()
-		Actor Guard = (_SLS_GuardWarnWeapEquippedDetectQuest.GetNthAlias(0) as ReferenceAlias).GetReference() as Actor
+		Actor Guard
+		If SLS_Utility.GuardDetectionPossible(_SLS_GuardWarnWeapEquippedDetectQuest) ; no restart when no guard could fill the alias
+			_SLS_GuardWarnWeapEquippedDetectQuest.Start()
+			Guard = (_SLS_GuardWarnWeapEquippedDetectQuest.GetNthAlias(0) as ReferenceAlias).GetReference() as Actor
+		EndIf
 		If Guard ; Detected
 			;Debug.Messagebox("DETECTED")
 			_SLS_GuardWarnTypeAndCooldown.SetValueInt(7)

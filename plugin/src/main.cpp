@@ -1,0 +1,73 @@
+#include "Contraband.h"
+#include "Papyrus.h"
+
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/msvc_sink.h>
+
+using namespace SKSE;
+
+// SLSurvival.dll - native code for SL Survival's heaviest Papyrus paths. The mod runs
+// without it (every caller has a Papyrus path), so nothing in here may take the game
+// down: a failing step logs and leaves that native's callers on their Papyrus path.
+
+namespace
+{
+	void InitializeLogging()
+	{
+		auto path = log::log_directory();
+		if (!path) {
+			return;
+		}
+		*path /= PluginDeclaration::GetSingleton()->GetName();
+		*path += L".log";
+
+		std::shared_ptr<spdlog::logger> logger;
+		if (IsDebuggerPresent()) {
+			logger = std::make_shared<spdlog::logger>("Global", std::make_shared<spdlog::sinks::msvc_sink_mt>());
+		} else {
+			logger = std::make_shared<spdlog::logger>("Global", std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true));
+		}
+		logger->set_level(spdlog::level::info);
+		logger->flush_on(spdlog::level::info);
+
+		spdlog::set_default_logger(std::move(logger));
+		spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] %v");
+	}
+
+	void OnMessage(MessagingInterface::Message* a_msg)
+	{
+		try {
+			if (a_msg->type == MessagingInterface::kDataLoaded) {
+				Contraband::Init();
+			}
+		} catch (...) {
+			log::error("message {} failed", a_msg ? a_msg->type : 0);
+		}
+	}
+}
+
+SKSEPluginLoad(const LoadInterface* a_skse)
+{
+	try {
+		InitializeLogging();
+	} catch (...) {
+		// no log is not a reason to refuse to load
+	}
+
+	const auto* plugin = PluginDeclaration::GetSingleton();
+	log::info("{} v{} is loading...", plugin->GetName(), plugin->GetVersion());
+
+	// false: SKSE::Init would otherwise build a logger of its own on top of ours, and that
+	// one throws inside a noexcept function when the log cannot be created
+	Init(a_skse, false);
+
+	if (const auto* messaging = GetMessagingInterface()) {
+		messaging->RegisterListener(OnMessage);
+	}
+	if (const auto* papyrus = GetPapyrusInterface()) {
+		papyrus->Register(Papyrus::Register);
+	}
+
+	log::info("{} loaded.", plugin->GetName());
+	return true;
+}

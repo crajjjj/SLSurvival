@@ -99,14 +99,12 @@ EndFunction
 Function GetIsPlayerSpotted()
 	;Debug.Messagebox("Hunting begins")
 	;DetectionCount = 0
-	_SLS_TollDodgeGuardSearch.Stop()
-	_SLS_TollDodgeGuardSearch.Start()
-	
+	Actor[] Hunters = SLS_Utility.FillSearchQuest(_SLS_TollDodgeGuardSearch)
 	Int i = 0
-	Int AliasCount = _SLS_TollDodgeGuardSearch.GetNumAliases()
+	Int AliasCount = Hunters.Length
 	Actor Hunter
 	While i < AliasCount
-		Hunter = (_SLS_TollDodgeGuardSearch.GetNthAlias(i) as ReferenceAlias).GetReference() as Actor
+		Hunter = Hunters[i]
 		If Hunter && PlayerRef.IsDetectedBy(Hunter)
 			AssignHunterSlot(Hunter)
 		EndIf

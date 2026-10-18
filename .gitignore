@@ -23,3 +23,6 @@ cmake-build*
 
 # MkDocs build output
 site/
+
+# SKSE plugin build working folder (plugin/build.ps1)
+.xmake/

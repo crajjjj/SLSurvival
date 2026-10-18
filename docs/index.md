@@ -4,7 +4,7 @@
 
 A large Skyrim SE gameplay and survival overhaul. It layers a web of interlocking pressures on the player — needs, licences, tolls, misogyny, trauma — and ties them together with **dozens of optional LoversLab and survival mods**, so the mod keeps running no matter which of those you happen to have installed.
 
-SexLab Survival is **pure Papyrus** — it ships no SKSE plugin of its own. Everything is driven by scripts and a single plugin (`SL Survival.esp`).
+SexLab Survival is written in **Papyrus**: scripts and a single plugin (`SL Survival.esp`). A small SKSE plugin, `SLSurvival.dll`, takes over the heaviest searches (guards spotting you, licence inventory checks); without it, SLS does the same work in Papyrus.
 
 !!! warning "Adult mod — reference documentation"
     SexLab Survival is a mature (18+) Skyrim mod built on the SexLab framework. **These pages are reference documentation:** they describe the mod's gameplay systems, MCM options, and mod compatibility so players can configure it and authors can integrate with it. They contain no pornographic media and exist to document software behaviour, not to depict sexual content. Install and use the mod only where appropriate for your age and local laws.

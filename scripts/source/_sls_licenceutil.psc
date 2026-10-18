@@ -717,6 +717,9 @@ Bool Function BeginGetHasClothes(ObjectReference akTarget)
 EndFunction
 
 Bool Function HasClothes(ObjectReference akTarget)
+	If _SLS_Native.IsLoaded() ; the same rules in one native call (_SLS_Native.HasContraband) instead of this walk
+		Return _SLS_Native.HasContraband(akTarget, 3, _SLS_LicExceptionsArmor, _SLS_LicExceptionsWeapon, FollowerLicStyle)
+	EndIf
 	Actor akTargetActor = akTarget as Actor
 	Int i = akTarget.GetNumItems()
 	Form Item
@@ -770,6 +773,9 @@ Bool Function BeginGetHasMagicItem(ObjectReference akTarget)
 EndFunction
 
 Bool Function HasMagicItem(ObjectReference akTarget)
+	If _SLS_Native.IsLoaded() ; the same rules in one native call (_SLS_Native.HasContraband) instead of this walk
+		Return _SLS_Native.HasContraband(akTarget, 2, _SLS_LicExceptionsArmor, _SLS_LicExceptionsWeapon, FollowerLicStyle)
+	EndIf
 	Actor akTargetActor = akTarget as Actor
 	Int i = akTarget.GetNumItems()
 	Form Item
@@ -974,6 +980,9 @@ Bool Function HasAnyContraband(ObjectReference akTarget, Int LocationInt)
 EndFunction
 
 Bool Function ActorHasArmor(ObjectReference akTarget)
+	If _SLS_Native.IsLoaded() ; the same rules in one native call (_SLS_Native.HasContraband) instead of this walk
+		Return _SLS_Native.HasContraband(akTarget, 0, _SLS_LicExceptionsArmor, _SLS_LicExceptionsWeapon, FollowerLicStyle)
+	EndIf
 	Actor akTargetActor = akTarget as Actor
 	Int i = akTarget.GetNumItems()
 	Form Item
@@ -1058,6 +1067,9 @@ Bool Function BeginGetHasWeapon(ObjectReference akTarget)
 EndFunction
 
 Bool Function HasWeapon(ObjectReference akTarget)
+	If _SLS_Native.IsLoaded() ; the same rules in one native call (_SLS_Native.HasContraband) instead of this walk
+		Return _SLS_Native.HasContraband(akTarget, 1, _SLS_LicExceptionsArmor, _SLS_LicExceptionsWeapon, FollowerLicStyle)
+	EndIf
 	;Debug.Trace("_SLS_: HasWeapon: akTarget:" + akTarget)
 	;Debug.Messagebox("_SLS_: HasWeapon: akTarget:" + akTarget)
 	Actor akTargetActor = akTarget as Actor

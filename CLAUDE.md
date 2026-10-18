@@ -1,6 +1,6 @@
 # SexLab Survival — Project Notes for Claude
 
-Large Skyrim SE gameplay/survival overhaul mod. Pure **Papyrus** (`.psc` → `.pex`), no SKSE plugin of its own. ~812 source scripts. Heavily integrates with dozens of optional LoversLab/survival mods through a consistent adapter layer (see *Adapter Architecture* — it is the most important thing in this project).
+Large Skyrim SE gameplay/survival overhaul mod. Written in **Papyrus** (`.psc` → `.pex`), plus a small optional SKSE plugin (`plugin/`, see *Native plugin*). ~812 source scripts. Heavily integrates with dozens of optional LoversLab/survival mods through a consistent adapter layer (see *Adapter Architecture* — it is the most important thing in this project).
 
 Current version: **0.800** (`meta.ini`).
 
@@ -36,6 +36,19 @@ $compiler = "C:\SteamLibrary\steamapps\common\Skyrim Special Edition\Papyrus Com
 **Fallback (Pyro output absent or stale):** build from the **`<ZipFiles>` manifest in `skyrimse.ppj`** — read the `<Match In="...">pattern</Match>` and `<Include>` entries from the ppj rather than hardcoding a file list, so manifest changes flow into the build automatically. Pyro isn't on PATH for Claude; build the archive directly (PowerShell `System.IO.Compression`, entry paths relative to the project root with forward slashes, `CompressionLevel.SmallestSize`). Manifest semantics: `Match In="scripts"` with `*.pex` catches top-level `.pex` only (`scripts/source` has no pex), the other `Match` folders are recursive.
 
 Either way the output is `Build/SLSurvival patch X.YYY.zip` (GitHub dot-normalizes the name on upload — expected). Sanity-check: `fomod/info.xml` inside the zip must report the released version, and the entry count should only change when files were actually added/removed (0.707–0.709 are all 1099 entries).
+
+## Native plugin (`plugin/`)
+
+`SLSurvival.dll` (CommonLibSSE-NG v7.1.0 submodule at `plugin/lib/commonlibsse-ng`, GPL-3.0+ with exceptions; xmake 3.0, VS 2022) takes over SLS's costliest Papyrus paths. Build with `plugin\build.ps1`: it stamps the version from `fomod/info.xml` (X.YYY becomes X.(YYY/100).(YYY%100), because a packed SKSE version has 8 bits of minor) and copies the DLL to `SKSE/Plugins/`, which the FOMOD and the ppj zip ship. The folder is `plugin/`, not `skse/`: Windows folds that onto the shipped `SKSE/` folder. `plugin/xmake.lua` re-points the commonlib rule's install into `plugin/build` and the build script unsets `XSE_TES5_MODS_PATH`, or every build drops a folder into the live MO2 mods directory.
+
+Natives live in the Hidden script `_SLS_Native` (`GetAPIVersion`, `FillQuestAliases`, `HasContraband`). Rules:
+- SLS must run without the DLL: every caller checks `_SLS_Native.IsLoaded()` and keeps its Papyrus path. Unbound natives log an error per call.
+- A native that reproduces Papyrus logic is a twin: `HasContraband` = `_SLS_LicenceUtil.ActorHasArmor`/`HasWeapon`/`HasMagicItem`/`HasClothes`. Change both or neither.
+- Never change a released native's signature (strict arity in the VM); add a new one and bump `API_VERSION` in `plugin/src/Papyrus.cpp`.
+- Natives touching game state register with "callable from tasklets" false, so they run on the main thread.
+- Never return an empty vector to Papyrus (it arrives as None); `FillQuestAliases` always returns one entry per alias.
+
+Not done yet: the equip fan-out (one player equip wakes up to 18 SLS scripts). It needs either the per-script handlers moved behind one dispatcher (a large Papyrus change) or a filter on the VM's event dispatch.
 
 ## Versioning (bumping the release)
 
@@ -146,6 +159,7 @@ seq/                   SL Survival.seq (shipped: the original's predates a third
 sound/  meshes/  textures/   Game assets (inherited from the original mod, not shipped by the patch)
 SKSE/Plugins/          StorageUtilData JSON, SkyPatcher INIs, AudioUtil config (shipped)
 optional/              FOMOD optional patches, one folder each (see fomod/ModuleConfig.xml)
+plugin/                SLSurvival.dll source (C++, xmake; see Native plugin)
 dependencies/          Bundled *.psc sources for every imported mod (compile-time only)
 docs/                  MkDocs player guide + internals (published to GitHub Pages)
 mkdocs.yml             MkDocs Material site config (nav, theme, extensions)
