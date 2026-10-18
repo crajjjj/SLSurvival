@@ -834,8 +834,40 @@ Int Function BeginOverlay(Actor akTarget, Float Alpha, String TextureToApply, St
 		Return 0
 	EndIf
 	Bool Gender = akTarget.GetLeveledActorBase().GetSex() as Bool
+	TextureToApply = OverlayTextureFor(akTarget, TextureToApply, Area)
 	Debug.Trace("_SLS_: Applying overlay " + TextureToApply + " to " + akTarget.GetBaseObject().GetName())
 	Return ReadyOverlay(akTarget, Gender, Area, SlotToUse, TextureToApply, Alpha)
+EndFunction
+
+; "\SL Survival\Oral1.dds" + "Face" -> "\SL Survival\UBE\Face\Oral1.dds": where the UBE-layout copy of one
+; of SLS's own overlays sits (optional UBE textures), or "" for any other texture. Per area, because UBE
+; keeps body, hands and feet in one shared UV atlas. The wound sets have their own UBE folders, which
+; _SLS_Trauma picks itself, and SlaveTats NG's UBE build finds the SlaveTats Pack's UBE copies on its own.
+String Function UbeOverlayPath(String Texture, String Area)
+	If StringUtil.Find(Texture, "\\SL Survival\\") != 0 || StringUtil.Find(Texture, "\\", 13) != -1
+		Return ""
+	EndIf
+	Return "\\SL Survival\\UBE\\" + Area + "\\" + StringUtil.Substring(Texture, 13)
+EndFunction
+
+; The texture to draw: the UBE copy on a UBE-race actor when that copy is installed (checked per file,
+; like the wounds), the given texture otherwise.
+String Function OverlayTextureFor(Actor akTarget, String Texture, String Area)
+	String Ube = UbeOverlayPath(Texture, Area)
+	If Ube != "" && IsUbeActor(akTarget) && MiscUtil.FileExists("Data/textures/SL Survival/UBE/" + Area + "/" + StringUtil.Substring(Texture, 13))
+		Return Ube
+	EndIf
+	Return Texture
+EndFunction
+
+; Does an overlay slot's texture belong to Texture? Either copy counts: the actor may have changed race
+; since it was applied (a werewolf or vampire lord form counts), or the UBE textures were added or removed.
+Bool Function IsOverlayTexture(String SlotTexture, String Texture, String Area)
+	If SlotTexture == Texture
+		Return true
+	EndIf
+	String Ube = UbeOverlayPath(Texture, Area)
+	Return Ube != "" && SlotTexture == Ube
 EndFunction
 
 Int Function ReadyOverlay(Actor akTarget, Bool Gender, String Area, Int SlotToUse = -1, String TextureToApply, Float Alpha)
@@ -986,7 +1018,7 @@ Int Function GetOverlaySlot(Actor akTarget, String TextureToUpdate, String Area)
 	While j > 0; && !Result
 		j -= 1
 		Node = Area + " [ovl" + j + "]"
-		If NiOverride.GetNodeOverrideString(akTarget, Gender, Node, 9, 0) == MatchString
+		If IsOverlayTexture(NiOverride.GetNodeOverrideString(akTarget, Gender, Node, 9, 0), MatchString, Area)
 			Return j
 		EndIf
 	EndWhile
@@ -1024,7 +1056,7 @@ Int Function RemoveOverlayLegacy(Actor akTarget, String TextureToRemove, String 
 	While j < GetNumSlots(Area)
 		String Node = Area + " [ovl" + j + "]"
 		TexPath = NiOverride.GetNodeOverrideString(akTarget, Gender, Node, 9, 0)
-		If TexPath == TextureToRemove
+		If IsOverlayTexture(TexPath, TextureToRemove, Area)
 			ClearOverlaySlot(akTarget, Gender, Node)
 			Return j
 		EndIf

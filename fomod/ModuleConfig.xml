@@ -99,7 +99,7 @@
                         </plugin>
 
                         <plugin name="SlaveTats Pack">
-                            <description>SL Survival's own overlays (wounds and bruises, spank marks, magic-silence collar, bikini curse, cum desperation) as a SlaveTats pack, with UBE variants for the female overlays and three hand-print spank marks (from slavetats_spanked) for "Survival Ass Slapping". With it SL Survival applies its overlays through SlaveTats instead of its own NiOverride slots. Pack by RustyOldSword. REQUIRES SlaveTats NG (SlaveTats.esp + the SlaveTatsNG SKSE plugin); without them the base scripts keep using their own overlays.</description>
+                            <description>SL Survival's own overlays (wounds and bruises, spank marks, magic-silence collar, bikini curse, cum desperation) as a SlaveTats pack, with UBE variants (used by SlaveTats NG's UBE build) and three hand-print spank marks (from slavetats_spanked) for "Survival Ass Slapping". With it SL Survival applies its overlays through SlaveTats instead of its own NiOverride slots. Pack by RustyOldSword. REQUIRES SlaveTats NG (SlaveTats.esp + the SlaveTatsNG SKSE plugin); without them the base scripts keep using their own overlays.</description>
                             <files>
                                 <folder source="optional\SlaveTatsPack\textures" destination="textures" priority="1" />
                             </files>
@@ -108,8 +108,8 @@
                             </typeDescriptor>
                         </plugin>
 
-                        <plugin name="UBE Battle Wound Textures">
-                            <description>UBE-layout copies of the wound and bruise overlays, for characters of a UBE 2.0 race. SL Survival picks them per actor; everyone else keeps the standard textures. Only useful with UBE 2.0 installed.</description>
+                        <plugin name="UBE Overlay Textures">
+                            <description>UBE-layout copies of SL Survival's overlays for characters of a UBE 2.0 race: the wounds and bruises, the cum-desperation marks, the bikini curse and the magic-silence collar. SL Survival picks them per actor; everyone else keeps the standard textures. Only useful with UBE 2.0 installed. With the SlaveTats Pack, SlaveTats NG's UBE build uses that pack's own UBE copies instead.</description>
                             <files>
                                 <folder source="optional\BattleWoundsUBE\textures" destination="textures" priority="1" />
                             </files>
