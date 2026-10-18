@@ -7,9 +7,20 @@ Function IssueLicHandle(Int LicenceType, Int TermDuration, Form Issuer, Form Giv
 	GoToState("")
 EndFunction
 
+; Issue whatever AddLicToQueue has queued, in one pass with one bikini-curse check: for a caller
+; with several licences to hand out at once (the Snowberry start)
+Function ProcessQueue()
+	GoToState("Busy")
+	BeginProcQueue()
+	GoToState("")
+EndFunction
+
 State Busy
 	Function IssueLicHandle(Int LicenceType, Int TermDuration, Form Issuer, Form GiveLicTo, Bool DeductGold, Form Sender)
 		AddLicToQueue(LicenceType, TermDuration, Issuer, GiveLicTo, DeductGold, Sender)
+	EndFunction
+
+	Function ProcessQueue() ; the pass already running picks the queue up
 	EndFunction
 EndState
 
@@ -23,31 +34,35 @@ Function AddLicToQueue(Int LicenceType, Int TermDuration, Form Issuer, Form Give
 EndFunction
 
 Function BeginProcQueue()
-	; IssueLicence waits 2 s after every licence before its bikini-curse check, which made the four
-	; Snowberry start licences trickle in over ~8 s. Issue the whole queue back to back and check once.
-	LicUtil.BatchIssuing = true
+	; IssueLicence waits 2 s after every licence before its bikini-curse check, which made the
+	; Snowberry start licences trickle in over ~8 s. Issue the whole queue back to back and check
+	; once. The outer loop picks up requests that arrive during that wait (this script is still
+	; Busy then, so they were only queued).
 	While StorageUtil.FormListCount(Self, "Sender") > 0
-		Int LicenceType = StorageUtil.IntListPop(Self, "LicenceType")
-		Int TermDuration = StorageUtil.IntListPop(Self, "TermDuration")
-		Form Issuer = StorageUtil.FormListPop(Self, "Issuer")
-		Form GiveLicTo = StorageUtil.FormListPop(Self, "GiveLicTo")
-		Bool DeductGold = StorageUtil.IntListPop(Self, "DeductGold") as Bool
-		Form Sender = StorageUtil.FormListPop(Self, "Sender")
+		LicUtil.BatchIssuing = true
+		While StorageUtil.FormListCount(Self, "Sender") > 0
+			Int LicenceType = StorageUtil.IntListPop(Self, "LicenceType")
+			Int TermDuration = StorageUtil.IntListPop(Self, "TermDuration")
+			Form Issuer = StorageUtil.FormListPop(Self, "Issuer")
+			Form GiveLicTo = StorageUtil.FormListPop(Self, "GiveLicTo")
+			Bool DeductGold = StorageUtil.IntListPop(Self, "DeductGold") as Bool
+			Form Sender = StorageUtil.FormListPop(Self, "Sender")
 		
-		Debug.Trace("_SLS_: On_SLS_IssueLicence: Received event with parameters: LicenceType - " + LicenceType + ", TermDuration - " + TermDuration + ", Issuer - " + Issuer + ", GiveLicTo - " + GiveLicTo + ", DeductGold - " + DeductGold + ", Sender - " + Sender)
-		If CheckIssueLicenceParameters(LicenceType, TermDuration, Issuer, DeductGold, Sender)
-			ObjectReference Licence = LicUtil.IssueLicence(Issuer as Actor, LicenceType, TermDuration, DeductGold = DeductGold, IsModEvent = true)
-			If GiveLicTo as ObjectReference
-				(GiveLicTo as ObjectReference).AddItem(Licence)
-			Else
-				Debug.Trace("_SLS_: On_SLS_IssueLicence: Received an invalid ObjRef for GiveLicTo")
+			Debug.Trace("_SLS_: On_SLS_IssueLicence: Received event with parameters: LicenceType - " + LicenceType + ", TermDuration - " + TermDuration + ", Issuer - " + Issuer + ", GiveLicTo - " + GiveLicTo + ", DeductGold - " + DeductGold + ", Sender - " + Sender)
+			If CheckIssueLicenceParameters(LicenceType, TermDuration, Issuer, DeductGold, Sender)
+				ObjectReference Licence = LicUtil.IssueLicence(Issuer as Actor, LicenceType, TermDuration, DeductGold = DeductGold, IsModEvent = true)
+				If GiveLicTo as ObjectReference
+					(GiveLicTo as ObjectReference).AddItem(Licence)
+				Else
+					Debug.Trace("_SLS_: On_SLS_IssueLicence: Received an invalid ObjRef for GiveLicTo")
+				EndIf
+				Api.SendLicenceIssuedEvent(Licence, LicenceType, TermDuration, Sender)
 			EndIf
-			Api.SendLicenceIssuedEvent(Licence, LicenceType, TermDuration, Sender)
-		EndIf
+		EndWhile
+		LicUtil.BatchIssuing = false
+		Utility.Wait(2.0)
+		LicUtil.CheckForBikiniCurse()
 	EndWhile
-	LicUtil.BatchIssuing = false
-	Utility.Wait(2.0)
-	LicUtil.CheckForBikiniCurse()
 EndFunction
 
 Bool Function CheckIssueLicenceParameters(Int LicenceType, Int TermDuration, Form Issuer, Bool DeductGold, Form Sender)
