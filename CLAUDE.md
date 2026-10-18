@@ -48,7 +48,7 @@ Natives live in the Hidden script `_SLS_Native` (`GetAPIVersion`, `FillQuestAlia
 - Natives touching game state register with "callable from tasklets" false, so they run on the main thread.
 - Never return an empty vector to Papyrus (it arrives as None); `FillQuestAliases` always returns one entry per alias.
 
-Not done yet: the equip fan-out (one player equip wakes up to 18 SLS scripts). It needs either the per-script handlers moved behind one dispatcher (a large Papyrus change) or a filter on the VM's event dispatch.
+Left in Papyrus on purpose: the equip fan-out (one player equip wakes up to 18 SLS scripts). Moving it would mean either the per-script handlers behind one dispatcher (a large Papyrus change) or a filter on the VM's event dispatch (an engine hook); the user decided against both.
 
 ## Versioning (bumping the release)
 
