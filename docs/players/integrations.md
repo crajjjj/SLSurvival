@@ -15,7 +15,7 @@ You don't need any of these. Install the ones you want and SLS adapts.
 | iNeed | Hunger/thirst needs drive SLS consequences |
 | Realistic Needs and Diseases (RND) | Needs source SLS reads |
 | Eating Sleeping Drinking | Needs source SLS reads |
-| SunHelm Survival | Needs/fatigue/sleep integration. Needs the **SunHelm Survival Patch** FOMOD option, which installs the patch plugin that connects SLS's SunHelm adapter |
+| SunHelm Survival | Needs/fatigue/sleep integration. Needs the **SunHelm Survival Patch** FOMOD option, which installs the patch plugin that connects SLS's SunHelm adapter. Warmth from sex, cum and milk reaches SunHelm's cold without it (**Frostfall & Simply Knock** MCM page) |
 | Creation Club Survival Mode | Hunger, exhaustion and cold, while Survival Mode is switched on: swallowed cum feeds you, drugs and bondage furniture tire you, sleeping conditions (the cold included) cap your rest, hunger drives the belly and begging, and sex, skooma and milk warm you. Survival Mode has no thirst, so thirst options do nothing with it |
 | WetFunction NG | Cum and milk leaks make you wet, and getting drenched can ruin carried licences and counts for the kennel bucket (Frostfall-only before) |
 | Campfire | Enables camping actions in the SLS survival wheel menu |

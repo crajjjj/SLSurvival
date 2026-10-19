@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.800
+	Version = 0.801
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -843,6 +843,12 @@ Function VersionCheck()
 	If Version < 0.800
 		UpdateVersion(0.800)
 	EndIf
+
+	; 0.801 sends warmth from sex to SunHelm cold and fixes Warm Bodies chilling the player.
+	; No migration: the Frostfall interface picks its state on every load.
+	If Version < 0.801
+		UpdateVersion(0.801)
+	EndIf
 EndFunction
 
 Function UpdateVersion(Float UpgradeVersion)
@@ -1150,7 +1156,7 @@ EndEvent
 Event OnAnimationStarting(int tid, bool HasPlayer)
 	If HasPlayer
 		PlayerRef.AddToFaction(_SLS_NoParalyzeFact)
-		If Init.FrostfallInstalled
+		If Frostfall.HasColdSystem() ; Frostfall, or SunHelm / Survival Mode cold
 			_SLS_WarmBodies.Cast(PlayerRef, PlayerRef)
 		EndIf
 	EndIf

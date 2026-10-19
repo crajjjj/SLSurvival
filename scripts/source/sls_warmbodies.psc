@@ -6,7 +6,9 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 EndEvent
 
 Event OnUpdate()
-	Frostfall.ModExposure(-Menu.WarmBodies) ; negative = warmer (FrostUtil.ModPlayerExposure)
+	; Negative exposure = warmer, and the MCM already stores WarmBodies negative (its slider sets -value).
+	; 0.800 negated it once more, so Warm Bodies chilled the player.
+	Frostfall.ModExposure(Menu.WarmBodies)
 	If Self
 		RegisterForSingleUpdate(3.0)
 	EndIf

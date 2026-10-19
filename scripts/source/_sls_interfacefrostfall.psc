@@ -52,7 +52,7 @@ Function PlayerLoadsGame()
 			GoToState("Installed")
 		EndIf
 
-	ElseIf WfngOn || Game.GetModByName("ccqdrsse001-survivalmode.esl") != 255
+	ElseIf WfngOn || Game.GetModByName("ccqdrsse001-survivalmode.esl") != 255 || Game.GetModByName("SunHelmSurvival.esp") != 255
 		If GetState() != "Local"
 			GoToState("Local")
 		EndIf
@@ -77,6 +77,23 @@ Bool Function CcsOn()
 		CcsHeatQuest = Game.GetFormFromFile(0x000895, "ccqdrsse001-survivalmode.esl") as Quest ; Survival_HeatCheckQuest
 	EndIf
 	Return CcsModeEnabled && CcsModeEnabled.GetValueInt() == 1 && CcsColdQuest && CcsHeatQuest
+EndFunction
+
+; SunHelm: True while its cold system runs (SunHelm's MCM can switch cold off). Fetches the quest on first use, so the
+; optional SunHelm patch plugin is not needed for warmth.
+Bool Function ShsColdOn()
+	If Game.GetModByName("SunHelmSurvival.esp") == 255
+		Return false
+	EndIf
+	If !ShsColdQuest
+		ShsColdQuest = Game.GetFormFromFile(0x6A13C2, "SunHelmSurvival.esp") as Quest ; _SHColdQuest (_SHColdSystem)
+	EndIf
+	Return ShsColdQuest && ShsColdQuest.IsRunning()
+EndFunction
+
+; True when ModExposure reaches a cold system, i.e. warmth from sex has somewhere to go
+Bool Function HasColdSystem()
+	Return false
 EndFunction
 
 Bool Function GetIsInterfaceActive()
@@ -117,6 +134,10 @@ State Installed
 
 	Function ModExposure(Float Amount) ; amount: The amount to modify the player's exposure by. Positive numbers increase exposure, negative values decrease exposure.
 		_SLS_IntFrost.ModExposure(Amount)
+	EndFunction
+
+	Bool Function HasColdSystem()
+		Return true
 	EndFunction
 
 	Bool Function IsCurrentWeatherSevere()
@@ -180,9 +201,9 @@ State Installed
 	EndFunction
 EndState
 
-; Local: WetFunction NG + Survival Mode ======================================
+; Local: WetFunction NG + Survival Mode + SunHelm cold ======================================
 ; Frostfall scales kept for the callers: wetness 0..750 (550 = damp, 750 = drenched), exposure + colder / - warmer
-; on a ~120 point meter, temperature 10 = neutral and lower = cold.
+; on a ~120 point meter, temperature 10 = neutral and lower = cold. Only exposure reaches SunHelm.
 
 State Local
 	Bool Function IsPlayerWarming()
@@ -231,6 +252,18 @@ State Local
 				_SLS_IntCcs.DecreaseCold(CcsColdQuest, -Amount * ExposureToCold)
 			EndIf
 		EndIf
+		; not ElseIf: each cold system that is running tracks the player on its own
+		If ShsColdOn()
+			If Amount > 0.0
+				_SLS_IntShs.IncreaseColdLevel(Amount * ExposureToShsCold, ShsColdQuest)
+			ElseIf Amount < 0.0
+				_SLS_IntShs.DecreaseColdLevel(-Amount * ExposureToShsCold, ShsColdQuest)
+			EndIf
+		EndIf
+	EndFunction
+
+	Bool Function HasColdSystem()
+		Return CcsOn() || ShsColdOn()
 	EndFunction
 
 	; WetFunction NG sends no wetness event: poll while the licence destroy chance is set
@@ -352,6 +385,8 @@ GlobalVariable CcsModeEnabled
 Quest CcsColdQuest
 Quest CcsHeatQuest
 Float Property ExposureToCold = 8.0 Auto Hidden ; Frostfall exposure (~120) -> Survival Mode cold (1000)
+Quest ShsColdQuest
+Float Property ExposureToShsCold = 7.5 Auto Hidden ; Frostfall exposure (~120) -> SunHelm cold (cap 900)
 
 Int LicencesLost = 0
 Int Property MaxLicsToLose = 1 Auto Hidden

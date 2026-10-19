@@ -10,7 +10,7 @@ SLS detects and drives the needs mod you have installed. You do not pick one in 
 - **Realistic Needs and Diseases (RND)**
 - **Eating Sleeping Drinking**
 - **Frostfall**: cold/warmth, with its own config surfaced under the **Frostfall & Simply Knock** MCM page
-- **SunHelm Survival**: needs the "SunHelm Survival Patch" FOMOD option, whose plugin connects SLS's SunHelm adapter
+- **SunHelm Survival**: needs the "SunHelm Survival Patch" FOMOD option, whose plugin connects SLS's SunHelm adapter. Its cold takes SLS's warmth (sex, cum, milk) even without that option; the amounts are on the **Frostfall & Simply Knock** page
 - **Creation Club Survival Mode**: hunger, exhaustion and cold, counted only while Survival Mode is switched on (it has no thirst). Without Frostfall it also stands in for the cold and warmth hooks
 - **WetFunction NG**: wetness, for the leak and drenched-licence mechanics that used to need Frostfall
 

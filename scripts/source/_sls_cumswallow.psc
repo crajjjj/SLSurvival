@@ -325,16 +325,20 @@ Function DoPlayerOralLoad(Actor Male, Int tid, Float LoadSize, Int MaleCount, Bo
 			EndIf
 		EndIf
 	EndIf
-	If Init.FrostfallInstalled
-		If Swallowed
-			debug.trace("SLS_: swallowed")
+	; Wetness stays Frostfall-only here. The warmth goes through the interface, which also reaches
+	; SunHelm and Survival Mode cold and does nothing when no cold system is running.
+	If Swallowed
+		debug.trace("SLS_: swallowed")
+		If Init.FrostfallInstalled
 			FrostInterface.ModWetness((LoadSize * 50.0 * MaleCount)/2.0)
-			FrostInterface.ModExposure(-(LoadSize * 16.0 * MaleCount))
-		Else
-			debug.trace("SLS_: Didn't swallow")
-			FrostInterface.ModWetness(Math.Ceiling(LoadSize* 50.0 * 4.0* MaleCount*Menu.CumWetMult))
-			FrostInterface.ModExposure(-(Math.Ceiling(LoadSize * 32.0 * MaleCount * Menu.CumExposureMult)))
 		EndIf
+		FrostInterface.ModExposure(-(LoadSize * 16.0 * MaleCount))
+	Else
+		debug.trace("SLS_: Didn't swallow")
+		If Init.FrostfallInstalled
+			FrostInterface.ModWetness(Math.Ceiling(LoadSize* 50.0 * 4.0* MaleCount*Menu.CumWetMult))
+		EndIf
+		FrostInterface.ModExposure(-(Math.Ceiling(LoadSize * 32.0 * MaleCount * Menu.CumExposureMult)))
 	EndIf
 	If Swallowed
 		If TollUtil.IsTollSwallowDeal

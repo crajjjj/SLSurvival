@@ -1361,7 +1361,7 @@ event OnPageReset(string page)
 		
 		SetCursorFillMode(TOP_TO_BOTTOM)
 		AddHeaderOption("Frostfall ")
-		WarmBodiesOID_S = AddSliderOption("$SLS_WarmBodies", WarmBodies, "{0} Per Tick")
+		WarmBodiesOID_S = AddSliderOption("$SLS_WarmBodies", -WarmBodies, "{0} Per Tick")
 		MilkLeakWetOID_S = AddSliderOption("$SLS_MilkLeakWet", MilkLeakWet, "{0} Wetness Per Tick")
 		CumWetMultOID_S = AddSliderOption("$SLS_CumWetMult", CumWetMult, "{1}x More Wet")
 		CumExposureMultOID_S = AddSliderOption("$SLS_CumExposureMult", CumExposureMult, "{1}x More Exposure")
@@ -5351,7 +5351,7 @@ Event OnOptionSliderOpen(int option)
 		
 	ElseIf StorageUtil.GetStringValue(Self, "CurrentPage") == "$SLS_pFrostfallSimplyKnock" ; <----------------->
 		If (option == WarmBodiesOID_S)
-			SetSliderOptions(Value = WarmBodies, Default = 3.0, Min = 0.0, Max = 20.0, Interval = 1.0)
+			SetSliderOptions(Value = -WarmBodies, Default = 3.0, Min = 0.0, Max = 20.0, Interval = 1.0) ; stored negative (exposure)
 		ElseIf (option == MilkLeakWetOID_S)
 			SetSliderOptions(Value = MilkLeakWet, Default = 50.0, Min = 0.0, Max = 200.0, Interval = 1.0)
 		ElseIf (option == CumWetMultOID_S)

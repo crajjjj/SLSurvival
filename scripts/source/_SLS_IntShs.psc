@@ -52,3 +52,27 @@ Int[] Function GetFatigueLevels(Quest _SHFatigueQuest) Global
     FatigueLevels[5] = FatigueSystem._SHFatigueStage5
     Return FatigueLevels ; Missing pre-0.714: the caller got None and every threshold read as 0
 EndFunction
+
+
+; Cold API ============================================================================
+; Cold runs from 0 (warm) up to _SHColdLevelCap (900); stage floors 25/150/250/450/700.
+Function DecreaseColdLevel(Float Amount, Quest _SHColdQuest) Global
+    _SHColdSystem Cold = _SHColdQuest as _SHColdSystem
+    If !Cold
+        Return
+    EndIf
+    ; Not Cold.DecreaseColdLevel: away from a fire it floors the level at the area's cold
+    ; limit, and a player still below that limit is snapped UP to it, so warming her would
+    ; chill her. Body heat warms like a fire does, down to 0; SunHelm's own tick then climbs
+    ; back toward the area's limit.
+    Float Level = Cold._SHCurrentColdLevel.GetValue() - Amount
+    If Level < 0.0
+        Level = 0.0
+    EndIf
+    Cold.SetColdLevel(Level)
+EndFunction
+
+Function IncreaseColdLevel(Float Amount, Quest _SHColdQuest) Global
+    ; never colder than the area's limit, like SunHelm's own tick
+    (_SHColdQuest as _SHColdSystem).IncreaseColdLevel(Amount)
+EndFunction
