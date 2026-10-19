@@ -65,11 +65,23 @@ Function DecreaseColdLevel(Float Amount, Quest _SHColdQuest) Global
     ; limit, and a player still below that limit is snapped UP to it, so warming her would
     ; chill her. Body heat warms like a fire does, down to 0; SunHelm's own tick then climbs
     ; back toward the area's limit.
-    Float Level = Cold._SHCurrentColdLevel.GetValue() - Amount
+    Float OldLevel = Cold._SHCurrentColdLevel.GetValue()
+    Float Level = OldLevel - Amount
     If Level < 0.0
         Level = 0.0
     EndIf
-    Cold.SetColdLevel(Level)
+    If Level == OldLevel
+        Return
+    EndIf
+    Int OldStage = Cold.CurrentColdStage
+    Cold._SHCurrentColdLevel.SetValue(Level)
+    Cold.SetColdStage()
+    ; Not SetColdLevel either: its ApplyColdEffects ends in CheckColdDamage, which hurts at
+    ; stage 5 on every call, so a warming tick every 3 s would bite while still Freezing.
+    ; Effects only need refreshing when the stage moves, and warming never moves INTO stage 5.
+    If Cold.CurrentColdStage != OldStage
+        Cold.ApplyColdEffects()
+    EndIf
 EndFunction
 
 Function IncreaseColdLevel(Float Amount, Quest _SHColdQuest) Global
