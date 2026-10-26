@@ -946,6 +946,7 @@ Cell KnockHouse
 Function BeginKnockStay()
 	ObjectReference NewHost = _SLS_Knock.Host()
 	ObjectReference NewDoor = _SLS_Knock.OutsideDoor()
+	Cell NewHouse = _SLS_Knock.HouseCell(NewDoor)
 	Location NewHostLocation = None
 	If NewHost
 		NewHostLocation = NewHost.GetCurrentLocation()
@@ -955,6 +956,7 @@ Function BeginKnockStay()
 	HostLocation = NewHostLocation
 	GoToState("Knocked")
 	CloseKnockHouse() ; a previous stay's, if no cell load has closed it yet
+	KnockHouse = NewHouse
 EndFunction
 
 ; Ends a knock stay, on every way out of it. abThrowOut: the host shows the player out.
@@ -987,21 +989,23 @@ State Knocked
 		If KnockHost != None
 			Location PlayerLoc = PlayerRef.GetCurrentLocation()
 			Location HostLoc = KnockHost.GetCurrentLocation()
-			If PlayerLoc != None && HostLoc != None
-				If PlayerLoc.IsSameLocation(HostLoc)
-					;KnockPlayerScript.GoToState("InKnockedCell") ; Wake up in milk pump scenario
-					ObjectReference HouseDoor = _SLS_Knock.InsideDoor(KnockDoor)
-					If HouseDoor
-						KnockHouse = HouseDoor.GetParentCell()
-						LockTheDoor.ForceRefTo(HouseDoor)
-						_SLS_Knock.HoldDoor()
-						(LockTheDoor as SLS_KnockLockDoor).InitDoor()
-					EndIf
-					Utility.Wait(0.1)
-					ForceGreetAlias.ForceRefTo(KnockHost)
-					(KnockHost as Actor).EvaluatePackage()
-					_SLS_KnockForceGreet.Start()
+			Bool AtHost = PlayerLoc != None && HostLoc != None && PlayerLoc.IsSameLocation(HostLoc)
+			If !AtHost && KnockHouse
+				AtHost = PlayerRef.GetParentCell() == KnockHouse ; a house interior with no location
+			EndIf
+			If AtHost
+				;KnockPlayerScript.GoToState("InKnockedCell") ; Wake up in milk pump scenario
+				ObjectReference HouseDoor = _SLS_Knock.InsideDoor(KnockDoor)
+				If HouseDoor
+					KnockHouse = HouseDoor.GetParentCell()
+					LockTheDoor.ForceRefTo(HouseDoor)
+					_SLS_Knock.HoldDoor()
+					(LockTheDoor as SLS_KnockLockDoor).InitDoor()
 				EndIf
+				Utility.Wait(0.1)
+				ForceGreetAlias.ForceRefTo(KnockHost)
+				(KnockHost as Actor).EvaluatePackage()
+				_SLS_KnockForceGreet.Start()
 			EndIf
 		EndIf
 	EndEvent

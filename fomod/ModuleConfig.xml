@@ -59,7 +59,7 @@
                         </plugin>
 
                         <plugin name="Simpler Knock">
-                            <description>The same beg-for-a-bed scenario through Simpler Knock's door dialogue: after you pick who to talk to, beg them to let you in. Installs SL Survival - Simpler Knock.esp. REQUIRES Simpler Knock (SimplerKnock.esp, no SKSE needed). Do not run it together with Simply Knock: both take over door activation.</description>
+                            <description>The same beg-for-a-bed scenario through Simpler Knock's door dialogue: after you pick who to talk to, beg them to let you in. Installs SL Survival - Simpler Knock.esp. REQUIRES Simpler Knock (SimplerKnock.esp, no SKSE needed); Papyrus Extender, which SL Survival already uses, finds the house's inside door (without it SLS takes the door nearest to where you come in). Do not run it together with Simply Knock: both take over door activation.</description>
                             <files>
                                 <file source="optional\SimplerKnock\SL Survival - Simpler Knock.esp" destination="SL Survival - Simpler Knock.esp" priority="1" />
                             </files>

@@ -36,6 +36,11 @@ Function SetResult_FailedInitial() Global
 	EndIf
 EndFunction
 
+; The other side of akDoor, from Simply Knock's SKSE plugin (the one it finds houses with).
+ObjectReference Function LinkedDoor(ObjectReference akDoor) Global
+	Return SimplyKnockSKSE.GetLinkedDoor(akDoor)
+EndFunction
+
 ; Simply Knock's LinkedDoor alias: SetResult_Succeeded() fills it with the inside door, and its
 ; script unlocks that door whenever the owner locks it with the player inside.
 ReferenceAlias Function LinkedDoorAlias() Global

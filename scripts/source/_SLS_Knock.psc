@@ -55,16 +55,7 @@ Function LetIn() Global
 		If !KnockedDoor
 			Return
 		EndIf
-		Cell House = None
-		ObjectReference Inside = PO3_SKSEFunctions.GetDoorDestination(KnockedDoor)
-		If Inside
-			House = Inside.GetParentCell()
-		Else
-			Actor Owner = Host()
-			If Owner
-				House = Owner.GetParentCell()
-			EndIf
-		EndIf
+		Cell House = HouseCell(KnockedDoor)
 		If House
 			House.SetPublic()
 		EndIf
@@ -72,6 +63,31 @@ Function LetIn() Global
 		Utility.Wait(0.2)
 		KnockedDoor.Activate(Game.GetPlayer())
 	EndIf
+EndFunction
+
+; The house behind akOutsideDoor, known before the player goes in (a house interior need not
+; have a location, so SLS_Main watches for this cell too).
+Cell Function HouseCell(ObjectReference akOutsideDoor) Global
+	ObjectReference Inside = None
+	If akOutsideDoor
+		If KnockMod() == 1
+			Inside = _SLS_IntSimplyKnock.LinkedDoor(akOutsideDoor)
+		EndIf
+		If !Inside
+			Inside = PO3_SKSEFunctions.GetDoorDestination(akOutsideDoor)
+		EndIf
+	EndIf
+	If Inside
+		Return Inside.GetParentCell()
+	EndIf
+	Actor Owner = Host()
+	If Owner
+		Cell OwnerCell = Owner.GetParentCell()
+		If OwnerCell && OwnerCell.IsInterior()
+			Return OwnerCell
+		EndIf
+	EndIf
+	Return None
 EndFunction
 
 ; The player refused the host's terms.
@@ -90,12 +106,17 @@ ObjectReference Function InsideDoor(ObjectReference akOutsideDoor) Global
 		If Linked
 			Inside = Linked.GetReference()
 		EndIf
+		If !Inside && akOutsideDoor
+			Inside = _SLS_IntSimplyKnock.LinkedDoor(akOutsideDoor)
+		EndIf
 	EndIf
 	If !Inside && akOutsideDoor
 		Inside = PO3_SKSEFunctions.GetDoorDestination(akOutsideDoor)
 	EndIf
 	If !Inside
-		; Without Papyrus Extender: the player has just arrived through it.
+		; Simpler Knock without Papyrus Extender: the player has just arrived through it, so it
+		; is almost always the nearest door, but a house with an inner door by the entrance can
+		; fool this.
 		Inside = NearestDoorToPlayer()
 	EndIf
 	Return Inside
