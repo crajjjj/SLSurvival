@@ -11,11 +11,9 @@ If PlayerRef.WornHasKeyword(Devious.zad_DeviousArmbinder)
 EndIf
 PlayerRef.AddItem(Main.StrippedClothes, 1, false)
 Actor Host = KnockHost.GetReference() as Actor
-SLS_KnockLockDoor LockInScript = Main.LockTheDoor as SLS_KnockLockDoor
-LockInScript.RemoveLockdown()
 KnockHost.Clear()
 Host.EvaluatePackage()
-Main.GoToState("")
+Main.EndKnockStay(abThrowOut = false)
 ;END CODE
 EndFunction
 ;END FRAGMENT

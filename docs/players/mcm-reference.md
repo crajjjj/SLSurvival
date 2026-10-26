@@ -13,7 +13,7 @@ Quick reference to every page in the SexLab Survival MCM, in the order they appe
 | 4 | Trauma | Trauma buildup and its consequences | — |
 | 5 | Needs | Survival needs and how they feed SLS | [Needs](needs.md) |
 | 6 | Cum | Cum tracking, coverage, and related effects | [Cum](cum.md) |
-| 7 | Frostfall & Simply Knock | Cold-gating and door-knock gating integrations | — |
+| 7 | Frostfall & Door Knocking | Cold-gating, and the beg-for-a-bed scenario of Simply Knock or Simpler Knock | - |
 | 8 | Tolls, Eviction & Gates | City tolls, eviction, and gate access | [Tolls, Eviction & Gates](tolls-eviction-gates.md) |
 | 9 | Licences 1 | Licence system (first page of options) | [Licences](licences.md) |
 | 10 | Licences 2 | Licence system (second page of options) | [Licences](licences.md) |

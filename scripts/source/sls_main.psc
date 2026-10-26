@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.801
+	Version = 0.802
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -849,6 +849,13 @@ Function VersionCheck()
 	If Version < 0.801
 		UpdateVersion(0.801)
 	EndIf
+
+	; 0.802 takes SL Survival.esp off Simply Knock: the knock-a-door beg dialogue moves to
+	; SL Survival - Simply Knock.esp, with SL Survival - Simpler Knock.esp as the alternative.
+	; No migration: a stay already under way ends through the new path.
+	If Version < 0.802
+		UpdateVersion(0.802)
+	EndIf
 EndFunction
 
 Function UpdateVersion(Float UpgradeVersion)
@@ -921,11 +928,59 @@ Location Property HostLocation Auto Hidden
 Quest Property _SLS_KnockForceGreet Auto
 ReferenceAlias Property ForceGreetAlias Auto
 ReferenceAlias Property LockTheDoor Auto
-SimplyKnockMainScript Property KnockMain Auto
-ReferenceAlias Property _SK_LinkedDoor Auto ; Simply knocks door alias which tries to keep the inside door unlocked. Exactly what we don't want. 
+; Unused since 0.802, kept because saves hold them: Simply Knock's main quest and its LinkedDoor
+; alias, now reached through _SLS_Knock so that SL Survival.esp no longer needs Simply Knock.
+Quest Property KnockMain Auto
+ReferenceAlias Property _SK_LinkedDoor Auto
 
 ReferenceAlias Property PlayerAliasKnockQuest  Auto 
 SLS_KnockPlayerScript KnockPlayerScript
+
+; The house a knock stay opened to the player. Both knock mods make it public for the stay and
+; neither makes it private again after SLS's version of the stay, so that is done here once the
+; player has left it.
+Cell KnockHouse
+
+; The host took the player in. Call before _SLS_Knock.LetIn(), which with Simpler Knock walks the
+; player straight in.
+Function BeginKnockStay()
+	ObjectReference NewHost = _SLS_Knock.Host()
+	ObjectReference NewDoor = _SLS_Knock.OutsideDoor()
+	Location NewHostLocation = None
+	If NewHost
+		NewHostLocation = NewHost.GetCurrentLocation()
+	EndIf
+	KnockHost = NewHost
+	KnockDoor = NewDoor
+	HostLocation = NewHostLocation
+	GoToState("Knocked")
+	CloseKnockHouse() ; a previous stay's, if no cell load has closed it yet
+EndFunction
+
+; Ends a knock stay, on every way out of it. abThrowOut: the host shows the player out.
+Function EndKnockStay(Bool abThrowOut)
+	ObjectReference HouseDoor = LockTheDoor.GetReference()
+	If KnockHouse == None && HouseDoor
+		KnockHouse = HouseDoor.GetParentCell()
+	EndIf
+	GoToState("KnockLeaving")
+	If HouseDoor
+		(LockTheDoor as SLS_KnockLockDoor).RemoveLockdown()
+	EndIf
+	If abThrowOut && HouseDoor
+		HouseDoor.Activate(PlayerRef)
+	EndIf
+	; or a later stay whose door was not found would end on this house's door
+	LockTheDoor.Clear()
+EndFunction
+
+Function CloseKnockHouse()
+	Cell House = KnockHouse
+	KnockHouse = None
+	If House
+		House.SetPublic(false)
+	EndIf
+EndFunction
 
 State Knocked
 	Event OnCellLoad()
@@ -935,16 +990,28 @@ State Knocked
 			If PlayerLoc != None && HostLoc != None
 				If PlayerLoc.IsSameLocation(HostLoc)
 					;KnockPlayerScript.GoToState("InKnockedCell") ; Wake up in milk pump scenario
-					LockTheDoor.ForceRefTo(KnockMain.DoorAlias.GetReference())
-					SLS_KnockLockDoor LockInScript = LockTheDoor as SLS_KnockLockDoor
-					_SK_LinkedDoor.Clear()
-					LockInScript.InitDoor()
+					ObjectReference HouseDoor = _SLS_Knock.InsideDoor(KnockDoor)
+					If HouseDoor
+						KnockHouse = HouseDoor.GetParentCell()
+						LockTheDoor.ForceRefTo(HouseDoor)
+						_SLS_Knock.HoldDoor()
+						(LockTheDoor as SLS_KnockLockDoor).InitDoor()
+					EndIf
 					Utility.Wait(0.1)
 					ForceGreetAlias.ForceRefTo(KnockHost)
 					(KnockHost as Actor).EvaluatePackage()
 					_SLS_KnockForceGreet.Start()
 				EndIf
 			EndIf
+		EndIf
+	EndEvent
+EndState
+
+State KnockLeaving
+	Event OnCellLoad()
+		If PlayerRef.GetParentCell() != KnockHouse
+			GoToState("")
+			CloseKnockHouse()
 		EndIf
 	EndEvent
 EndState
@@ -1289,10 +1356,8 @@ Function KnockStripClothes()
 	EndWhile
 EndFunction
 /;
-Function KnockResetSk() ; Reset simply knock and return the player to trespassing state
-	;ObjectReference state_marker = KnockMain.GetStateMarker(KnockMain.CurrentDoor)
-	_SK_LinkedDoor.GetReference().Activate(PlayerRef) ; throw player out
-	;(state_marker as SimplyKnockInteriorState).ClearAllowedEntryAndDelete()	
+Function KnockResetSk() ; 0.801 and older threw the player out here; EndKnockStay(true) does now
+	EndKnockStay(true)
 EndFunction
 
 Actor[] DnpcList

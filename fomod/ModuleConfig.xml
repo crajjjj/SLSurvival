@@ -34,6 +34,71 @@
     <installSteps order="Explicit">
         <installStep name="Patches">
             <optionalFileGroups order="Explicit">
+                <!-- One knock-mod patch or none. Each patch masters its knock mod, so the installer
+                     preselects the one whose plugin is active. -->
+                <group name="Door Knocking" type="SelectExactlyOne">
+                    <plugins order="Explicit">
+                        <plugin name="Simply Knock">
+                            <description>Beg a house owner for a bed through Simply Knock's door dialogue: a night's stay at the price of an armbinder, and with some bad luck a new owner. Installs SL Survival - Simply Knock.esp. REQUIRES Simply Knock (SimplyKnock.esp), and on Skyrim AE its SKSE64 DLL port. This is what SL Survival 0.801 and older always did.</description>
+                            <files>
+                                <file source="optional\SimplyKnock\SL Survival - Simply Knock.esp" destination="SL Survival - Simply Knock.esp" priority="1" />
+                            </files>
+                            <typeDescriptor>
+                                <dependencyType>
+                                    <defaultType name="Optional" />
+                                    <patterns>
+                                        <pattern>
+                                            <dependencies operator="And">
+                                                <fileDependency file="SimplyKnock.esp" state="Active" />
+                                            </dependencies>
+                                            <type name="Recommended" />
+                                        </pattern>
+                                    </patterns>
+                                </dependencyType>
+                            </typeDescriptor>
+                        </plugin>
+
+                        <plugin name="Simpler Knock">
+                            <description>The same beg-for-a-bed scenario through Simpler Knock's door dialogue: after you pick who to talk to, beg them to let you in. Installs SL Survival - Simpler Knock.esp. REQUIRES Simpler Knock (SimplerKnock.esp, no SKSE needed). Do not run it together with Simply Knock: both take over door activation.</description>
+                            <files>
+                                <file source="optional\SimplerKnock\SL Survival - Simpler Knock.esp" destination="SL Survival - Simpler Knock.esp" priority="1" />
+                            </files>
+                            <typeDescriptor>
+                                <dependencyType>
+                                    <defaultType name="Optional" />
+                                    <patterns>
+                                        <pattern>
+                                            <dependencies operator="And">
+                                                <fileDependency file="SimplerKnock.esp" state="Active" />
+                                            </dependencies>
+                                            <type name="Recommended" />
+                                        </pattern>
+                                    </patterns>
+                                </dependencyType>
+                            </typeDescriptor>
+                        </plugin>
+
+                        <plugin name="None">
+                            <description>No door-knock scenario. SL Survival needs neither knock mod.</description>
+                            <files />
+                            <typeDescriptor>
+                                <dependencyType>
+                                    <defaultType name="Recommended" />
+                                    <patterns>
+                                        <pattern>
+                                            <dependencies operator="Or">
+                                                <fileDependency file="SimplyKnock.esp" state="Active" />
+                                                <fileDependency file="SimplerKnock.esp" state="Active" />
+                                            </dependencies>
+                                            <type name="Optional" />
+                                        </pattern>
+                                    </patterns>
+                                </dependencyType>
+                            </typeDescriptor>
+                        </plugin>
+                    </plugins>
+                </group>
+
                 <group name="Optional Patches" type="SelectAny">
                     <plugins order="Explicit">
                         <plugin name="Animal Friend Teammates">

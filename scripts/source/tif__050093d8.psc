@@ -19,12 +19,9 @@ Function Fragment_1(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Actor Host = KnockHost.GetReference() as Actor
-SLS_KnockLockDoor LockInScript = Main.LockTheDoor as SLS_KnockLockDoor
-LockInScript.RemoveLockdown()
 KnockHost.Clear()
 Host.EvaluatePackage()
-Main.KnockResetSk()
-Main.GoToState("")
+Main.EndKnockStay(abThrowOut = true)
 ;END CODE
 EndFunction
 ;END FRAGMENT

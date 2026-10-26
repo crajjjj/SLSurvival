@@ -9,8 +9,8 @@ SLS detects and drives the needs mod you have installed. You do not pick one in 
 - **iNeed**
 - **Realistic Needs and Diseases (RND)**
 - **Eating Sleeping Drinking**
-- **Frostfall**: cold/warmth, with its own config surfaced under the **Frostfall & Simply Knock** MCM page
-- **SunHelm Survival**: needs the "SunHelm Survival Patch" FOMOD option, whose plugin connects SLS's SunHelm adapter. Its cold takes SLS's warmth (sex, cum, milk) even without that option; the amounts are on the **Frostfall & Simply Knock** page
+- **Frostfall**: cold/warmth, with its own config surfaced under the **Frostfall & Door Knocking** MCM page
+- **SunHelm Survival**: needs the "SunHelm Survival Patch" FOMOD option, whose plugin connects SLS's SunHelm adapter. Its cold takes SLS's warmth (sex, cum, milk) even without that option; the amounts are on the **Frostfall & Door Knocking** page
 - **Creation Club Survival Mode**: hunger, exhaustion and cold, counted only while Survival Mode is switched on (it has no thirst). Without Frostfall it also stands in for the cold and warmth hooks
 - **WetFunction NG**: wetness, for the leak and drenched-licence mechanics that used to need Frostfall
 
@@ -35,4 +35,4 @@ Rather than *tracking* hunger and thirst, SLS makes them **harder to satisfy** a
 
 ## Configuring
 
-Everything here lives on the **Needs** MCM page, with cold/warmth handling on the **Frostfall & Simply Knock** page. Every consequence — the consumption multipliers, the barefoot debuff, steep-fall damage, the speed and carry floors, and gold weight — can be tuned or switched off there. If a survival pressure is more than you want, turn it down or disable it on those pages rather than uninstalling the underlying needs mod.
+Everything here lives on the **Needs** MCM page, with cold/warmth handling on the **Frostfall & Door Knocking** page. Every consequence (the consumption multipliers, the barefoot debuff, steep-fall damage, the speed and carry floors, and gold weight) can be tuned or switched off there. If a survival pressure is more than you want, turn it down or disable it on those pages rather than uninstalling the underlying needs mod.

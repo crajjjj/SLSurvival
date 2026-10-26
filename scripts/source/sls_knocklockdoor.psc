@@ -25,7 +25,9 @@ Function RemoveLockdown()
 	ObjectReference DoorRef = Self.GetReference()
 	DoorRef.SetLockLevel(DoorLockLevel )
 	DoorRef.Lock(false, true)
-	SkDoorAlias.ForceRefTo(DoorRef)
 EndFunction
 
+; Unused since 0.802 (kept because saves hold it): Simply Knock's LinkedDoor alias, which this
+; used to refill after the stay. Nothing cleared it afterwards, so Simply Knock kept unlocking the
+; door of that house for good; SLS_Main.EndKnockStay now sees the stay out instead.
 ReferenceAlias Property SkDoorAlias Auto
