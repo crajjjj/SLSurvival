@@ -79,6 +79,7 @@
         <Import>.\dependencies\SunHelm Survival\Source\Scripts</Import><!-- compile target for the SunHelm adapter (_SLS_IntShs) -->
         <Import>.\dependencies\WetFunction NG\Source\Scripts</Import><!-- compile-only header for _SLS_IntWfng; Survival Mode (_SLS_IntCcs) compiles against @SkyrimScripts -->
         <Import>.\dependencies\Private Needs - Orgasm\Source\Scripts</Import><!-- compile-only header for _SLS_IntPno -->
+        <Import>.\dependencies\SL Widgets\Source\Scripts</Import><!-- compile-only header for _SLS_IntSlw -->
 
         <Import>@SkyrimScripts</Import>
         <!-- After @SkyrimScripts: the live Data SLA sources resolve slaMainScr/slaFrameworkScr (they

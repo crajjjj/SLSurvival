@@ -1444,16 +1444,16 @@ Function SpankNpc()
 	EndIf
 EndFunction
 
-; Puts the NPC in an SL Widgets NPC slot, or takes it out: what SL Widgets' own hotkey does.
-; Through its mod-event API (SL Widgets 3.0.2+), so no compile dependency; SL Widgets
-; reports the result in a notification.
+; Puts the NPC in an SL Widgets NPC slot, or takes it out: what SL Widgets' own hotkey does
 Function TrackNpc()
 	Actor akTarget = XhairTarget as Actor
 	If !akTarget
 		Debug.Notification("I need to be looking at someone to do that")
 		Return
 	EndIf
-	akTarget.SendModEvent("SLWidgets_ToggleTrackActor", "SL Survival")
+	If Game.IsPluginInstalled("SLWidgets.esp")
+		_SLS_IntSlw.ToggleTrackNpc(akTarget)
+	EndIf
 EndFunction
 
 ; Outfits Menu ===================================================================================================
