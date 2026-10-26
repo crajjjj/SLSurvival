@@ -985,7 +985,8 @@ Function ActionsMenu(Bool IsShortcut = false)
 		GoToState("Waiting")
 		WaitMenu()
 	ElseIf MenuSelect == 5
-
+		GoToState("PrivateNeeds")
+		PrivateNeeds()
 	ElseIf MenuSelect == 6
 
 	ElseIf MenuSelect == 7
@@ -1018,8 +1019,22 @@ Int Function ShowActionsMenu()
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 2, value = PlayerRef.IsInFaction(CompulsiveSex.SexlabAnimatingFaction))
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 3, value = true)
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 4, value = true)
-	
+
+	; Hidden entirely (blank slice) when Private Needs - Orgasm is absent
+	If Game.IsPluginInstalled("Private Needs - Orgasm.esp")
+		wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 5, value = "Private Needs")
+		wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 5, value = "Private Needs")
+		wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 5, value = true)
+	EndIf
+
 	Return wheelMenu.OpenMenu()
+EndFunction
+
+; Private Needs - Orgasm's universal hotkey: its own pee or poop menu
+Function PrivateNeeds()
+	If Game.IsPluginInstalled("Private Needs - Orgasm.esp")
+		_SLS_IntPno.UniversalMenu()
+	EndIf
 EndFunction
 
 Function WaitMenu()
@@ -1271,6 +1286,9 @@ Function MoreActionsMenu(Bool IsShortcut = false)
 		GoToState("TattooNpc")
 	ElseIf MenuResult == 5
 		BegForCockMenu()
+	ElseIf MenuResult == 6
+		GoToState("TrackNpc")
+		TrackNpc()
 	;ElseIf MenuResult == 7
 	
 	EndIf
@@ -1310,7 +1328,13 @@ Int Function ShowMoreActionsMenu()
 	wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 5, value = "Beg For Cock")
 	wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 5, value = "Beg For Cock")
 	wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 5, value = true)
-	
+
+	If Game.IsPluginInstalled("SLWidgets.esp") ; ESL-flagged, so not GetModByName
+		wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 6, value = "Track Npc")
+		wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 6, value = "Track Npc")
+		wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 6, value = true) ; No-target explained on select
+	EndIf
+
 	Return wheelMenu.OpenMenu()
 EndFunction
 
@@ -1418,6 +1442,18 @@ Function SpankNpc()
 	If akTarget
 		(Game.GetFormFromFile(0x017E5E, "Spank That Ass.esp") as Spell).Cast(PlayerRef, akTarget)
 	EndIf
+EndFunction
+
+; Puts the NPC in an SL Widgets NPC slot, or takes it out: what SL Widgets' own hotkey does.
+; Through its mod-event API (SL Widgets 3.0.2+), so no compile dependency; SL Widgets
+; reports the result in a notification.
+Function TrackNpc()
+	Actor akTarget = XhairTarget as Actor
+	If !akTarget
+		Debug.Notification("I need to be looking at someone to do that")
+		Return
+	EndIf
+	akTarget.SendModEvent("SLWidgets_ToggleTrackActor", "SL Survival")
 EndFunction
 
 ; Outfits Menu ===================================================================================================
@@ -4500,6 +4536,34 @@ State TattooNpc
 	
 	Function LastAction()
 		TattooNpc()
+	EndFunction
+EndState
+
+State TrackNpc
+	String Function GetLastActionString()
+		Return "Track Npc"
+	EndFunction
+
+	Function LastAction()
+		TrackNpc()
+	EndFunction
+
+	Bool Function LastActionAvailable()
+		Return Game.IsPluginInstalled("SLWidgets.esp")
+	EndFunction
+EndState
+
+State PrivateNeeds
+	String Function GetLastActionString()
+		Return "Private Needs"
+	EndFunction
+
+	Function LastAction()
+		PrivateNeeds()
+	EndFunction
+
+	Bool Function LastActionAvailable()
+		Return Game.IsPluginInstalled("Private Needs - Orgasm.esp")
 	EndFunction
 EndState
 

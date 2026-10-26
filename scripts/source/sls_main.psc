@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.802
+	Version = 0.803
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -855,6 +855,12 @@ Function VersionCheck()
 	; No migration: a stay already under way ends through the new path.
 	If Version < 0.802
 		UpdateVersion(0.802)
+	EndIf
+
+	; 0.803 adds the action wheel's Track Npc (SL Widgets) and Private Needs (PNO) slices.
+	; No migration: the wheel builds its slices each time it opens.
+	If Version < 0.803
+		UpdateVersion(0.803)
 	EndIf
 EndFunction
 
