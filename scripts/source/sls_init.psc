@@ -259,7 +259,9 @@ Function PlayerLoadsGame()
 	EndIf
 	Debug.Trace("SLS_: HorseGangbangAnims = " + HorseGangbangAnims)
 	
-	LicUtil.PlayerLoadsGame()
+	; No LicUtil.PlayerLoadsGame() here: SLS_Main.LoadGameMaintenance and LicUtil's OnInit run it. LicUtil
+	; reads Init's properties, and a Papyrus thread keeps its script's lock while its call waits for another
+	; script, so a call from here into a busy LicUtil that is waiting to read Init froze both (a 0.802 new game).
 	Menu.PlayerLoadsGame()
 	GuardWarnDrugs.PlayerLoadsGame()
 EndFunction

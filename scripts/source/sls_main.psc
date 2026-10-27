@@ -130,6 +130,7 @@ Function LoadGameMaintenance()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
 	Util.ApplyAudioUtilVolumes() ; AudioUtil group volumes reset to the toml defaults each session
 	Init.PlayerLoadsGame()
+	LicUtil.PlayerLoadsGame() ; Not from Init.PlayerLoadsGame: see there
 	;Debug.Messagebox("0xFEFFFFFD: " + 0xFEFFFFFD +"\n0xFEFFFFFE: " + 0xFEFFFFFE + "\n0xFEFFFFFF: " + 0xFEFFFFFF + "\n\n0xFF000000: " + 0xFF000000 + "\n0xFF000001: " + 0xFF000001 + "\n0xFFFFFFFE: " + 0xFEFFFFFE + "\n0xFFFFFFFF: " + 0xFFFFFFFF)
 	
 	;Int Index = Math.RightShift(Math.LogicalAnd(0xFF000001, 0xFF000000), 24)

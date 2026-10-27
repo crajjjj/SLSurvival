@@ -1,6 +1,7 @@
 Scriptname _SLS_LicenceUtil extends Quest Conditional 
 
 Event OnInit()
+	LicNameMaintenance() ; New-game half of PlayerLoadsGame, which SLS_Init no longer calls (see there)
 	If Self.IsRunning()
 		SetupSlotMasks()
 		SetupLicTypeStrArray()
