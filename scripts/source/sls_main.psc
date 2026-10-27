@@ -857,7 +857,7 @@ Function VersionCheck()
 		UpdateVersion(0.802)
 	EndIf
 
-	; 0.803 adds the action wheel's Track Npc (SL Widgets) and Private Needs (PNO) slices.
+	; 0.803 adds the action wheel's Track Npc (SL Widgets), Private Needs (PNO) and Shave (SPH) slices.
 	; No migration: the wheel builds its slices each time it opens.
 	If Version < 0.803
 		UpdateVersion(0.803)

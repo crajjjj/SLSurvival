@@ -988,6 +988,8 @@ Function ActionsMenu(Bool IsShortcut = false)
 		GoToState("PrivateNeeds")
 		PrivateNeeds()
 	ElseIf MenuSelect == 6
+		GoToState("Shave")
+		Shave()
 
 	ElseIf MenuSelect == 7
 
@@ -1026,6 +1028,11 @@ Int Function ShowActionsMenu()
 		wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 5, value = "Private Needs")
 		wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 5, value = true)
 	EndIf
+	If Game.IsPluginInstalled("SPH - Skyrim Pubic Hair.esp")
+		wheelMenu.SetPropertyIndexString(propertyName = "optionText", index = 6, value = "Shave ")
+		wheelMenu.SetPropertyIndexString(propertyName = "optionLabelText", index = 6, value = "Shave ")
+		wheelMenu.SetPropertyIndexBool(propertyName = "optionEnabled", index = 6, value = true)
+	EndIf
 
 	Return wheelMenu.OpenMenu()
 EndFunction
@@ -1035,6 +1042,18 @@ Function PrivateNeeds()
 	If Game.IsPluginInstalled("Private Needs - Orgasm.esp")
 		_SLS_IntPno.UniversalMenu()
 	EndIf
+EndFunction
+
+; SPH - Skyrim Pubic Hair's shaving: its razor / cream checks and its pubis or armpits menu
+Function Shave()
+	If !Game.IsPluginInstalled("SPH - Skyrim Pubic Hair.esp")
+		Return
+	EndIf
+	If !Devious.AreHandsAvailable(PlayerRef)
+		Debug.Notification("I can't do that with my hands tied")
+		Return
+	EndIf
+	_SLS_IntSph.StartShaving()
 EndFunction
 
 Function WaitMenu()
@@ -4564,6 +4583,20 @@ State PrivateNeeds
 
 	Bool Function LastActionAvailable()
 		Return Game.IsPluginInstalled("Private Needs - Orgasm.esp")
+	EndFunction
+EndState
+
+State Shave
+	String Function GetLastActionString()
+		Return "Shave "
+	EndFunction
+
+	Function LastAction()
+		Shave()
+	EndFunction
+
+	Bool Function LastActionAvailable()
+		Return Game.IsPluginInstalled("SPH - Skyrim Pubic Hair.esp")
 	EndFunction
 EndState
 

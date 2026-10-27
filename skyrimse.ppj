@@ -80,6 +80,7 @@
         <Import>.\dependencies\WetFunction NG\Source\Scripts</Import><!-- compile-only header for _SLS_IntWfng; Survival Mode (_SLS_IntCcs) compiles against @SkyrimScripts -->
         <Import>.\dependencies\Private Needs - Orgasm\Source\Scripts</Import><!-- compile-only header for _SLS_IntPno -->
         <Import>.\dependencies\SL Widgets\Source\Scripts</Import><!-- compile-only header for _SLS_IntSlw -->
+        <Import>.\dependencies\SPH - Skyrim Pubic Hair\Source\Scripts</Import><!-- compile-only header for _SLS_IntSph -->
 
         <Import>@SkyrimScripts</Import>
         <!-- After @SkyrimScripts: the live Data SLA sources resolve slaMainScr/slaFrameworkScr (they

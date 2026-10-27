@@ -19,6 +19,7 @@ You don't need any of these. Install the ones you want and SLS adapts.
 | Creation Club Survival Mode | Hunger, exhaustion and cold, while Survival Mode is switched on: swallowed cum feeds you, drugs and bondage furniture tire you, sleeping conditions (the cold included) cap your rest, hunger drives the belly and begging, and sex, skooma and milk warm you. Survival Mode has no thirst, so thirst options do nothing with it |
 | WetFunction NG | Cum and milk leaks make you wet, and getting drenched can ruin carried licences and counts for the kennel bucket (Frostfall-only before) |
 | Campfire | Enables camping actions in the SLS survival wheel menu |
+| Private Needs - Orgasm | **Private Needs** on the action wheel (Actions) opens Private Needs' own pee or poop menu, the one its Universal key opens |
 | Hunterborn | Hunting/harvest integration (hunter's cache) |
 
 ## Devious devices & bondage
@@ -54,6 +55,7 @@ You don't need any of these. Install the ones you want and SLS adapts.
 | SexLab Inflation Framework (SLIF) | Coordinated belly/breast/ass scaling (see **SLIF Max Scaling** in the MCM) |
 | Schlongs of Skyrim (SOS) | Genital state/scaling integration |
 | Fill Her Up (FHU) | Cum-inflation visuals tie into the [Cum](cum.md) system |
+| SPH - Skyrim Pubic Hair | **Shave** on the action wheel (Actions) starts SPH's own shaving: it needs SPH's razor and shaving cream, and not with your hands tied |
 
 ## Milk & drugs
 
@@ -85,6 +87,7 @@ You don't need any of these. Install the ones you want and SLS adapts.
 | Extensible Follower Framework (EFF) | Follower framework support (e.g. followers stealing gold) |
 | FNIS Sexy Move | Walk-style integration |
 | Spank That Ass | Spanking integration |
+| SL Widgets | **Track Npc** on the action wheel (Actions > More Actions) adds the NPC you are looking at to SL Widgets' NPC tracking, or takes them off, like SL Widgets' own hotkey |
 | AudioUtil (+ a voice pack, e.g. SLO VE) | Moan prompts, trauma/trip pain squeaks and cum-swallow reactions play through your voice pack — gag-muffled and lipsynced — instead of the stock sounds; moan prompts work even without DD, and a masochist PC (Spank That Ass "Likes"/"Loves" pain) moans instead of squeaking when slapped. Screams for help, NPC catcalls and clothes-strip gasps are lipsynced; cum-addict daydream moans come from the NPC's own voice pack. Two sliders on the **Trauma** page (General) control the volume of SLS-played voice and SFX separately from the voice-pack mod's own sliders |
 | yps Immersive Fashion | Piercings/hair/nails (requires the tweak version) |
 | Simply Knock **or** Simpler Knock | Beg the owner of a locked house for a night's stay through the door: the price is an armbinder and a door locked behind you, and when you leave there is a chance of being sold (Simple Slavery) or kept (SD+). Pick the matching **Door Knocking** option in the installer, which preselects the knock mod you have (Simpler Knock also wants Papyrus Extender to find the house's inside door); SLS needs neither (**Frostfall & Door Knocking** MCM page) |
