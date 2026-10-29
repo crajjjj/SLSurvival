@@ -149,6 +149,11 @@ Script properties filled via the Creation Kit in `SL Survival.esp` must **not** 
 - `parent.Func()` calls one level up, not necessarily the base.
 - Unary minus needs spaces: `x = y - 1`, not `x = y-1`.
 
+## Plugin Gotchas
+
+- **No `_` in a cell or worldspace editor ID the player can save in.** The game copies that editor ID into the save file name, and the load menu splits the name on `_` and needs exactly 9 fields; any other count leaves the save without a character ID, so it is written but never listed, with no message. The kennel was `_SLS_KennelWhiterun` until 0.804. `_SLS_StorageCell` is the only one left, and it is a holding cell the player never enters.
+- **`optional/Missives/SL Survival - Missives.esp` is placed around SLS's Markarth toll desk** (tables `00ABF6`/`00ABF7`, toll collector ACHR `037EF1`, all at the city gate). It sets absolute positions for Missives' four Markarth refs (`0094A2`-`0094A5`) and forwards USSEP's MarkarthWorld flags and MarkarthOrigin location. Moving that desk means revisiting the patch. It was built from a merged Missives 2.05 EN/RU repack; the FormIDs were not checked against the Nexus release (2.03).
+
 ## Code Conventions
 - Keep edits ASCII in code and data files (`.psc`, `.json`, `.yml`, `.xml`) unless the file already contains non-ASCII. Markdown prose (`docs/**`, `README.md`) may use typographic punctuation (em dash, ellipsis, arrows).
 - Comments explain *why* (a hidden constraint, an invariant, a mod-version workaround), not *what*.
