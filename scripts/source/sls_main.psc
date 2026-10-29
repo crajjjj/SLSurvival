@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.803
+	Version = 0.804
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -862,6 +862,13 @@ Function VersionCheck()
 	; No migration: the wheel builds its slices each time it opens.
 	If Version < 0.803
 		UpdateVersion(0.803)
+	EndIf
+
+	; 0.804 renames the kennel cell's editor ID, which the game copies into save file names: the
+	; underscores in _SLS_KennelWhiterun hid every save made in the kennel from the load menu.
+	; No migration: saves store the cell's FormID, not its editor ID.
+	If Version < 0.804
+		UpdateVersion(0.804)
 	EndIf
 EndFunction
 
