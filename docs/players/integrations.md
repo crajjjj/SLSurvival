@@ -92,6 +92,7 @@ You don't need any of these. Install the ones you want and SLS adapts.
 | yps Immersive Fashion | Piercings/hair/nails (requires the tweak version) |
 | Simply Knock **or** Simpler Knock | Beg the owner of a locked house for a night's stay through the door: the price is an armbinder and a door locked behind you, and when you leave there is a chance of being sold (Simple Slavery) or kept (SD+). Pick the matching **Door Knocking** option in the installer, which preselects the knock mod you have (Simpler Knock also wants Papyrus Extender to find the house's inside door); SLS needs neither (**Frostfall & Door Knocking** MCM page) |
 | JKs Skyrim | Adds the extra Riften gate as a toll door |
+| Missives | No gameplay link. Its Markarth noticeboard stands where SLS's toll desk is by the city gate; the **Missives Placement Fix** installer option moves the board along the wall |
 | Dawnguard | Adds a voice type used in creature-race handling |
 
 !!! note "The list evolves"
