@@ -123,7 +123,7 @@
                         </plugin>
 
                         <plugin name="Missives Placement Fix">
-                            <description>Missives puts its Markarth noticeboard in the same spot by the city gate as SL Survival's toll desk, so the two clip into each other. Installs SL Survival - Missives.esp (ESL-flagged), which moves the board a few steps along the wall, away from the desk. REQUIRES Missives (Missives.esp).</description>
+                            <description>Missives puts its Markarth noticeboard in the same spot by the city gate as SL Survival's toll desk, so the two clip into each other. Installs SL Survival - Missives.esp (ESL-flagged), which moves the board along the wall and a little out into the walkway, clear of the desk and a boulder, and shifts the Markarth toll collector's starting spot so he does not stand inside it. REQUIRES Missives (Missives.esp).</description>
                             <files>
                                 <file source="optional\Missives\SL Survival - Missives.esp" destination="SL Survival - Missives.esp" priority="1" />
                             </files>
