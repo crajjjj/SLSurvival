@@ -99,6 +99,92 @@
                     </plugins>
                 </group>
 
+                <!-- One Missives build or none. Both plugins are SL Survival - Missives.esp and move the same four
+                     Markarth refs; they differ only in the board's base object, which the two builds number
+                     differently. The repack variant crashes the game with Nexus Missives, so Nexus is the default and
+                     the repack's BSA (the Nexus release ships loose files) only changes which one is preselected. -->
+                <group name="Missives Placement Fix" type="SelectExactlyOne">
+                    <plugins order="Explicit">
+                        <plugin name="Nexus Missives">
+                            <description>Missives puts its Markarth noticeboard in the same spot by the city gate as SL Survival's toll desk, so the two clip into each other. Installs SL Survival - Missives.esp (ESL-flagged), which moves the board along the wall and a little out into the walkway, clear of the desk and a boulder. For Missives from Nexus Mods (2.03). REQUIRES Missives (Missives.esp); load it after Missives and any Missives patch that moves the Markarth board.</description>
+                            <files>
+                                <file source="optional\Missives\SL Survival - Missives.esp" destination="SL Survival - Missives.esp" priority="1" />
+                            </files>
+                            <typeDescriptor>
+                                <dependencyType>
+                                    <defaultType name="Optional" />
+                                    <patterns>
+                                        <pattern>
+                                            <dependencies operator="And">
+                                                <fileDependency file="Missives.esp" state="Missing" />
+                                            </dependencies>
+                                            <type name="NotUsable" />
+                                        </pattern>
+                                        <pattern>
+                                            <dependencies operator="And">
+                                                <fileDependency file="Missives.esp" state="Active" />
+                                                <fileDependency file="Missives - Textures.bsa" state="Active" />
+                                            </dependencies>
+                                            <type name="Optional" />
+                                        </pattern>
+                                        <pattern>
+                                            <dependencies operator="And">
+                                                <fileDependency file="Missives.esp" state="Active" />
+                                            </dependencies>
+                                            <type name="Recommended" />
+                                        </pattern>
+                                    </patterns>
+                                </dependencyType>
+                            </typeDescriptor>
+                        </plugin>
+
+                        <plugin name="Missives repack (2.05 EN/RU)">
+                            <description>The same board move for the merged Missives 2.05 EN/RU repack, which ships Missives.bsa and Missives - Textures.bsa and uses its own Markarth board. Pick it ONLY with that repack: with Missives from Nexus Mods the game crashes while loading. The installer preselects it when it finds Missives - Textures.bsa.</description>
+                            <files>
+                                <file source="optional\MissivesRepack\SL Survival - Missives.esp" destination="SL Survival - Missives.esp" priority="1" />
+                            </files>
+                            <typeDescriptor>
+                                <dependencyType>
+                                    <defaultType name="Optional" />
+                                    <patterns>
+                                        <pattern>
+                                            <dependencies operator="And">
+                                                <fileDependency file="Missives.esp" state="Missing" />
+                                            </dependencies>
+                                            <type name="NotUsable" />
+                                        </pattern>
+                                        <pattern>
+                                            <dependencies operator="And">
+                                                <fileDependency file="Missives.esp" state="Active" />
+                                                <fileDependency file="Missives - Textures.bsa" state="Active" />
+                                            </dependencies>
+                                            <type name="Recommended" />
+                                        </pattern>
+                                    </patterns>
+                                </dependencyType>
+                            </typeDescriptor>
+                        </plugin>
+
+                        <plugin name="None">
+                            <description>Leave Missives' Markarth noticeboard where it is. SL Survival needs no Missives patch.</description>
+                            <files />
+                            <typeDescriptor>
+                                <dependencyType>
+                                    <defaultType name="Recommended" />
+                                    <patterns>
+                                        <pattern>
+                                            <dependencies operator="And">
+                                                <fileDependency file="Missives.esp" state="Active" />
+                                            </dependencies>
+                                            <type name="Optional" />
+                                        </pattern>
+                                    </patterns>
+                                </dependencyType>
+                            </typeDescriptor>
+                        </plugin>
+                    </plugins>
+                </group>
+
                 <group name="Optional Patches" type="SelectAny">
                     <plugins order="Explicit">
                         <plugin name="Animal Friend Teammates">
@@ -119,32 +205,6 @@
                             </files>
                             <typeDescriptor>
                                 <type name="Optional" />
-                            </typeDescriptor>
-                        </plugin>
-
-                        <plugin name="Missives Placement Fix">
-                            <description>Missives puts its Markarth noticeboard in the same spot by the city gate as SL Survival's toll desk, so the two clip into each other. Installs SL Survival - Missives.esp (ESL-flagged), which moves the board along the wall and a little out into the walkway, clear of the desk and a boulder. REQUIRES Missives (Missives.esp); load it after Missives and any Missives patch that moves the Markarth board.</description>
-                            <files>
-                                <file source="optional\Missives\SL Survival - Missives.esp" destination="SL Survival - Missives.esp" priority="1" />
-                            </files>
-                            <typeDescriptor>
-                                <dependencyType>
-                                    <defaultType name="Optional" />
-                                    <patterns>
-                                        <pattern>
-                                            <dependencies operator="And">
-                                                <fileDependency file="Missives.esp" state="Active" />
-                                            </dependencies>
-                                            <type name="Recommended" />
-                                        </pattern>
-                                        <pattern>
-                                            <dependencies operator="And">
-                                                <fileDependency file="Missives.esp" state="Missing" />
-                                            </dependencies>
-                                            <type name="NotUsable" />
-                                        </pattern>
-                                    </patterns>
-                                </dependencyType>
                             </typeDescriptor>
                         </plugin>
 
