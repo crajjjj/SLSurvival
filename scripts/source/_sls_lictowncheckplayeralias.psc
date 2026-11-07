@@ -48,6 +48,7 @@ Function GetShouldApproach()
 		Return
 	ElseIf Init.HasEnoughFollowers < 1
 		_SLS_LicTownViolation.SetValueInt(1)
+		LicUtil.LicInfractionType = -2 ; No licence infraction; the enforcers' escort line only needs a value below 0
 		GoToState("")
 		;Debug.Messagebox("Should approach No follower")
 		Return
@@ -65,6 +66,9 @@ Function GetShouldApproach()
 		Return
 	EndIf
 	_SLS_LicTownViolation.SetValueInt(0)
+	; Clear (-2), never leave the -1 set above: the toll gate dialogue reads -1 as "check in progress"
+	; and repeats its "one moment" lines until the value changes
+	LicUtil.LicInfractionType = -2
 	GoToState("")
 	;Debug.Messagebox("Should NOT approach")
 	Return

@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.804
+	Version = 0.805
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -869,6 +869,13 @@ Function VersionCheck()
 	; No migration: saves store the cell's FormID, not its editor ID.
 	If Version < 0.804
 		UpdateVersion(0.804)
+	EndIf
+
+	; 0.805 stops the town licence recheck leaving the infraction at "check in progress" (-1), which
+	; trapped the player in the toll collectors' "one moment" dialogue loop.
+	; No migration: the next town check writes the value again.
+	If Version < 0.805
+		UpdateVersion(0.805)
 	EndIf
 EndFunction
 
