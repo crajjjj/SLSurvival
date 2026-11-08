@@ -52,6 +52,7 @@ Bool DoSleepDeprivMessage = true
 String LastConditions ; Breakdown from the most recent GetSleepPenalty() call, minus the flavor statement
 Float ConditionsShownRT = -3600.0 ; Real-time stamp of the last on-screen breakdown (Sleep/Wait menu hook path)
 Bool SleptInFurniture ; Player was already in the bed when the applied penalty was computed (Go To Bed-style flow)
+Keyword BedrollKeyword ; Skyrim.esm FurnitureBedRoll, fetched on first use
 
 Event OnInit()
 	PickNeedsState()
@@ -182,6 +183,9 @@ Float Function GetSleepPenalty(Bool ShowConditions = false, Bool IsSleeping)
 	EndIf
 	If !Bed
 		Bed = Game.GetCurrentCrosshairRef()
+		If Bed && !(Bed.GetBaseObject() as Furniture) ; a chest or a corpse in the crosshair is no bed
+			Bed = None
+		EndIf
 	EndIf
 	;Debug.Messagebox("Bed: " + Bed.GetBaseObject().GetName())
 	If Bed
@@ -190,8 +194,14 @@ Float Function GetSleepPenalty(Bool ShowConditions = false, Bool IsSleeping)
 		If ((;/OwningFaction == PlayerBedOwnership ||/; OwningFaction == None || PlayerRef.IsInFaction(OwningFaction)) && (Owner == None || Owner == PlayerRef.GetActorBase())); || (OwningFaction == None && Bed.GetActorOwner() == None) ; Not someone elses bed
 			HasBed = true
 			String BedName = Bed.GetBaseObject().GetName()
-			If StringUtil.Find(BedName, "Roll") != -1 || StringUtil.Find(BedName, "Hay Pile") != -1  || StringUtil.Find(BedName, "Bedding") != -1 ; Bedding = 'Rough Bedding'
-				If StringUtil.Find(BedName, "Roll") != -1
+			; The keyword is on every vanilla and DLC bedroll and hay pile, and on most modded ones, in any
+			; game language; the English names stay as a fallback for a modded bedroll that lacks it.
+			; A translated hay pile has no "Hay" to find, so it scores as a bedroll.
+			If !BedrollKeyword
+				BedrollKeyword = Game.GetFormFromFile(0x0E4AD6, "Skyrim.esm") as Keyword
+			EndIf
+			If Bed.HasKeyword(BedrollKeyword) || StringUtil.Find(BedName, "Roll") != -1 || StringUtil.Find(BedName, "Hay Pile") != -1  || StringUtil.Find(BedName, "Bedding") != -1 ; Bedding = 'Rough Bedding'
+				If StringUtil.Find(BedName, "Hay") == -1 && StringUtil.Find(BedName, "Bedding") == -1
 					ValTemp = JsonUtil.GetFloatValue("SL Survival/SleepDepriv.json", "bed_bedroll") ; 0.10
 					Conditions += "Bed - Serviceable: " + ((ValTemp * 100.0) as Int) + "%"
 					SleepPenalty += ValTemp
@@ -209,7 +219,7 @@ Float Function GetSleepPenalty(Bool ShowConditions = false, Bool IsSleeping)
 			
 			Else
 				ValTemp = JsonUtil.GetFloatValue("SL Survival/SleepDepriv.json", "bed_bed") ; -0.10
-				Conditions += "Bed - Cosy: " + ((ValTemp * 100.0) as Int) + ""
+				Conditions += "Bed - Cosy: " + ((ValTemp * 100.0) as Int) + "%"
 				SleepPenalty += ValTemp
 				;If IsSleeping
 					CampingFatigueGain = 0.0
@@ -257,7 +267,7 @@ Float Function GetSleepPenalty(Bool ShowConditions = false, Bool IsSleeping)
 		EndIf
 		If FrostInterface.IsCurrentWeatherSevere()
 			ValTemp = JsonUtil.GetFloatValue("SL Survival/SleepDepriv.json", "weather_severe") ; 0.20
-			Conditions += "Weather - Severe: " + ((ValTemp * 100.0) as Int) + "\n"
+			Conditions += "Weather - Severe: " + ((ValTemp * 100.0) as Int) + "%\n"
 			SleepPenalty += ValTemp
 		Else
 			ValTemp = JsonUtil.GetFloatValue("SL Survival/SleepDepriv.json", "weather_calm") ; 0.0
@@ -368,10 +378,10 @@ Float Function GetSleepPenalty(Bool ShowConditions = false, Bool IsSleeping)
 			Conditions += "Night: " + ((ValTemp * 100.0) as Int) + "%\n"
 			SleepPenalty += ValTemp
 		ElseIf CurrentGameHour < JsonUtil.GetFloatValue("SL Survival/SleepDepriv.json", "time_day_begin")
-			ValTemp = JsonUtil.GetFloatValue("SL Survival/SleepDepriv.json", "time_pen_vamp_night") ; -0.1
+			ValTemp = JsonUtil.GetFloatValue("SL Survival/SleepDepriv.json", "time_pen_vamp_morning") ; -0.1
 			Conditions += "Morning: " + ((ValTemp * 100.0) as Int) + "%\n"
 			SleepPenalty += ValTemp
-		ElseIf CurrentGameHour < JsonUtil.GetFloatValue("SL Survival/SleepDepriv.json", "time_pen_vamp_morning")
+		ElseIf CurrentGameHour < JsonUtil.GetFloatValue("SL Survival/SleepDepriv.json", "time_evening_begin")
 			ValTemp = JsonUtil.GetFloatValue("SL Survival/SleepDepriv.json", "time_pen_vamp_day") ; -0.2
 			Conditions += "Day: " + ((ValTemp * 100.0) as Int) + "%\n"
 			SleepPenalty += ValTemp
@@ -420,11 +430,13 @@ Float Function GetSleepPenalty(Bool ShowConditions = false, Bool IsSleeping)
 	Conditions += ((ThirstPen * 100.0) as Int) + "%\n"
 	SleepPenalty += ThirstPen
 	
-	; Milk
-	Float MilkCap = (StorageUtil.GetFloatValue(PlayerRef, "MME.MilkMaid.MilkCount", Missing = -1.0) / StorageUtil.GetFloatValue(PlayerRef, "MME.MilkMaid.MilkMaximum", Missing = 1.0))
-	If MilkCap >= 0.0
-		Float MilkPen = (0.1 * 2.0 * (-0.5 + MilkCap)) * JsonUtil.GetFloatValue("SL Survival/SleepDepriv.json", "mme_milkfullnessmult")
-		Conditions += "Milk fullness: " + (((MilkPen * 100.0) as Int)) + "%"
+	; Milk: shown in the breakdown but never added to the penalty before 0.806
+	Float MilkCount = StorageUtil.GetFloatValue(PlayerRef, "MME.MilkMaid.MilkCount", Missing = -1.0)
+	Float MilkMax = StorageUtil.GetFloatValue(PlayerRef, "MME.MilkMaid.MilkMaximum", Missing = 0.0)
+	If MilkCount >= 0.0 && MilkMax > 0.0 ; now that it counts, a zero maximum must not divide into the penalty
+		Float MilkPen = (0.1 * 2.0 * (-0.5 + (MilkCount / MilkMax))) * JsonUtil.GetFloatValue("SL Survival/SleepDepriv.json", "mme_milkfullnessmult")
+		Conditions += "Milk fullness: " + (((MilkPen * 100.0) as Int)) + "%\n"
+		SleepPenalty += MilkPen
 	EndIf
 	
 	; Cap it in case
@@ -1131,9 +1143,8 @@ State Ccs ; Creation Club Survival Mode ========================================
 			If CurrentFatigue < TargetFatigue
 				ModFatigue(TargetFatigue - CurrentFatigue)
 			EndIf
-		Else ; fresher than the floor - bad conditions slowly wear the player down toward it
-			Float Delta = (TargetFatigue + StartingFatigue) - CurrentFatigue
-			ModFatigue((Delta / 8.0) * HoursSlept) ; 8 hours of sleep to reach the target
+		ElseIf CurrentFatigue < TargetFatigue ; fresher than the floor - bad conditions wear the player down to it in 8 hours
+			ModFatigue((TargetFatigue - CurrentFatigue) * PapyrusUtil.ClampFloat(HoursSlept / 8.0, 0.0, 1.0))
 		EndIf
 	EndFunction
 

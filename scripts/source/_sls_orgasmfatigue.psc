@@ -8,12 +8,22 @@ Event OnInit()
 EndEvent
 
 Function Shutdown()
-	Int i = 0
-	While i < FatigueSpellList.Length
-		PlayerRef.RemoveSpell(FatigueSpellList[i])
-		i += 1
-	EndWhile
+	; Stop() keeps every registration and a stopped quest still gets its events, so without this the
+	; next orgasm, sleep or daily tick put the debuff straight back on with the feature switched off
+	UnRegisterForAllModEvents()
+	UnRegisterForSleep()
+	UnRegisterForUpdateGameTime()
+	RemoveFatigue()
+	_SLS_OrgasmFatigueLevel.SetValueInt(0) ; _SLS_OrgasmFatiguePerk's damage cut reads it
 	Self.Stop()
+EndFunction
+
+Function OnGameLoad()
+	; The debuff's stamina/magicka magnitude is set on the spell form, which a load reverts to the
+	; plugin's value (0 for the two stronger levels), so put the sized debuff back on every load
+	If Self.IsRunning()
+		SetFatigue()
+	EndIf
 EndFunction
 
 Function Setup()
@@ -35,6 +45,10 @@ EndFunction
 Function RegisterForEvents()
 	UnRegisterForSleep()
 	UnRegisterForAllModEvents()
+	If !Self.IsRunning() ; old save-upgrade steps call this whatever the MCM toggle says
+		UnRegisterForUpdateGameTime()
+		Return
+	EndIf
 	; P+ folds SLSO in: it always sends SexlabOrgasmSeparate but skips HookOrgasmStart in its
 	; per-actor climax mode, so P+ must take the separate-event path even without SLSO.esp
 	If Game.GetModByName("SLSO.esp") != 255 || _SLS_IntSlpp.GetIsInstalled()
@@ -104,7 +118,7 @@ Event On_SLS_BfLabor(Int ChildCount, Form Father0)
 EndEvent
 
 Function OutOfSexOrgasmEvent()
-	AdjustOrgasmCount(1.0)
+	AddOrgasm()
 	;Debug.Messagebox("Player orgasm\nCount: " + OrgasmCount)
 	If OrgasmCount > OrgasmThreshold
 		SetFatigue()
@@ -125,7 +139,7 @@ EndEvent
 
 Function OrgasmEvent(Actor ActorRef = None, Int tid, Bool HasPlayer)
 	If ActorRef == PlayerRef || (!ActorRef && HasPlayer) ; Player had orgasm
-		AdjustOrgasmCount(1.0)
+		AddOrgasm()
 		;Debug.Messagebox("Player orgasm\nCount: " + OrgasmCount)
 		If OrgasmCount > OrgasmThreshold
 			RegisterForModEvent("HookAnimationEnd", "OnAnimationEnd")
@@ -167,12 +181,13 @@ Function RemoveFatigue()
 	EndWhile
 EndFunction
 
+Function AddOrgasm()
+	AdjustOrgasmCount(1.0)
+	DailyOrgasmCount += 1.0 ; only real orgasms train the daily threshold - not childbirth fatigue
+EndFunction
+
 Function AdjustOrgasmCount(Float Value)
-	Float NewVal = OrgasmCount + Value
-	OrgasmCount = PapyrusUtil.ClampFloat(NewVal, 0.0, 20.0)
-	If Value > 0.0 ; Is Orgasm
-		DailyOrgasmCount += 1.0
-	EndIf
+	OrgasmCount = PapyrusUtil.ClampFloat(OrgasmCount + Value, 0.0, 20.0)
 EndFunction
 
 Int Function SetFatigueLevel()

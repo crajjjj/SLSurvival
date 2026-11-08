@@ -1,5 +1,9 @@
 Scriptname _SLS_OrgasmFatigueAlcohol extends ReferenceAlias  
 
+Event OnPlayerLoadGame()
+	OrgFat.OnGameLoad()
+EndEvent
+
 Event OnObjectEquipped(Form akBaseObject, ObjectReference akReference)
 	If akBaseObject as Potion && AlcoholicDrinksList.HasForm(akBaseObject)
 		OrgFat.DrinkAlcohol(akBaseObject)

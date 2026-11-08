@@ -541,12 +541,10 @@ State Installed
 			;Else	; Else player is still more tired than the cap - Do nothing
 			EndIf
 
-		Else ; Player was less tired when sleep began - slowly decrease rest to target
-			
-			Float Delta = (TargetFatigue + StartingFatigue) - CurrentFatigue
-			Float ThisNapFatigue = (Delta / 8.0) * HoursSlept ; 8 hours of sleeping to reach target fatigue
-			;Debug.MessageBox("ThisNapFatigue: " + ThisNapFatigue)
-			ModFatigue(ThisNapFatigue as Int)
+		ElseIf CurrentFatigue < TargetFatigue ; Player was less tired when sleep began - slowly decrease rest to target
+			; 8 hours of sleep reach the target, longer sleeps stay on it. Before 0.806 the delta also added
+			; StartingFatigue, so 8 hours ended that far PAST the target and every extra hour climbed further.
+			ModFatigue(((TargetFatigue - CurrentFatigue) * PapyrusUtil.ClampFloat(HoursSlept / 8.0, 0.0, 1.0)) as Int)
 		EndIf
 	EndFunction
 

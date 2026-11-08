@@ -99,11 +99,21 @@ State Installed
 
 	; No foreign function calls =========================
 	Function ModFatigueDesiredEffect(MagicEffect DesiredEffect)
-		ModFatigue(1000.0) ; remove all fatigue
+		; iNeed's fatigue stages climb only while its meter sits at empty: each drain there adds the
+		; hours of its last update to a counter, and a non-empty meter zeroes it. So rest fully to zero
+		; the counter, then drain until the wanted stage shows. ModFatigue adds fatigue for a positive
+		; amount; before 0.806 both signs here were flipped, so every retry rested the player fully
+		; and a sleep that should have left moderate or severe fatigue left none.
+		ModFatigue(-1000.0)
 		Int Timeout = 10
-		While !PlayerRef.HasMagicEffect(DesiredEffect) && Timeout > 0
-			ModFatigue(-1000.0)
-			Timeout -= 1
+		While Timeout > 0
+			ModFatigue(1000.0)
+			Utility.Wait(0.2) ; let the stage's ability apply before testing for it
+			If HasFatigueStageAtLeast(DesiredEffect)
+				Timeout = 0
+			Else
+				Timeout -= 1
+			EndIf
 		EndWhile
 	EndFunction
 
@@ -294,6 +304,20 @@ Function ModFatigue(Float SleepAmount)
 EndFunction
 
 Function ModFatigueDesiredEffect(MagicEffect DesiredEffect)
+EndFunction
+
+; True once the player shows DesiredEffect's fatigue stage or a worse one. One drain can jump a stage
+; when iNeed's last update spanned many hours, and draining on past the wanted stage would run into
+; iNeed's death-by-exhaustion damage.
+Bool Function HasFatigueStageAtLeast(MagicEffect DesiredEffect)
+	If PlayerRef.HasMagicEffect(_SNDmgFatigueFX_3)
+		Return true
+	ElseIf PlayerRef.HasMagicEffect(_SNDmgFatigueFX_2)
+		Return DesiredEffect != _SNDmgFatigueFX_3
+	ElseIf PlayerRef.HasMagicEffect(_SNDmgFatigueFX_1)
+		Return DesiredEffect == _SNDmgFatigueFX_1
+	EndIf
+	Return false
 EndFunction
 
 Bool Function IsDesperate()

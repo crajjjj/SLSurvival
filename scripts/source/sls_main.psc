@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.805
+	Version = 0.806
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -686,8 +686,7 @@ Function VersionCheck()
 			StorageUtil.UnSetIntValue(None, "_SLS_CreatureCorruption")
 			UpdateVersion(0.674)
 		EndIf
-		(Game.GetFormFromFile(0x0E857D, "SL Survival.esp") as _SLS_OrgasmFatigue)
-		
+
 		If Version < 0.682
 			((Game.GetFormFromFile(0x0E857D, "SL Survival.esp") as Quest).GetNthAlias(0) as ReferenceAlias).ForceRefTo(PlayerRef)
 			Menu.AnimalFriend.Wildling.Friend = Menu.AnimalFriend
@@ -876,6 +875,17 @@ Function VersionCheck()
 	; No migration: the next town check writes the value again.
 	If Version < 0.805
 		UpdateVersion(0.805)
+	EndIf
+
+	; 0.806 fixes the fatigue mechanics (drug comedown, sleep conditions, orgasm fatigue). Migration: a
+	; save that switched Orgasm Fatigue off kept its event registrations, which put the debuff back
+	; on; Shutdown now drops them, so run it again for a quest that is already stopped.
+	If Version < 0.806
+		_SLS_OrgasmFatigue OrgasmFatigue = Game.GetFormFromFile(0x0E857D, "SL Survival.esp") as _SLS_OrgasmFatigue
+		If OrgasmFatigue && !OrgasmFatigue.IsRunning()
+			OrgasmFatigue.Shutdown()
+		EndIf
+		UpdateVersion(0.806)
 	EndIf
 EndFunction
 

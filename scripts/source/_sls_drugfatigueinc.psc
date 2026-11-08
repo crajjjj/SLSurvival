@@ -10,21 +10,21 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 EndEvent
 
 Event OnEffectFinish(Actor akTarget, Actor akCaster)
-	;Debug.Messagebox("Ended: Fatigue strenght: " + FatigueStrength)
-	If Needs.GetState() == "Rnd"
-		Float FatigueLoss
-		If FatigueAtBegin > FatigueStrength
-			FatigueLoss = FatigueStrength + (FatigueStrength * Menu.DrugEndFatigueInc)
-		Else
-			FatigueLoss = FatigueAtBegin + (FatigueStrength * Menu.DrugEndFatigueInc)
-		EndIf
-		;Debug.Messagebox("Increase fatigue by: " + FatigueLoss)
-		Needs.ModFatigue(-Math.Ceiling(FatigueLoss))
-	ElseIf Needs.GetState() == "Esd"
-		Needs.ModFatigue(-Math.Ceiling(FatigueStrength))
-	ElseIf Needs.GetState() == "Ineed"
-		Needs.ModFatigue(-Math.Ceiling(FatigueStrength))
+	; The comedown: the fatigue the drug took away comes back, plus DrugEndFatigueInc of its strength.
+	; Needs.ModFatigue adds fatigue for a positive amount. This passed a negative one until 0.806, so
+	; the comedown was a second dose of rest, and SunHelm and Survival Mode had no comedown at all.
+	String NeedsState = Needs.GetState()
+	Float FatigueGain = FatigueStrength * Menu.DrugEndFatigueInc
+	If NeedsState == "Rnd" || NeedsState == "Shs" || NeedsState == "Ccs"
+		; Fatigue counts up from 0 here, so the drug only took what there was to take
+		FatigueGain += PapyrusUtil.ClampFloat(FatigueAtBegin, 0.0, FatigueStrength)
+	ElseIf NeedsState == "Esd" || NeedsState == "iNeed"
+		; These count rest, not fatigue: no "before" figure to cap the refund with
+		FatigueGain += FatigueStrength
+	Else
+		Return
 	EndIf
+	Needs.ModFatigue(Math.Ceiling(FatigueGain))
 EndEvent
 
 State InActive
