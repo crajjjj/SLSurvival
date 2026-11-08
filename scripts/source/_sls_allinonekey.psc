@@ -2574,6 +2574,7 @@ Int Function ShowStatusMenu()
 	If OrgFat != ""
 		ListMenu.AddEntryItem("Orgasm Fatigue: " + OrgFat)
 	EndIf
+	ListMenu.AddEntryItem("Debuffs: " + _SLS_Debuff.GetStatusString())
 
 	; Devious Followers
 	If Game.GetModByName("DeviousFollowers.esp") != 255

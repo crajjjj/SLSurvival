@@ -19,6 +19,43 @@ Function Notify(String Category, String Msg) Global
 	Debug.Notification(Msg)
 EndFunction
 
+; The Debuffs line of the wheel's Status list. Orgasm fatigue and cum hunger have lines of their own there.
+String Function GetStatusString() Global
+	Actor PlayerRef = Game.GetPlayer()
+	String Debuffs = ""
+	; The barefoot effect is conditioned (crawling and werewolf switch it off), so ask for the effect
+	; and the global both
+	If (Game.GetFormFromFile(0x0783BF, "SL Survival.esp") as GlobalVariable).GetValueInt() == 1 && PlayerRef.HasMagicEffect(Game.GetFormFromFile(0x0783C0, "SL Survival.esp") as MagicEffect) ; _SLS_PlayerIsBareFoot, _SLS_BarefootSpeedMgef
+		Debuffs = AddToList(Debuffs, "Barefoot")
+	EndIf
+	If PlayerRef.HasSpell(Game.GetFormFromFile(0x04F450, "SL Survival.esp")) || PlayerRef.HasSpell(Game.GetFormFromFile(0x04F454, "SL Survival.esp")) || PlayerRef.HasSpell(Game.GetFormFromFile(0x04F44D, "SL Survival.esp")) || PlayerRef.HasSpell(Game.GetFormFromFile(0x04F452, "SL Survival.esp")) ; heavy bondage lockpick/pickpocket, difficult/impossible
+		Debuffs = AddToList(Debuffs, "Heavy bondage")
+	EndIf
+	If PlayerRef.HasSpell(Game.GetFormFromFile(0x07CF47, "SL Survival.esp")) ; _SLS_BikCurseShortBreathSpell
+		Debuffs = AddToList(Debuffs, "Bikini curse (short of breath)")
+	EndIf
+	If PlayerRef.HasSpell(Game.GetFormFromFile(0x045C3C, "SL Survival.esp")) || PlayerRef.HasSpell(Game.GetFormFromFile(0x045161, "SL Survival.esp")) ; _SLS_MagicLicenceCurse, _SLS_MagicLicenceCollarSpell
+		Debuffs = AddToList(Debuffs, "Magicka curse")
+	EndIf
+	If PlayerRef.HasSpell(Game.GetFormFromFile(0x0C36DB, "SL Survival.esp")) ; _SLS_DeviousDrowningSpell
+		Debuffs = AddToList(Debuffs, "Drowning")
+	EndIf
+	If PlayerRef.HasMagicEffect(Game.GetFormFromFile(0x0778F8, "SL Survival.esp") as MagicEffect) ; _SLS_DrugFatigueIncMgef
+		Debuffs = AddToList(Debuffs, "Drug comedown ahead")
+	EndIf
+	If Debuffs == ""
+		Return "None"
+	EndIf
+	Return Debuffs
+EndFunction
+
+String Function AddToList(String List, String Item) Global
+	If List == ""
+		Return Item
+	EndIf
+	Return List + ", " + Item
+EndFunction
+
 ; SexLab strips and redresses the player around every scene, which flips the equipment-driven
 ; debuffs (barefoot) on and off; those are no news during a scene
 Bool Function PlayerInScene() Global
