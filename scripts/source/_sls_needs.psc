@@ -36,7 +36,7 @@ Quest CcsExhaustionQuest
 GlobalVariable CcsModeEnabled
 GlobalVariable CcsHungerValue
 GlobalVariable CcsExhaustionValue
-Float Property CcsFatigueScale = 2.0 Auto Hidden ; Survival Mode exhaustion runs to 960: SLS fatigue amounts x2, like SunHelm's 480 scale
+Float Property CcsFatigueScale = 2.0 Auto Hidden ; Retired in 0.806 for GetFatigueScale(), kept because saves hold it
 
 ; Survival Mode belly ladder, added to the base belly scale, one rung per hunger stage (00 Well Fed .. 05
 ; Ravenous). Like the other needs mods' ladders, by default only the fullest stage shows, and only a little.
@@ -553,6 +553,16 @@ EndFunction
 Function ModFatigue(Float Amount)
 EndFunction
 
+; How many of the needs mod's own fatigue units one SLS fatigue unit is. SLS amounts (drugs, milk,
+; bondage furniture) are counted in RND's units, and RND gains 4 fatigue an hour awake, so one SLS
+; unit is a quarter hour awake; a state converts at its mod's default rate per hour divided by 4.
+; Before 0.806 only Survival Mode converted (x2), so the same skooma kept a SunHelm player awake 4
+; hours and an Eating Sleeping Drinking player 40 minutes, against 10 on RND. GetFatigue, ModFatigue
+; and FatigueBeforeModding speak SLS units; each CorrectFatigue works in its mod's own.
+Float Function GetFatigueScale()
+	Return 1.0
+EndFunction
+
 Bool Function IsDesperate() ; Condition used to determine if player will auto swallow cum
 	Return false
 EndFunction
@@ -739,8 +749,12 @@ State iNeed ; iNeed ============================================================
 		Ineed.Drink(Amount)
 	EndFunction
 
-	Float Function GetFatigue()
-		Return Ineed.GetFatigue()
+	Float Function GetFatigueScale() ; iNeed: 5 fatigue an hour (counts rest down from 110)
+		Return 1.25
+	EndFunction
+
+	Float Function GetFatigue() ; rest, not fatigue: higher is fresher
+		Return Ineed.GetFatigue() / GetFatigueScale()
 	EndFunction
 	
 	Function CorrectFatigue(Float SleepPenalty, Float StartingFatigue, Float HoursSlept)
@@ -750,9 +764,9 @@ State iNeed ; iNeed ============================================================
 	EndFunction
 
 	Function ModFatigue(Float Amount)
-		FatigueBeforeModding = Ineed.GetFatigue()
+		FatigueBeforeModding = GetFatigue()
 		;Debug.Messagebox("FatigueBeforeModding: " + FatigueBeforeModding)
-		Ineed.ModFatigue(Amount)
+		Ineed.ModFatigue(Amount * GetFatigueScale())
 	EndFunction
 	
 	Bool Function IsDesperate() ; Condition used to determine if player will auto swallow cum
@@ -829,8 +843,12 @@ State Esd ; EatingSleepingDrinking =============================================
 		EatSleepDrink.Drink(Amount as Int)
 	EndFunction
 
-	Float Function GetFatigue()
-		Return EatSleepDrink.GetFatigue()
+	Float Function GetFatigueScale() ; Eating Sleeping Drinking counts sleepiness in game minutes: 60 an hour
+		Return 15.0
+	EndFunction
+
+	Float Function GetFatigue() ; rest, not fatigue: higher is fresher
+		Return EatSleepDrink.GetFatigue() / GetFatigueScale()
 	EndFunction
 
 	Function CorrectFatigue(Float SleepPenalty, Float StartingFatigue, Float HoursSlept)
@@ -838,8 +856,8 @@ State Esd ; EatingSleepingDrinking =============================================
 	EndFunction
 
 	Function ModFatigue(Float Amount)
-		FatigueBeforeModding = EatSleepDrink.GetFatigue()
-		EatSleepDrink.ModFatigue(Amount as Int)
+		FatigueBeforeModding = GetFatigue()
+		EatSleepDrink.ModFatigue((Amount * GetFatigueScale()) as Int)
 	EndFunction
 	
 	Bool Function IsDesperate() ; Condition used to determine if player will auto swallow cum
@@ -916,12 +934,16 @@ State Shs ; SunHelmSurvival, only with the optional SunHelm patch plugin =======
 		Shs.Drink(Amount as Int)
 	EndFunction
 
+	Float Function GetFatigueScale() ; SunHelm: 10 fatigue an hour (_SHFatigueRate)
+		Return 2.5
+	EndFunction
+
 	Float Function GetFatigue()
-		Return Shs.GetFatigue()
+		Return Shs.GetFatigue() / GetFatigueScale()
 	EndFunction
 
 	Function CorrectFatigue(Float SleepPenalty, Float StartingFatigue, Float HoursSlept)
-		Shs.CorrectFatigue(SleepPenalty, StartingFatigue, HoursSlept)
+		Shs.CorrectFatigue(SleepPenalty, StartingFatigue * GetFatigueScale(), HoursSlept) ; the adapter works in SunHelm's units
 	EndFunction
 
 	Function SyncBedrollSleepFlag()
@@ -929,8 +951,8 @@ State Shs ; SunHelmSurvival, only with the optional SunHelm patch plugin =======
 	EndFunction
 
 	Function ModFatigue(Float Amount)
-		FatigueBeforeModding = Shs.GetFatigue()
-		Shs.ModFatigue(Amount as Int)
+		FatigueBeforeModding = GetFatigue()
+		Shs.ModFatigue((Amount * GetFatigueScale()) as Int)
 	EndFunction
 
 	Bool Function IsDesperate() ; Condition used to determine if player will auto swallow cum
@@ -1098,11 +1120,15 @@ State Ccs ; Creation Club Survival Mode ========================================
 	Function ModThirst(Float Amount)
 	EndFunction
 
-	Float Function GetFatigue() ; SLS fatigue units: Survival Mode exhaustion / CcsFatigueScale
+	Float Function GetFatigueScale() ; Survival Mode: 9 exhaustion an hour (Survival_ExhaustionNeedRate)
+		Return 2.25
+	EndFunction
+
+	Float Function GetFatigue() ; SLS fatigue units: Survival Mode exhaustion / GetFatigueScale()
 		If !IsCcsEnabled()
 			Return 0.0
 		EndIf
-		Return CcsExhaustionValue.GetValue() / CcsFatigueScale
+		Return CcsExhaustionValue.GetValue() / GetFatigueScale()
 	EndFunction
 
 	Function ModFatigue(Float Amount) ; + more tired, - less tired
@@ -1111,9 +1137,9 @@ State Ccs ; Creation Club Survival Mode ========================================
 		EndIf
 		FatigueBeforeModding = GetFatigue()
 		If Amount > 0.0
-			_SLS_IntCcs.IncreaseExhaustion(CcsExhaustionQuest, Amount * CcsFatigueScale)
+			_SLS_IntCcs.IncreaseExhaustion(CcsExhaustionQuest, Amount * GetFatigueScale())
 		ElseIf Amount < 0.0
-			_SLS_IntCcs.DecreaseExhaustion(CcsExhaustionQuest, -Amount * CcsFatigueScale)
+			_SLS_IntCcs.DecreaseExhaustion(CcsExhaustionQuest, -Amount * GetFatigueScale())
 		EndIf
 	EndFunction
 
@@ -1136,7 +1162,7 @@ State Ccs ; Creation Club Survival Mode ========================================
 		Else
 			TargetFatigue = (SleepPenalty / 1.0) * ((Levels[4] + Levels[5]) / 2.0) ; between 'Weary' and 'Debilitated'
 		EndIf
-		TargetFatigue = TargetFatigue / CcsFatigueScale
+		TargetFatigue = TargetFatigue / GetFatigueScale()
 
 		Float CurrentFatigue = GetFatigue()
 		If StartingFatigue > TargetFatigue ; more tired than the cap when sleep began - cap the rest gained
