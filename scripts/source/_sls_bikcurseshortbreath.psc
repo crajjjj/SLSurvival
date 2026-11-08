@@ -2,7 +2,9 @@ Scriptname _SLS_BikCurseShortBreath extends activemagiceffect
 
 Event OnEffectStart(Actor akTarget, Actor akCaster)
 	;Debug.Messagebox("BEGIN")
-	_SLS_Debuff.Notify("Bikini curse: this armor leaves me short of breath")
+	If !_SLS_Debuff.PlayerInScene() ; redressing after a scene
+		_SLS_Debuff.Notify("BikiniCurse", "Bikini curse: this armor leaves me short of breath")
+	EndIf
 	RegisterForSingleUpdate(1.0)
 EndEvent
 

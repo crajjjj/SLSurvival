@@ -110,7 +110,7 @@ Function NotifyHeavyBondage()
 		EndIf
 	EndIf
 	If Msg != ""
-		_SLS_Debuff.Notify("Heavy bondage: " + Msg)
+		_SLS_Debuff.Notify("HeavyBondage", "Heavy bondage: " + Msg)
 	EndIf
 EndFunction
 

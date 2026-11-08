@@ -163,12 +163,12 @@ Function SetFatigue()
 	Spell FatigueSpell = GetDebuff(Level)
 	; Every load runs this too, and there the level is unchanged, so it stays silent
 	If Level > OldLevel
-		_SLS_Debuff.Notify("Orgasm fatigue: I'm " + FatigueLevelName(Level) + " now")
+		_SLS_Debuff.Notify("OrgasmFatigue", "Orgasm fatigue: I'm " + FatigueLevelName(Level) + " now")
 	ElseIf Level < OldLevel
 		If Level == 0
-			_SLS_Debuff.Notify("Orgasm fatigue: I've recovered")
+			_SLS_Debuff.Notify("OrgasmFatigue", "Orgasm fatigue: I've recovered")
 		Else
-			_SLS_Debuff.Notify("Orgasm fatigue eased: I'm only " + FatigueLevelName(Level) + " now")
+			_SLS_Debuff.Notify("OrgasmFatigue", "Orgasm fatigue eased: I'm only " + FatigueLevelName(Level) + " now")
 		EndIf
 	EndIf
 	If FatigueSpell

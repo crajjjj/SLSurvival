@@ -6,10 +6,12 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	RegisterForModEvent("_SLS_BarefootStaggerChance", "On_SLS_BarefootStaggerChance")
 	RegisterForSingleUpdate(1.0)
 	; The effect is conditioned on _SLS_PlayerIsBareFoot, so it starts when the shoes come off
-	If StorageUtil.GetFloatValue(Menu, "BarefootStaggerChance", Missing = 20.0) > 0.0
-		_SLS_Debuff.Notify("Barefoot: I'm slower without shoes and may stumble when running")
+	If _SLS_Debuff.PlayerInScene()
+		; the scene's strip took them
+	ElseIf StorageUtil.GetFloatValue(Menu, "BarefootStaggerChance", Missing = 20.0) > 0.0
+		_SLS_Debuff.Notify("Barefoot", "Barefoot: I'm slower without shoes and may stumble when running")
 	Else
-		_SLS_Debuff.Notify("Barefoot: I'm slower without shoes")
+		_SLS_Debuff.Notify("Barefoot", "Barefoot: I'm slower without shoes")
 	EndIf
 EndEvent
 
