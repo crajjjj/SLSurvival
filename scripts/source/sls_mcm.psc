@@ -443,6 +443,10 @@ Event OnConfigClose()
 		StorageUtil.UnSetIntValue(Self, "DoToggleOrgasmFatigue")
 		ToggleOrgasmFatigue()
 	EndIf
+	If StorageUtil.GetIntValue(Self, "DoRefreshOrgasmFatigue", Missing = 0) == 1
+		StorageUtil.UnSetIntValue(Self, "DoRefreshOrgasmFatigue")
+		(Game.GetFormFromFile(0x0E857D, "SL Survival.esp") as _SLS_OrgasmFatigue).Refresh()
+	EndIf
 	If StorageUtil.GetIntValue(Self, "DoToggleCurfew", Missing = 0) == 1
 		StorageUtil.UnSetIntValue(Self, "DoToggleCurfew")
 		ToggleCurfew(LicUtil.LicCurfewEnable)
@@ -757,6 +761,7 @@ event OnPageReset(string page)
 		StorageUtil.SetIntValue(Self, "OrgasmFatigueOID", AddToggleOption("$SLS_hOrgasmFatigue", StorageUtil.GetIntValue(Self, "OrgasmFatigue", Missing = 1)))
 		;StorageUtil.SetIntValue(Self, "OrgasmFatigueThresholdOID_S", AddSliderOption("$SLS_OrgasmFatigueThreshold", (Game.GetFormFromFile(0x0E857D, "SL Survival.esp") as _SLS_OrgasmFatigue).OrgasmThreshold, "{0}", OrgasmFatigueFlag))
 		StorageUtil.SetIntValue(Self, "OrgasmFatigueRecoveryOID_S", AddSliderOption("$SLS_OrgasmFatigueRecovery", (Game.GetFormFromFile(0x0E857D, "SL Survival.esp") as _SLS_OrgasmFatigue).OrgasmRecoveryPerHour, "{1}", OrgasmFatigueFlag))
+		StorageUtil.SetIntValue(Self, "OrgasmFatigueExpBonusOID_S", AddSliderOption("$SLS_OrgasmFatigueExpBonus", (Game.GetFormFromFile(0x0E857D, "SL Survival.esp") as _SLS_OrgasmFatigue).ExperienceLimitBonus, "{0}", OrgasmFatigueFlag))
 		AddEmptyOption()
 		
 		AddHeaderOption("$SLS_hAhegao")
@@ -2432,6 +2437,8 @@ event OnOptionHighlight(int option)
 			SetInfoText("$SLS_OrgasmFatigueThreshold_Info")
 		ElseIf Option == StorageUtil.GetIntValue(Self, "OrgasmFatigueRecoveryOID_S")
 			SetInfoText("$SLS_OrgasmFatigueRecovery_Info")
+		ElseIf Option == StorageUtil.GetIntValue(Self, "OrgasmFatigueExpBonusOID_S")
+			SetInfoText("$SLS_OrgasmFatigueExpBonus_Info")
 		
 		ElseIf Option == StorageUtil.GetIntValue(Self, "RapeDrugLactacidOID")
 			SetInfoText("$SLS_RapeDrugLactacid_Info")
@@ -5120,6 +5127,8 @@ Event OnOptionSliderOpen(int option)
 			SetSliderOptions(Value = (Game.GetFormFromFile(0x0E857D, "SL Survival.esp") as _SLS_OrgasmFatigue).OrgasmThreshold, Default = 3.0, Min = 1.0, Max = 10.0, Interval = 1.0)
 		ElseIf Option == StorageUtil.GetIntValue(Self, "OrgasmFatigueRecoveryOID_S")
 			SetSliderOptions(Value = (Game.GetFormFromFile(0x0E857D, "SL Survival.esp") as _SLS_OrgasmFatigue).OrgasmRecoveryPerHour, Default = 0.8, Min = 0.0, Max = 2.0, Interval = 0.1)
+		ElseIf Option == StorageUtil.GetIntValue(Self, "OrgasmFatigueExpBonusOID_S")
+			SetSliderOptions(Value = (Game.GetFormFromFile(0x0E857D, "SL Survival.esp") as _SLS_OrgasmFatigue).ExperienceLimitBonus, Default = 9.0, Min = 0.0, Max = 15.0, Interval = 1.0)
 		ElseIf Option == StorageUtil.GetIntValue(Self, "AhegaoDurPerOrgasmOID_S")
 			SetSliderOptions(Value = (Game.GetFormFromFile(0x0FCE71, "SL Survival.esp") as _SLS_Ahegao).DurPerOrgasm, Default = 6.0, Min = 0.0, Max = 20.0, Interval = 0.5)
 		ElseIf (option == SexMinStaminaRateOID_S)
@@ -5852,6 +5861,10 @@ Event OnOptionSliderAccept(int option, float value)
 		ElseIf Option == StorageUtil.GetIntValue(Self, "OrgasmFatigueRecoveryOID_S")
 			(Game.GetFormFromFile(0x0E857D, "SL Survival.esp") as _SLS_OrgasmFatigue).OrgasmRecoveryPerHour = value
 			SetSliderOptionValue(StorageUtil.GetIntValue(Self, "OrgasmFatigueRecoveryOID_S"), (Game.GetFormFromFile(0x0E857D, "SL Survival.esp") as _SLS_OrgasmFatigue).OrgasmRecoveryPerHour)
+		ElseIf Option == StorageUtil.GetIntValue(Self, "OrgasmFatigueExpBonusOID_S")
+			(Game.GetFormFromFile(0x0E857D, "SL Survival.esp") as _SLS_OrgasmFatigue).ExperienceLimitBonus = value
+			SetSliderOptionValue(StorageUtil.GetIntValue(Self, "OrgasmFatigueExpBonusOID_S"), value)
+			StorageUtil.SetIntValue(Self, "DoRefreshOrgasmFatigue", 1) ; on close: Refresh() waits, which stalls inside a menu
 		ElseIf Option == StorageUtil.GetIntValue(Self, "AhegaoDurPerOrgasmOID_S")
 			(Game.GetFormFromFile(0x0FCE71, "SL Survival.esp") as _SLS_Ahegao).DurPerOrgasm = value
 			SetSliderOptionValue(StorageUtil.GetIntValue(Self, "AhegaoDurPerOrgasmOID_S"), value)
@@ -9844,6 +9857,7 @@ Function LoadSettings()
 		(Game.GetFormFromFile(0x0E7553, "SL Survival.esp") as _SLS_CompulsiveSex).TimeBetweenFucks = JsonUtil.GetFloatValue("SL Survival/Settings.json", "TimeBetweenFucks", missing = 1.0)
 		;(Game.GetFormFromFile(0x0E857D, "SL Survival.esp") as _SLS_OrgasmFatigue).OrgasmThreshold = JsonUtil.GetFloatValue("SL Survival/Settings.json", "OrgasmFatigueThreshold", missing = 3.0)
 		(Game.GetFormFromFile(0x0E857D, "SL Survival.esp") as _SLS_OrgasmFatigue).OrgasmRecoveryPerHour = JsonUtil.GetFloatValue("SL Survival/Settings.json", "OrgasmFatigueRecovery", missing = 0.8)
+		(Game.GetFormFromFile(0x0E857D, "SL Survival.esp") as _SLS_OrgasmFatigue).ExperienceLimitBonus = JsonUtil.GetFloatValue("SL Survival/Settings.json", "OrgasmFatigueExpBonus", missing = 9.0)
 		(Game.GetFormFromFile(0x0E3F3D, "SL Survival.esp") as _SLS_Curfew).TimeToClearStreets = JsonUtil.GetFloatValue("SL Survival/Settings.json", "TimeToClearStreets", missing = 60.0)
 		(Game.GetFormFromFile(0x07B44C, "SL Survival.esp") as GlobalVariable).SetValue(JsonUtil.GetFloatValue("SL Survival/Settings.json", "_SLS_CurfewBegin", missing = 21.0)) ; _SLS_CurfewBegin
 		(Game.GetFormFromFile(0x07B44D, "SL Survival.esp") as GlobalVariable).SetValue(JsonUtil.GetFloatValue("SL Survival/Settings.json", "_SLS_CurfewEnd", missing = 6.0)) ; _SLS_CurfewEnd
@@ -9994,6 +10008,7 @@ Function LoadSettings()
 		CumSwallow.SetOpenMouthKey(JsonUtil.GetIntValue("SL Survival/Settings.json", "OpenMouthKey", missing = 0))
 		StorageUtil.SetIntValue(Self, "DoToggleCompulsiveSex", 1)
 		StorageUtil.SetIntValue(Self, "DoToggleOrgasmFatigue", 1)
+		StorageUtil.SetIntValue(Self, "DoRefreshOrgasmFatigue", 1) ; the imported experience bonus
 		(Game.GetFormFromFile(0x0E3F3D, "SL Survival.esp") as _SLS_Curfew).CheckCurfewState()
 		LocTrack.SetInnCostByString(LocTrack.PlayerCurrentLocString)
 		StorageUtil.SetIntValue(Self, "DoToggleTrauma", 1)
@@ -10421,6 +10436,7 @@ Function SaveSettings()
 		JsonUtil.SetFloatValue("SL Survival/Settings.json", "TimeBetweenFucks", (Game.GetFormFromFile(0x0E7553, "SL Survival.esp") as _SLS_CompulsiveSex).TimeBetweenFucks)
 		;JsonUtil.SetFloatValue("SL Survival/Settings.json", "OrgasmFatigueThreshold", (Game.GetFormFromFile(0x0E857D, "SL Survival.esp") as _SLS_OrgasmFatigue).OrgasmThreshold)
 		JsonUtil.SetFloatValue("SL Survival/Settings.json", "OrgasmFatigueRecovery", (Game.GetFormFromFile(0x0E857D, "SL Survival.esp") as _SLS_OrgasmFatigue).OrgasmRecoveryPerHour)
+		JsonUtil.SetFloatValue("SL Survival/Settings.json", "OrgasmFatigueExpBonus", (Game.GetFormFromFile(0x0E857D, "SL Survival.esp") as _SLS_OrgasmFatigue).ExperienceLimitBonus)
 		JsonUtil.SetFloatValue("SL Survival/Settings.json", "TimeToClearStreets", (Game.GetFormFromFile(0x0E3F3D, "SL Survival.esp") as _SLS_Curfew).TimeToClearStreets)
 		JsonUtil.SetFloatValue("SL Survival/Settings.json", "_SLS_CurfewBegin", (Game.GetFormFromFile(0x07B44C, "SL Survival.esp") as GlobalVariable).GetValue()) ; _SLS_CurfewBegin
 		JsonUtil.SetFloatValue("SL Survival/Settings.json", "_SLS_CurfewEnd", (Game.GetFormFromFile(0x07B44D, "SL Survival.esp") as GlobalVariable).GetValue()) ; _SLS_CurfewEnd

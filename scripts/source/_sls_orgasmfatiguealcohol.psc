@@ -1,7 +1,7 @@
 Scriptname _SLS_OrgasmFatigueAlcohol extends ReferenceAlias  
 
 Event OnPlayerLoadGame()
-	OrgFat.OnGameLoad()
+	OrgFat.Refresh()
 EndEvent
 
 Event OnObjectEquipped(Form akBaseObject, ObjectReference akReference)

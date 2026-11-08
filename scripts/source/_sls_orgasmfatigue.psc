@@ -18,9 +18,10 @@ Function Shutdown()
 	Self.Stop()
 EndFunction
 
-Function OnGameLoad()
-	; The debuff's stamina/magicka magnitude is set on the spell form, which a load reverts to the
-	; plugin's value (0 for the two stronger levels), so put the sized debuff back on every load
+Function Refresh()
+	; Every load: the debuff's stamina/magicka magnitude is set on the spell form, which a load reverts
+	; to the plugin's value (0 for the two stronger levels), so put the sized debuff back on. Also on
+	; MCM close after the experience bonus changed.
 	If Self.IsRunning()
 		SetFatigue()
 	EndIf
@@ -67,7 +68,7 @@ Event OnUpdateGameTime()
 	If DailyOrgasmCount > OrgasmThreshold && OrgasmThreshold < 19.0
 		OrgasmThreshold += 1.0
 		Debug.Notification("I can handle more orgasms now")
-	ElseIf DailyOrgasmCount < OrgasmThreshold && OrgasmThreshold > 1.0
+	ElseIf DailyOrgasmCount < OrgasmThreshold && OrgasmThreshold > GetExperienceFloor() ; sensitivity returns only down to what experience gives
 		OrgasmThreshold -= 1.0
 		Debug.Notification("I'm more sensitive and can't have as many orgasms now")
 	EndIf
@@ -156,6 +157,7 @@ Event OnAnimationEnd(int tid, bool HasPlayer)
 EndEvent
 
 Function SetFatigue()
+	ApplyExperienceFloor()
 	Spell FatigueSpell = GetDebuff(SetFatigueLevel())
 	If FatigueSpell
 		Float StaminaPerOrgasm = PlayerRef.GetBaseActorValue("Stamina") / 10.0
@@ -182,8 +184,33 @@ Function RemoveFatigue()
 EndFunction
 
 Function AddOrgasm()
+	ApplyExperienceFloor() ; callers compare against the threshold next
 	AdjustOrgasmCount(1.0)
 	DailyOrgasmCount += 1.0 ; only real orgasms train the daily threshold - not childbirth fatigue
+EndFunction
+
+; The lowest the orgasm threshold can sit, from the player's SexLab experience: the vaginal, anal and
+; oral skill titles (Unskilled 0 .. Grand Master 6) summed to 0..18, so mastering all three adds
+; ExperienceLimitBonus orgasms. Daily training still pushes the threshold above this and a quiet day
+; still lowers it, but only down to here.
+Float Function GetExperienceFloor()
+	If ExperienceLimitBonus <= 0.0 || !Sexlab
+		Return 1.0
+	EndIf
+	Int Mastery = GetSkillTitleLevel("Vaginal") + GetSkillTitleLevel("Anal") + GetSkillTitleLevel("Oral")
+	Return 1.0 + ((Mastery * ExperienceLimitBonus / 18.0) as Int)
+EndFunction
+
+Int Function GetSkillTitleLevel(String Skill) ; the level keeps climbing past Grand Master; its title, and this, stop there
+	Return PapyrusUtil.ClampInt(Sexlab.GetSkillLevel(PlayerRef, Skill), 0, 6)
+EndFunction
+
+Function ApplyExperienceFloor()
+	Float ExperienceFloor = GetExperienceFloor()
+	If OrgasmThreshold < ExperienceFloor
+		OrgasmThreshold = ExperienceFloor
+		Debug.Notification("My experience lets me handle more orgasms now")
+	EndIf
 EndFunction
 
 Function AdjustOrgasmCount(Float Value)
@@ -236,6 +263,7 @@ Float Property DailyOrgasmCount = 0.0 Auto Hidden
 Float Property OrgasmThreshold = 1.0 Auto Hidden
 Float Property OrgasmRecoveryPerHour = 0.8 Auto Hidden
 Float Property LaborFatigue = 4.0 Auto Hidden ; Fatigue (orgasm-equivalents) added per baby at childbirth (Beeing Female)
+Float Property ExperienceLimitBonus = 9.0 Auto Hidden ; Orgasms full SexLab mastery adds to the lowest threshold (0 = off), see GetExperienceFloor
 
 Spell[] FatigueSpellList
 String[] FatigeStrs
