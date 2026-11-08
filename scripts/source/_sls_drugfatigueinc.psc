@@ -25,6 +25,9 @@ Event OnEffectFinish(Actor akTarget, Actor akCaster)
 		Return
 	EndIf
 	Needs.ModFatigue(Math.Ceiling(FatigueGain))
+	If FatigueGain > 0.0
+		_SLS_Debuff.Notify("Comedown: the drug wears off and the tiredness comes flooding back")
+	EndIf
 EndEvent
 
 State InActive

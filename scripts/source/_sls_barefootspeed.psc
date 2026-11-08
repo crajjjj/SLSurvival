@@ -5,6 +5,12 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	akTarget.ModAv("CarryWeight", -0.01)
 	RegisterForModEvent("_SLS_BarefootStaggerChance", "On_SLS_BarefootStaggerChance")
 	RegisterForSingleUpdate(1.0)
+	; The effect is conditioned on _SLS_PlayerIsBareFoot, so it starts when the shoes come off
+	If StorageUtil.GetFloatValue(Menu, "BarefootStaggerChance", Missing = 20.0) > 0.0
+		_SLS_Debuff.Notify("Barefoot: I'm slower without shoes and may stumble when running")
+	Else
+		_SLS_Debuff.Notify("Barefoot: I'm slower without shoes")
+	EndIf
 EndEvent
 
 Event OnEffectFinish(Actor akTarget, Actor akCaster)

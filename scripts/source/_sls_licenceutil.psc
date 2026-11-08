@@ -1169,7 +1169,10 @@ Function NullifyMagic(Actor akTarget)
 			CollarMiscreant(akTarget)
 			StorageUtil.SetIntValue(None, "_SLS_PlayerIsMagicCursed", 2)
 		Else
-			
+			; A party-wide licence re-runs this for the follower curses: say it only the first time
+			If akTarget == PlayerRef && !akTarget.HasSpell(_SLS_MagicLicenceCurse)
+				_SLS_Debuff.Notify("Magicka curse: I can't use my magicka without a magic licence")
+			EndIf
 			akTarget.RemoveSpell(_SLS_MagicLicenceCurse)
 			Utility.Wait(0.1)
 			akTarget.AddSpell(_SLS_MagicLicenceCurse, abVerbose = false)

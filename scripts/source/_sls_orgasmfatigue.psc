@@ -157,8 +157,20 @@ Event OnAnimationEnd(int tid, bool HasPlayer)
 EndEvent
 
 Function SetFatigue()
+	Int OldLevel = _SLS_OrgasmFatigueLevel.GetValueInt()
 	ApplyExperienceFloor()
-	Spell FatigueSpell = GetDebuff(SetFatigueLevel())
+	Int Level = SetFatigueLevel()
+	Spell FatigueSpell = GetDebuff(Level)
+	; Every load runs this too, and there the level is unchanged, so it stays silent
+	If Level > OldLevel
+		_SLS_Debuff.Notify("Orgasm fatigue: I'm " + FatigueLevelName(Level) + " now")
+	ElseIf Level < OldLevel
+		If Level == 0
+			_SLS_Debuff.Notify("Orgasm fatigue: I've recovered")
+		Else
+			_SLS_Debuff.Notify("Orgasm fatigue eased: I'm only " + FatigueLevelName(Level) + " now")
+		EndIf
+	EndIf
 	If FatigueSpell
 		Float StaminaPerOrgasm = PlayerRef.GetBaseActorValue("Stamina") / 10.0
 		Float MagickaPerOrgasm = PlayerRef.GetBaseActorValue("Magicka") / 10.0
@@ -238,6 +250,15 @@ Spell Function GetDebuff(Int Level)
 		Return FatigueSpellList[(Level - 1)]
 	EndIf
 	Return None
+EndFunction
+
+String Function FatigueLevelName(Int Level)
+	If Level >= 3
+		Return "drained"
+	ElseIf Level == 2
+		Return "exhausted"
+	EndIf
+	Return "fatigued"
 EndFunction
 
 String Function GetOrgasmFatigueString()

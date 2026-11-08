@@ -56,6 +56,10 @@ Function EquippedHeavyBondage(Form akBaseObject)
 		Utility.Wait(1.0)
 		RegForSwimEvents(true)
 		If PlayerRef.IsEquipped(akBaseObject)
+			; Every heavy bondage equip/unequip lands here, so only announce penalties that are new
+			If !PlayerRef.HasSpell(_SLS_DvEf_HeavyBondageLockpickingDiffSpell) && !PlayerRef.HasSpell(_SLS_DvEf_HeavyBondageLockpickingImpSpell) && !PlayerRef.HasSpell(_SLS_DvEf_HeavyBondagePickpocketDiffSpell) && !PlayerRef.HasSpell(_SLS_DvEf_HeavyBondagePickpocketImpSpell)
+				NotifyHeavyBondage()
+			EndIf
 			If LockpickingDiff == 1
 				PlayerRef.AddSpell(_SLS_DvEf_HeavyBondageLockpickingDiffSpell, abVerbose  = false)
 				
@@ -85,6 +89,28 @@ Function EquippedHeavyBondage(Form akBaseObject)
 			PlayerRef.RemovePerk(_SLS_NoHarvestingPerk)
 			UnRegisterForAnimationEvent(PlayerRef, "SoundPlay.NPCHumanPickAxe")
 		EndIf
+	EndIf
+EndFunction
+
+Function NotifyHeavyBondage()
+	String Msg = ""
+	If LockpickingDiff == 1
+		Msg = "lockpicking is harder"
+	ElseIf LockpickingDiff == 2
+		Msg = "I can't pick locks"
+	EndIf
+	If PickPocketDiff > 0
+		If Msg != ""
+			Msg += ", "
+		EndIf
+		If PickPocketDiff == 1
+			Msg += "pickpocketing is harder"
+		Else
+			Msg += "I can't pick pockets"
+		EndIf
+	EndIf
+	If Msg != ""
+		_SLS_Debuff.Notify("Heavy bondage: " + Msg)
 	EndIf
 EndFunction
 

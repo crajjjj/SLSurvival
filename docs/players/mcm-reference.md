@@ -27,6 +27,6 @@ Quick reference to every page in the SexLab Survival MCM, in the order they appe
 | 18 | Stats & Info 2 | Read-only status and stats (page 2) | — |
 
 !!! note "Page roles"
-    - **Settings** holds global keys, import/export, and general options.
+    - **Settings** holds global keys, import/export, and general options. Its **Debuff Notifications** toggle (on by default) shows a notification when SLS puts a debuff on you or one changes: barefoot, orgasm fatigue levels, heavy bondage's lockpicking and pickpocketing penalties, the bikini curse's breathlessness, the magicka curse and a drug's comedown. Switch it off to keep them silent.
     - **Interfaces** is where mod integrations are toggled — see [Mod Integrations](integrations.md).
     - **Stats & Info** and **Stats & Info 2** are read-only status pages; they display current state and don't change settings.
