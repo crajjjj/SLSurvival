@@ -12,6 +12,11 @@ Float Property CampingFatigue = 0.0 Auto Hidden
 
 Float Property FatigueBeforeModding Auto Hidden
 
+; The drug comedown (_SLS_DrugFatigueInc): the rest a dose gave is owed back, with DrugEndFatigueInc
+; of its strength on top, when the effect wears off. Doses add to one debt, because a second dose
+; recasts the effect, which ends the running one, and that end must not charge the first dose early.
+Float Property DrugFatigueOwed = 0.0 Auto Hidden
+
 Keyword Property SexLabNoStrip Auto
 Keyword Property Vampire Auto
 
@@ -53,6 +58,7 @@ String LastConditions ; Breakdown from the most recent GetSleepPenalty() call, m
 Float ConditionsShownRT = -3600.0 ; Real-time stamp of the last on-screen breakdown (Sleep/Wait menu hook path)
 Bool SleptInFurniture ; Player was already in the bed when the applied penalty was computed (Go To Bed-style flow)
 Keyword BedrollKeyword ; Skyrim.esm FurnitureBedRoll, fetched on first use
+Form VampireCoffin
 
 Event OnInit()
 	PickNeedsState()
@@ -200,7 +206,10 @@ Float Function GetSleepPenalty(Bool ShowConditions = false, Bool IsSleeping)
 			If !BedrollKeyword
 				BedrollKeyword = Game.GetFormFromFile(0x0E4AD6, "Skyrim.esm") as Keyword
 			EndIf
-			If Bed.HasKeyword(BedrollKeyword) || StringUtil.Find(BedName, "Roll") != -1 || StringUtil.Find(BedName, "Hay Pile") != -1  || StringUtil.Find(BedName, "Bedding") != -1 ; Bedding = 'Rough Bedding'
+			If !VampireCoffin
+				VampireCoffin = Game.GetFormFromFile(0x000801, "HearthFires.esm") ; BYOHVampireCoffinVert01 carries the keyword but is a vampire's bed
+			EndIf
+			If (Bed.HasKeyword(BedrollKeyword) && Bed.GetBaseObject() != VampireCoffin) || StringUtil.Find(BedName, "Roll") != -1 || StringUtil.Find(BedName, "Hay Pile") != -1  || StringUtil.Find(BedName, "Bedding") != -1 ; Bedding = 'Rough Bedding'
 				If StringUtil.Find(BedName, "Hay") == -1 && StringUtil.Find(BedName, "Bedding") == -1
 					ValTemp = JsonUtil.GetFloatValue("SL Survival/SleepDepriv.json", "bed_bedroll") ; 0.10
 					Conditions += "Bed - Serviceable: " + ((ValTemp * 100.0) as Int) + "%"
@@ -526,6 +535,31 @@ EndFunction
 Function SyncBedrollSleepFlag() ; No-op unless the needs mod has a bedroll latch to correct (SunHelm)
 EndFunction
 
+; Straight after a dose's ModFatigue: owe back what the dose actually took, measured, so a meter that
+; was already full is not charged for rest it never gave. Capped at the dose's strength, because
+; iNeed's reading jumps a whole stage when a dose lifts its meter off empty.
+Function OweDrugFatigue(Float Strength, Float ExtraMult)
+	If IsNeedsModActive()
+		Float Taken = PapyrusUtil.ClampFloat(Math.Abs(GetFatigue() - FatigueBeforeModding), 0.0, Strength)
+		DrugFatigueOwed += Taken + (Strength * ExtraMult)
+	EndIf
+EndFunction
+
+; From _SLS_DrugFatigueInc's end. A re-dose ends the running effect as well; then the newer dose's
+; effect is up after the wait and pays the whole debt when it ends.
+Function DrugEffectEnded(MagicEffect DrugEffect)
+	Utility.Wait(0.5)
+	If DrugEffect && PlayerRef.HasMagicEffect(DrugEffect)
+		Return
+	EndIf
+	Float Owed = DrugFatigueOwed
+	DrugFatigueOwed = 0.0
+	If Owed > 0.0 && IsNeedsModActive()
+		ModFatigue(Math.Ceiling(Owed))
+		_SLS_Debuff.Notify("Comedown", "Comedown: the drug wears off and the tiredness comes flooding back")
+	EndIf
+EndFunction
+
 ; Empty state functions ============================================================
 Bool Function IsNeedsModActive()
 	Return false
@@ -667,7 +701,7 @@ State Rnd ; RND ================================================================
 	EndFunction
 
 	Function CorrectFatigue(Float SleepPenalty, Float StartingFatigue, Float HoursSlept) ; Not Tired - 0.0, Slightly Tired - 30.0, Tired - 60.0, Very Tired - 120.0, Exhausted - 240.0. Capped between 0.0 - 240.0
-		Rnd.CorrectFatigue(SleepPenalty, StartingFatigue, HoursSlept)
+		Rnd.CorrectFatigue(SleepPenalty, StartingFatigue * GetFatigueScale(), HoursSlept) ; every adapter works in its mod's own units
 	EndFunction
 
 	Function ModFatigue(Float Amount)
@@ -759,7 +793,7 @@ State iNeed ; iNeed ============================================================
 	
 	Function CorrectFatigue(Float SleepPenalty, Float StartingFatigue, Float HoursSlept)
 		If IsNeedsModActive()
-			Ineed.CorrectFatigue(SleepPenalty, StartingFatigue, HoursSlept)
+			Ineed.CorrectFatigue(SleepPenalty, StartingFatigue * GetFatigueScale(), HoursSlept)
 		EndIf
 	EndFunction
 
@@ -852,7 +886,7 @@ State Esd ; EatingSleepingDrinking =============================================
 	EndFunction
 
 	Function CorrectFatigue(Float SleepPenalty, Float StartingFatigue, Float HoursSlept)
-		EatSleepDrink.CorrectFatigue(SleepPenalty, StartingFatigue, HoursSlept)
+		EatSleepDrink.CorrectFatigue(SleepPenalty, StartingFatigue * GetFatigueScale(), HoursSlept)
 	EndFunction
 
 	Function ModFatigue(Float Amount)

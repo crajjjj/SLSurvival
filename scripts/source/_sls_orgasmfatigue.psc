@@ -67,10 +67,10 @@ EndFunction
 Event OnUpdateGameTime()
 	If DailyOrgasmCount > OrgasmThreshold && OrgasmThreshold < 19.0
 		OrgasmThreshold += 1.0
-		Debug.Notification("I can handle more orgasms now")
+		_SLS_Debuff.Notify("OrgasmLimit", "I can handle more orgasms now")
 	ElseIf DailyOrgasmCount < OrgasmThreshold && OrgasmThreshold > GetExperienceFloor() ; sensitivity returns only down to what experience gives
 		OrgasmThreshold -= 1.0
-		Debug.Notification("I'm more sensitive and can't have as many orgasms now")
+		_SLS_Debuff.Notify("OrgasmLimit", "I'm more sensitive and can't have as many orgasms now")
 	EndIf
 	SetFatigue()
 	DailyOrgasmCount = 0.0
@@ -114,18 +114,16 @@ Event On_SLS_BfLabor(Int ChildCount, Form Father0)
 		Babies = 1
 	EndIf
 	AdjustOrgasmCount(LaborFatigue * Babies)
+	; Same category and before SetFatigue: the shared cooldown then swallows SetFatigue's level notice,
+	; so the birth says it once
+	_SLS_Debuff.Notify("OrgasmFatigue", "Giving birth has left me exhausted.")
 	SetFatigue()
-	Debug.Notification("Giving birth has left me exhausted.")
 EndEvent
 
 Function OutOfSexOrgasmEvent()
 	AddOrgasm()
 	;Debug.Messagebox("Player orgasm\nCount: " + OrgasmCount)
-	If OrgasmCount > OrgasmThreshold
-		SetFatigue()
-	Else
-		RemoveFatigue()
-	EndIf
+	SetFatigue() ; below the limit too: it clears the level global that RemoveFatigue alone leaves set
 	Ahegao.CaptureVibeEvent(OrgasmCount as Int)
 EndFunction
 
@@ -142,10 +140,10 @@ Function OrgasmEvent(Actor ActorRef = None, Int tid, Bool HasPlayer)
 	If ActorRef == PlayerRef || (!ActorRef && HasPlayer) ; Player had orgasm
 		AddOrgasm()
 		;Debug.Messagebox("Player orgasm\nCount: " + OrgasmCount)
-		If OrgasmCount > OrgasmThreshold
+		If OrgasmCount > OrgasmThreshold ; may still be the threshold from before the experience floor rose; SetFatigue settles it
 			RegisterForModEvent("HookAnimationEnd", "OnAnimationEnd")
 		Else
-			RemoveFatigue()
+			SetFatigue()
 		EndIf
 	EndIf
 EndFunction
@@ -157,8 +155,8 @@ Event OnAnimationEnd(int tid, bool HasPlayer)
 EndEvent
 
 Function SetFatigue()
+	ApplyExperienceFloor() ; first: its SexLab calls let other threads in, keep them out of OldLevel..Level
 	Int OldLevel = _SLS_OrgasmFatigueLevel.GetValueInt()
-	ApplyExperienceFloor()
 	Int Level = SetFatigueLevel()
 	Spell FatigueSpell = GetDebuff(Level)
 	; Every load runs this too, and there the level is unchanged, so it stays silent
@@ -196,7 +194,6 @@ Function RemoveFatigue()
 EndFunction
 
 Function AddOrgasm()
-	ApplyExperienceFloor() ; callers compare against the threshold next
 	AdjustOrgasmCount(1.0)
 	DailyOrgasmCount += 1.0 ; only real orgasms train the daily threshold - not childbirth fatigue
 EndFunction
@@ -210,7 +207,8 @@ Float Function GetExperienceFloor()
 		Return 1.0
 	EndIf
 	Int Mastery = GetSkillTitleLevel("Vaginal") + GetSkillTitleLevel("Anal") + GetSkillTitleLevel("Oral")
-	Return 1.0 + ((Mastery * ExperienceLimitBonus / 18.0) as Int)
+	; At most 19, like daily training: the count stops at 20, so a higher threshold is never passed
+	Return PapyrusUtil.ClampFloat(1.0 + ((Mastery * ExperienceLimitBonus / 18.0) as Int), 1.0, 19.0)
 EndFunction
 
 Int Function GetSkillTitleLevel(String Skill) ; the level keeps climbing past Grand Master; its title, and this, stop there
@@ -221,7 +219,7 @@ Function ApplyExperienceFloor()
 	Float ExperienceFloor = GetExperienceFloor()
 	If OrgasmThreshold < ExperienceFloor
 		OrgasmThreshold = ExperienceFloor
-		Debug.Notification("My experience lets me handle more orgasms now")
+		_SLS_Debuff.Notify("OrgasmLimit", "My experience lets me handle more orgasms now")
 	EndIf
 EndFunction
 
@@ -237,7 +235,7 @@ Int Function SetFatigueLevel()
 	ElseIf OrgasmCount >= OrgasmThreshold + Div
 		_SLS_OrgasmFatigueLevel.SetValueInt(2)
 		Return 2
-	ElseIf OrgasmCount >= OrgasmThreshold
+	ElseIf OrgasmCount > OrgasmThreshold ; past the limit, where the debuff's size stops being 0
 		_SLS_OrgasmFatigueLevel.SetValueInt(1)
 		Return 1
 	EndIf

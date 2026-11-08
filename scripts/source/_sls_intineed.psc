@@ -21,6 +21,14 @@ Float Function GetLastHungerUpdateTime(Quest SnQuest) Global
 	Return (SnQuest as _SNQuestScript).TimeUpdate
 EndFunction
 
+Int Function GetTimePassed(Quest SnQuest) Global
+	Return (SnQuest as _SNQuestScript).TimePassed
+EndFunction
+
+Function SetTimePassed(Quest SnQuest, Int Hours) Global
+	(SnQuest as _SNQuestScript).TimePassed = Hours
+EndFunction
+
 Float Function GetFatigue(Quest SnQuest) Global
 	Return (SnQuest as _SNQuestScript).FatigueState
 EndFunction

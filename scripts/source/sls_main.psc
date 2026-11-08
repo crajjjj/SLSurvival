@@ -1175,7 +1175,8 @@ Event OnObjectUnEquipped(Form akBaseObject, ObjectReference akReference)
 EndEvent
 
 Function AddFatigueGainEffect(Form akBaseObject, Bool IsMilk, Float Strength = 40.0, Float MilkStrength = 0.0) ; Strength = 40.0 for skooma types
-	If Menu.DrugEndFatigueInc >= 0.0
+	If Menu.DrugEndFatigueInc >= 0.0 && Needs.IsNeedsModActive() ; without a needs mod the dose gave no rest to owe back
+		Needs.OweDrugFatigue(Strength, Menu.DrugEndFatigueInc) ; right after the dose's ModFatigue, which it measures
 		_SLS_DrugFatigueIncSpell.SetNthEffectMagnitude(0, Strength)
 		Int Duration
 		If IsMilk
