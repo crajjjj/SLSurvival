@@ -352,12 +352,7 @@ Function SetIsInsideWalls(Int LocIndex)
 		Init.ResetCanDos()
 		TollDodge.PlayerLeavesCity()
 		ToggleGuardWarningQuests(Active = false)
-		If Menu.FtDisabledInCity ; only undo a block SLS set, never another mod's
-			Menu.FtDisabledInCity = false
-			If !Menu.FtDisableIsNormal
-				Game.EnableFastTravel()
-			EndIf
-		EndIf
+		Menu.ReleaseFastTravelBlock()
 		TollDisguise.SetGuardDistance(PlayerCurrentLocIndex)
 	
 	ElseIf !WasInside && Init.IsPlayerInside ; Was outside and now is inside

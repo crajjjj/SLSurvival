@@ -40,7 +40,8 @@ Function RegForSexEvents()
 	UnRegisterForModEvent("HookAnimationStart")
 	UnRegisterForModEvent("HookStageStart")
 	UnRegisterForModEvent("HookAnimationEnd")
-	If SexChancePlayer > 0.0 || SexChanceFollower > 0.0 || SexChanceNpc > 0.0
+	; A stopped quest still receives events, so it must not hold registrations
+	If IsRunning() && (SexChancePlayer > 0.0 || SexChanceFollower > 0.0 || SexChanceNpc > 0.0)
 		RegisterForModEvent("HookAnimationStart", "OnAnimationStart")
 		RegisterForModEvent("HookStageStart", "OnStageStart")
 		RegisterForModEvent("HookAnimationEnd", "OnAnimationEnd")
@@ -48,7 +49,7 @@ Function RegForSexEvents()
 EndFunction
 
 Function SetPushChance(Bool OverrideOff = false)
-	If !OverrideOff && PushChance > 0.0
+	If !OverrideOff && PushChance > 0.0 && IsRunning()
 		RegisterForAnimationEvent(PlayerRef, "getupstart")
 		RegisterAliasesForGetUpEvent(_SLS_TraumaDynamicQuest, Register = true)
 		RegisterAliasesForGetUpEvent(_SLS_TraumaAssignedQuest, Register = true)

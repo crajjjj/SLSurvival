@@ -889,13 +889,13 @@ Function VersionCheck()
 	EndIf
 
 	; 0.807 makes a settings import apply what clicking each MCM option does, and turns fast travel
-	; back on when leaving a tolled city. Migration: the Push Trauma Chance slider registered for the
-	; get-up event on the OLD chance, so a save that raised it from 0 never registered; do it now.
+	; back on when leaving a tolled city. Migration: the trauma sliders never registered a chance
+	; raised from 0 (push used the old value, sex never re-registered), so register again; and adopt
+	; a fast travel block left from a city visit, which no earlier version ever lifted.
 	If Version < 0.807
-		_SLS_Trauma TraumaQuest = Game.GetFormFromFile(0x0F37A1, "SL Survival.esp") as _SLS_Trauma
-		If TraumaQuest && TraumaQuest.IsRunning()
-			TraumaQuest.SetPushChance()
-		EndIf
+		Menu.Trauma.SetPushChance()
+		Menu.Trauma.RegForSexEvents()
+		Menu.FtDisabledInCity = Menu.FastTravelDisable && !Game.IsFastTravelControlsEnabled()
 		UpdateVersion(0.807)
 	EndIf
 EndFunction

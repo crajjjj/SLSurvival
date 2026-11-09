@@ -62,7 +62,8 @@ Event OnItemRemoved(Form akBaseItem, int aiItemCount, ObjectReference akItemRefe
 EndEvent
 
 Event OnMenuOpen(String MenuName)
-	If Init.IsPlayerInside && Menu.FastTravelDisable
+	; Only a block SLS sets itself is SLS's to lift on leaving; leave one another mod set alone
+	If Init.IsPlayerInside && Menu.FastTravelDisable && Game.IsFastTravelControlsEnabled()
 		Game.EnableFastTravel(false)
 		Menu.FtDisabledInCity = true
 	EndIf

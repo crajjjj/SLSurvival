@@ -4179,6 +4179,7 @@ Event OnOptionSelect(int option)
 	ElseIf (option == FtDisableIsNormalOID)
 		FtDisableIsNormal = !FtDisableIsNormal
 		SetToggleOptionValue(FtDisableIsNormalOID, FtDisableIsNormal)
+		ReleaseFastTravelBlock() ; a block kept from the last city visit
 	ElseIf (option == CompassMechanicsOID)
 		CompassMechanics = !CompassMechanics
 		SetToggleOptionValue(CompassMechanicsOID, CompassMechanics)
@@ -6044,12 +6045,15 @@ Event OnOptionSliderAccept(int option, float value)
 			
 		ElseIf Option == StorageUtil.GetIntValue(Self, "TraumaSexChancePlayerOID_S")
 			Trauma.SexChancePlayer = value
+			Trauma.RegForSexEvents() ; registered only while a sex chance is above 0
 			SetSliderOptionValue(StorageUtil.GetIntValue(Self, "TraumaSexChancePlayerOID_S"), Trauma.SexChancePlayer)
 		ElseIf Option == StorageUtil.GetIntValue(Self, "TraumaSexChanceFollowerOID_S")
 			Trauma.SexChanceFollower = value
+			Trauma.RegForSexEvents()
 			SetSliderOptionValue(StorageUtil.GetIntValue(Self, "TraumaSexChanceFollowerOID_S"), Trauma.SexChanceFollower)
 		ElseIf Option == StorageUtil.GetIntValue(Self, "TraumaSexChanceOID_S")
 			Trauma.SexChanceNpc = value
+			Trauma.RegForSexEvents()
 			SetSliderOptionValue(StorageUtil.GetIntValue(Self, "TraumaSexChanceOID_S"), Trauma.SexChanceNpc)
 			
 		ElseIf Option == StorageUtil.GetIntValue(Self, "TraumaSexHitsPlayerOID_S")
@@ -6087,9 +6091,7 @@ Event OnOptionSliderAccept(int option, float value)
 		ElseIf Option == StorageUtil.GetIntValue(Self, "TraumaPushChancePlayerOID_S")
 			If Trauma.PushChance != value
 				Trauma.PushChance = value ; before SetPushChance, which registers on the stored chance
-				If Trauma.IsRunning()
-					Trauma.SetPushChance()
-				EndIf
+				Trauma.SetPushChance()
 			EndIf
 			SetSliderOptionValue(StorageUtil.GetIntValue(Self, "TraumaPushChancePlayerOID_S"), Trauma.PushChance)
 		EndIf
@@ -8639,6 +8641,13 @@ Function ToggleFastTravelDisable()
 	EndIf
 EndFunction
 
+Function ReleaseFastTravelBlock() ; lift the block SLS set in a tolled city, once outside and allowed
+	If FtDisabledInCity && !FtDisableIsNormal && !Init.IsPlayerInside
+		FtDisabledInCity = false
+		Game.EnableFastTravel()
+	EndIf
+EndFunction
+
 Function ToggleLicMagicCursedDevices()
 	If LicUtil.LicMagicCursedDevices
 		PlayerRef.RemoveSpell(_SLS_MagicLicenceCurse)
@@ -8835,9 +8844,7 @@ Function ToggleCumAddictAutoSuckCreature()
 	If CumAddictAutoSuckCreature == 0.0
 		_SLS_CumAddictAutoSuckCreatureQuest.Stop()
 	Else
-		If CumAddict.GetHungerState() >= 1
-			_SLS_CumAddictAutoSuckCreatureQuest.Start()
-		EndIf
+		CumAddict.SetAutoSuckBeginStage() ; honours the Auto Suck Stage option and the cooldown
 	EndIf
 EndFunction
 
@@ -10050,8 +10057,12 @@ Function LoadSettings()
 		If OldFastTravelDisable && !FastTravelDisable ; as switching the option off in the MCM does
 			ToggleFastTravelDisable()
 		EndIf
-		If Trauma.IsRunning() ; a stopped quest must not hold the get-up registration
-			Trauma.SetPushChance()
+		ReleaseFastTravelBlock()
+		Trauma.SetPushChance()
+		Trauma.RegForSexEvents()
+		If IsHardcoreLocked && !HardcoreMode ; leaving hardcore takes the same gold as the toggle
+			HardcoreMode = true
+			HardcoreMode = !HardcoreToggleAllowed()
 		EndIf
 		IsHardcoreLocked = HardcoreMode
 		_SLS_LicInspLostSightSpell.SetNthEffectDuration(0, _SLS_LicInspPersistence.GetValueInt())
@@ -10062,8 +10073,18 @@ Function LoadSettings()
 		AnimalFriend.Wildling.UpdateAllurePool()
 		; Do debug mode last to avoid messagebox spam
 		Init.DebugMode = JsonUtil.GetIntValue("SL Survival/Settings.json", "Init.DebugMode")
-		
-		
+
+		; A gated male player keeps the female-only systems off: re-gate, which stores the imported
+		; values for a female player instead of applying them
+		If StorageUtil.GetIntValue(Self, "_SLS_GG_Active", Missing = 0) == 1
+			StorageUtil.SetIntValue(Self, "_SLS_GG_Active", 0)
+			ApplyGenderGate()
+		EndIf
+		; Utility.Wait (ToggleLicences, ResetCompass) does not run in menu mode, so the import often
+		; finishes after the menu closed, and that close ran before the later Do* toggles were set
+		If !IsInMcm
+			OnConfigClose()
+		EndIf
 		If IsInMcm
 			SetTextOptionValue(ImportSettingsOID_T, "Load Complete!")
 			ForcePageReset()
