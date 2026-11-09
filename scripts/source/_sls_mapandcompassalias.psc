@@ -64,6 +64,7 @@ EndEvent
 Event OnMenuOpen(String MenuName)
 	If Init.IsPlayerInside && Menu.FastTravelDisable
 		Game.EnableFastTravel(false)
+		Menu.FtDisabledInCity = true
 	EndIf
 	If (PlayerRef.GetItemCount(_SLS_MapAndCompass) == 0 && !TempAccess) || Devious.IsPlayerBlindfolded()
 		Game.DisablePlayerControls(!Game.IsMovementControlsEnabled(), !Game.IsFightingControlsEnabled(), !Game.IsCamSwitchControlsEnabled(), !Game.IsLookingControlsEnabled(), !Game.IsSneakingControlsEnabled(), true, !Game.IsActivateControlsEnabled(), !Game.IsJournalControlsEnabled())

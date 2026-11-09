@@ -6086,9 +6086,11 @@ Event OnOptionSliderAccept(int option, float value)
 		
 		ElseIf Option == StorageUtil.GetIntValue(Self, "TraumaPushChancePlayerOID_S")
 			If Trauma.PushChance != value
-				Trauma.SetPushChance()
+				Trauma.PushChance = value ; before SetPushChance, which registers on the stored chance
+				If Trauma.IsRunning()
+					Trauma.SetPushChance()
+				EndIf
 			EndIf
-			Trauma.PushChance = value
 			SetSliderOptionValue(StorageUtil.GetIntValue(Self, "TraumaPushChancePlayerOID_S"), Trauma.PushChance)
 		EndIf
 	
@@ -8633,6 +8635,7 @@ EndFunction
 Function ToggleFastTravelDisable()
 	If !FastTravelDisable
 		Game.EnableFastTravel()
+		FtDisabledInCity = false
 	EndIf
 EndFunction
 
@@ -9419,6 +9422,7 @@ Function LoadSettings()
 		If IsInMcm
 			SetTextOptionValue(ImportSettingsOID_T, "Loading Bools")
 		EndIf
+		Bool OldFastTravelDisable = FastTravelDisable
 
 		; Bools
 		If CanEnableSnowberry()
@@ -10041,6 +10045,21 @@ Function LoadSettings()
 		(Game.GetFormFromFile(0xA7B33, "Skyrim.esm") as Quest).UpdateCurrentInstanceGlobal(Game.GetFormFromFile(0xF728D, "Skyrim.esm") as GlobalVariable)
 		ModifyVendorGold(ImportSettings = true)
 		AllInOne.Fav.SetFav(AllInOne.Fav.Favorite)
+		; Effects the MCM handlers run that an import used to skip (0.807)
+		ToggleIneqBuySell()
+		If OldFastTravelDisable && !FastTravelDisable ; as switching the option off in the MCM does
+			ToggleFastTravelDisable()
+		EndIf
+		If Trauma.IsRunning() ; a stopped quest must not hold the get-up registration
+			Trauma.SetPushChance()
+		EndIf
+		IsHardcoreLocked = HardcoreMode
+		_SLS_LicInspLostSightSpell.SetNthEffectDuration(0, _SLS_LicInspPersistence.GetValueInt())
+		Game.SetGameSettingInt("iCrimeGoldPickpocket", PpCrimeGold)
+		Frostfall.RegisterForDrenchEvent(LicUtil.DrenchLicDestroyChance > 0.0)
+		DoToggleGuardBehavWeapEquip = true
+		DoToggleGuardBehavArmorEquip = true
+		AnimalFriend.Wildling.UpdateAllurePool()
 		; Do debug mode last to avoid messagebox spam
 		Init.DebugMode = JsonUtil.GetIntValue("SL Survival/Settings.json", "Init.DebugMode")
 		
@@ -11324,6 +11343,7 @@ Bool Property CumBreathNotify = true Auto Hidden
 Bool Property FollowersStealGold = true Auto Hidden
 Bool Property FastTravelDisable = true Auto Hidden
 Bool Property FtDisableIsNormal = true Auto Hidden
+Bool Property FtDisabledInCity = false Auto Hidden ; SLS turned fast travel off in a tolled city; leaving turns it back on
 Bool Property ReplaceMaps = true Auto Hidden
 Bool Property CompassMechanics = true Auto Hidden
 Bool Property MinAvToggleT = true Auto Hidden

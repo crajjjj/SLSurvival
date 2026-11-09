@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.806
+	Version = 0.807
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -886,6 +886,17 @@ Function VersionCheck()
 			OrgasmFatigue.Shutdown()
 		EndIf
 		UpdateVersion(0.806)
+	EndIf
+
+	; 0.807 makes a settings import apply what clicking each MCM option does, and turns fast travel
+	; back on when leaving a tolled city. Migration: the Push Trauma Chance slider registered for the
+	; get-up event on the OLD chance, so a save that raised it from 0 never registered; do it now.
+	If Version < 0.807
+		_SLS_Trauma TraumaQuest = Game.GetFormFromFile(0x0F37A1, "SL Survival.esp") as _SLS_Trauma
+		If TraumaQuest && TraumaQuest.IsRunning()
+			TraumaQuest.SetPushChance()
+		EndIf
+		UpdateVersion(0.807)
 	EndIf
 EndFunction
 
