@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.807
+	Version = 0.808
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -897,6 +897,15 @@ Function VersionCheck()
 		Menu.Trauma.RegForSexEvents()
 		Menu.FtDisabledInCity = Menu.FastTravelDisable && !Game.IsFastTravelControlsEnabled()
 		UpdateVersion(0.807)
+	EndIf
+
+	; 0.807's import replay zeroed the bikini rank and kept the stored experience, so the next hourly
+	; tick announced the restored rank as a gain: put the rank back silently
+	If Version < 0.808
+		If Menu._SLS_BikiniExpTrainingQuest.IsRunning()
+			Menu.BikiniExp.CalcLevel(false)
+		EndIf
+		UpdateVersion(0.808)
 	EndIf
 EndFunction
 

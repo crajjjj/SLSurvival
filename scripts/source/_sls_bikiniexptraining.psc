@@ -11,7 +11,23 @@ Function BeginUpdates()
 	EndIf
 EndFunction
 
+; The MCM switched the option on, or an import re-applied it while it was on: the rank follows the
+; stored experience at once and silently (the next hourly tick used to announce it as a gain), and
+; the hourly loop runs from now, so time spent with the option off is never credited
+Function Resume()
+	CalcLevel(false)
+	BeginUpdates()
+EndFunction
+
+; The MCM switched the option off: a stopped quest still receives the update it registered
+Function Suspend()
+	UnregisterForUpdateGameTime()
+EndFunction
+
 Event OnUpdateGameTime()
+	If !IsRunning() ; the option is off; the quest is stopped but its last registered update still arrives
+		Return
+	EndIf
 	DoUpdate()
 EndEvent
 
@@ -50,7 +66,7 @@ Function CalcExpLoss()
 	;Debug.Messagebox("ExpLoss")
 EndFunction
 
-Function CalcLevel()
+Function CalcLevel(Bool abNotify = true) ; abNotify false = set the rank without announcing a change
 	Int OldLevel = _SLS_BikiniExpLevel.GetValueInt()
 	If BikExp > ExpPerLevel * 5.5
 		_SLS_BikiniExpLevel.SetValueInt(4)
@@ -65,6 +81,9 @@ Function CalcLevel()
 	EndIf
 	
 	Int NewLevel = _SLS_BikiniExpLevel.GetValueInt()
+	If !abNotify
+		Return
+	EndIf
 	If NewLevel > OldLevel
 		Debug.Messagebox("You've gained more experience wearing bikini armors\nBikini Experience Rank: " + GetBikRankString())
 		

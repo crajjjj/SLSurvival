@@ -8332,14 +8332,16 @@ Function SetInequalityEffects()
 	_SLS_InequalitySpell.SetNthEffectMagnitude(9, IneqDestVal) ; Destruction power female
 EndFunction
 
-Function ToggleBikiniExp()
-	_SLS_BikiniExpLevel.SetValueInt(0)
+Function ToggleBikiniExp() ; also run by an import while the option is already on
 	If BikiniExpT
 		PlayerRef.AddSpell(_SLS_BikiniExpSpell)
 		PlayerRef.AddPerk(_SLS_BikiniExpPerk)
 		_SLS_BikiniExpTrainingQuest.Start()
+		BikiniExp.Resume() ; the rank from the stored experience, silently; zeroing it here left the next hourly tick to announce it as a gain
 	Else
+		BikiniExp.Suspend()
 		_SLS_BikiniExpTrainingQuest.Stop()
+		_SLS_BikiniExpLevel.SetValueInt(0)
 		PlayerRef.RemoveSpell(_SLS_BikiniExpSpell)
 		PlayerRef.RemovePerk(_SLS_BikiniExpPerk)
 	EndIf
