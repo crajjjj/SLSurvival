@@ -18,6 +18,9 @@ EndEvent
 
 Event On_SLS_Int_PlayerLoadsGame(string eventName, string strArg, float numArg, Form sender)
 	InitHeelsMgef()
+	If _SLS_BikiniExpTrainingQuest.IsRunning()
+		BikExp.MirrorWornBikinis() ; a mirrored bikini keyword is runtime only: put it back on what is worn
+	EndIf
 EndEvent
 
 Function InitHeelsMgef()

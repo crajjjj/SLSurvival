@@ -83,14 +83,15 @@ Function DoUpdate()
 	RegisterForSingleUpdateGameTime(1.0)
 EndFunction
 
-; Light or heavy armor that is not itself a bikini piece, in the slots the bikini curse looks at
-; (helmet, gauntlets, boots and shield never count there either)
+; Light or heavy armor the bikini curse would object to: the same slots and the same exemptions
+; (helmet, gauntlets, boots, shield, no-strip items and the licence exception list never count)
 Bool Function WearsOrdinaryArmor()
+	Formlist Exceptions = Menu._SLS_LicExceptionsArmor
 	Int Slot = 0x00000004 ; body, then every slot above it
 	While Slot <= 0x40000000 && Slot > 0
 		If Slot != 0x00000008 && Slot != 0x00000080 && Slot != 0x00000200 ; hands, feet, shield
 			Armor Piece = PlayerRef.GetWornForm(Slot) as Armor
-			If Piece && Piece.GetWeightClass() < 2 && !IsBikiniPiece(Piece)
+			If Piece && Piece.GetWeightClass() < 2 && !IsBikiniPiece(Piece) && !Piece.HasKeywordString("SexLabNoStrip") && !Exceptions.HasForm(Piece)
 				If !Piece.HasKeywordString("ArmorHelmet") && !Piece.HasKeywordString("ArmorGauntlets") && !Piece.HasKeywordString("ArmorBoots") && !Piece.HasKeywordString("ArmorShield")
 					Return true
 				EndIf

@@ -13,6 +13,8 @@ String Property FondleEffectId = "SLS_FONDLE" Auto Hidden ; fondle channel: a de
 Float Property FondleCap = 80.0 Auto Hidden ; fondling alone cannot push arousal past this ceiling
 Float Property FondleHalfLifeDays = 0.0833 Auto Hidden ; fondle decay half-life ~2 in-game hours (lingers through the scene, then fades)
 
+Bool MirrorUnavailable = false ; MirrorBikiniKeyword found no keyword native this session
+
 Quest SlaConfigQuest
 Quest sla_FrameworkQuest
 Quest sla_InternalQuest
@@ -32,6 +34,7 @@ Event On_SLS_Int_PlayerLoadsGame(string eventName, string strArg, float numArg, 
 EndEvent
 
 Function PlayerLoadsGame()
+	MirrorUnavailable = false
 	If Game.GetModByName("SexLabAroused.esm") != 255
 		If GetState() != "Installed"
 			GoToState("Installed")
@@ -121,8 +124,11 @@ State Installed
 	; only know _SLS_BikiniArmor: an armor SL Aroused calls a bikini is given that keyword too. Runtime
 	; only, so it is put back for worn pieces on equip and by the hourly experience update
 	Function MirrorBikiniKeyword(Form akItem, Keyword akSlsBikini)
-		If SlaVersion >= 29 && akItem as Armor && !akItem.HasKeyword(akSlsBikini) && IsBikiniArmor(akItem)
+		If SlaVersion >= 29 && !MirrorUnavailable && akItem as Armor && !akItem.HasKeyword(akSlsBikini) && IsBikiniArmor(akItem)
 			_SLS_IntSlax.AddKeywordToForm(akItem, akSlsBikini)
+			If !akItem.HasKeyword(akSlsBikini) ; this SL Aroused build has no keyword native: stop asking until the next load
+				MirrorUnavailable = true
+			EndIf
 		EndIf
 	EndFunction
 	
