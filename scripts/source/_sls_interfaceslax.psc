@@ -107,6 +107,24 @@ State Installed
 	Bool Function IsWearingStockings(Actor akActor)
 		Return akActor.WornHasKeyword(SLA_HasStockings)
 	EndFunction
+
+	; The one definition of "SL Aroused calls this a bikini": its bikini keyword, or its per-item tag
+	; (which it turns into that keyword on load). Experience, curse and licence code all ask here
+	Bool Function IsBikiniArmor(Form akItem)
+		If SlaVersion >= 29 && akItem.HasKeyword(SlaBikiniKeyword)
+			Return true
+		EndIf
+		Return StorageUtil.GetIntValue(akItem, "SLAroused.IsBikiniArmor", Missing = -1) > 0
+	EndFunction
+
+	; SL Survival.esp cannot name SL Aroused's keyword (not a master), so its spell and perk conditions
+	; only know _SLS_BikiniArmor: an armor SL Aroused calls a bikini is given that keyword too. Runtime
+	; only, so it is put back for worn pieces on equip and by the hourly experience update
+	Function MirrorBikiniKeyword(Form akItem, Keyword akSlsBikini)
+		If SlaVersion >= 29 && akItem as Armor && !akItem.HasKeyword(akSlsBikini) && IsBikiniArmor(akItem)
+			_SLS_IntSlax.AddKeywordToForm(akItem, akSlsBikini)
+		EndIf
+	EndFunction
 	
 	Int Function GetActorArousal(Actor who) ; Live arousal (0-100) from the framework API; preferred over reading the sla_Arousal faction rank
 		Return _SLS_IntSlax.GetActorArousal(sla_FrameworkQuest, who)
@@ -159,6 +177,13 @@ EndFunction
 
 Bool Function IsWearingStockings(Actor akActor)
 	Return false
+EndFunction
+
+Bool Function IsBikiniArmor(Form akItem)
+	Return false
+EndFunction
+
+Function MirrorBikiniKeyword(Form akItem, Keyword akSlsBikini)
 EndFunction
 
 Int Function GetActorArousal(Actor who) ; SLA absent: no arousal to read

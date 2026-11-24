@@ -60,6 +60,7 @@ State Off
 EndState
 
 Event OnObjectEquipped(Form akBaseObject, ObjectReference akReference)
+	Menu.Sla.MirrorBikiniKeyword(akBaseObject, _SLS_BikiniArmor) ; before the check reads the keyword
 	PreCheck(akBaseObject)
 EndEvent
 
@@ -69,6 +70,7 @@ EndEvent
 
 State InProc
 	Event OnObjectEquipped(Form akBaseObject, ObjectReference akReference)
+		Menu.Sla.MirrorBikiniKeyword(akBaseObject, _SLS_BikiniArmor)
 		ObjectJustEquipped = true
 	EndEvent
 
@@ -82,7 +84,7 @@ EndState
 
 Function PreCheck(Form akBaseObject)
 	If akBaseObject as Armor
-		If !akBaseObject.HasKeyword(_SLS_BikiniArmor) && StorageUtil.GetIntValue(akBaseObject, "SLAroused.IsBikiniArmor", Missing = -1) <= 0 && !akBaseObject.HasKeyword(SexLabNoStrip)
+		If !akBaseObject.HasKeyword(_SLS_BikiniArmor) && !Menu.Sla.IsBikiniArmor(akBaseObject) && !akBaseObject.HasKeyword(SexLabNoStrip)
 			If !akBaseObject.HasKeyword(ArmorGauntlets) && !akBaseObject.HasKeyword(ArmorHelmet) && !(akBaseObject).HasKeyword(ArmorShield)
 				If !_SLS_LicExceptionsArmor.HasForm(akBaseObject)
 					GoToState("InProc")
@@ -150,7 +152,7 @@ Function DoArmorCheck()
 		akBaseObject = PlayerRef.GetWornForm(SlotMasks[i])
 		If akBaseObject
 			If (akBaseObject as Armor).GetWeightClass() < 2
-				If !akBaseObject.HasKeyword(_SLS_BikiniArmor) && StorageUtil.GetIntValue(akBaseObject, "SLAroused.IsBikiniArmor", Missing = -1) <= 0 && !akBaseObject.HasKeyword(SexLabNoStrip) && !akBaseObject.HasKeyword(ArmorBoots) && !akBaseObject.HasKeyword(ArmorGauntlets) && !akBaseObject.HasKeyword(ArmorHelmet) && !(akBaseObject).HasKeyword(ArmorShield)
+				If !akBaseObject.HasKeyword(_SLS_BikiniArmor) && !Menu.Sla.IsBikiniArmor(akBaseObject) && !akBaseObject.HasKeyword(SexLabNoStrip) && !akBaseObject.HasKeyword(ArmorBoots) && !akBaseObject.HasKeyword(ArmorGauntlets) && !akBaseObject.HasKeyword(ArmorHelmet) && !(akBaseObject).HasKeyword(ArmorShield)
 					If !_SLS_LicExceptionsArmor.HasForm(akBaseObject)
 						Debug.Trace("_SLS_: Bikini curse triggered by: " + akBaseObject.GetName() + " - " + akBaseObject)
 						Menu.BikiniCurseTriggerArmor = akBaseObject
@@ -168,7 +170,7 @@ Function DoArmorCheck()
 	akBaseObject = PlayerRef.GetWornForm(4) ; Body slot
 	If akBaseObject
 		If (akBaseObject as Armor).GetWeightClass() == 2 ; Is clothes
-			If akBaseObject.HasKeyword(ClothingBody) && !akBaseObject.HasKeyword(SexLabNoStrip) && !_SLS_LicExceptionsArmor.HasForm(akBaseObject) && !akBaseObject.HasKeyword(_SLS_BikiniArmor) && StorageUtil.GetIntValue(akBaseObject, "SLAroused.IsSlootyArmor", Missing = -1) <= 0 && StorageUtil.GetIntValue(akBaseObject, "SLAroused.IsBikiniArmor", Missing = -1) <= 0
+			If akBaseObject.HasKeyword(ClothingBody) && !akBaseObject.HasKeyword(SexLabNoStrip) && !_SLS_LicExceptionsArmor.HasForm(akBaseObject) && !akBaseObject.HasKeyword(_SLS_BikiniArmor) && StorageUtil.GetIntValue(akBaseObject, "SLAroused.IsSlootyArmor", Missing = -1) <= 0 && !Menu.Sla.IsBikiniArmor(akBaseObject)
 				Debug.Trace("_SLS_: Bikini curse triggered by: " + akBaseObject.GetName() + " - " + akBaseObject)
 				Menu.BikiniCurseTriggerArmor = akBaseObject
 				;Debug.Messagebox("_SLS_: Bikini curse triggered by: " + akBaseObject.GetName() + " - " + akBaseObject)
@@ -372,7 +374,7 @@ Function ApplyCoverStatus(Form akBaseObject, Bool PlayerIsNaked)
 	; everything AND tracks while still deserving cat calls (bikini licence mechanics).
 	Bool IsSlooty = false
 	If akBaseObject
-		IsSlooty = akBaseObject.HasKeyword(_SLS_BikiniArmor) || akBaseObject.HasKeyword(_SLS_HalfNakedCoverKw) || StorageUtil.GetIntValue(akBaseObject, "SLAroused.IsSlootyArmor", Missing = -1) > 0 || StorageUtil.GetIntValue(akBaseObject, "SLAroused.IsBikiniArmor", Missing = -1) > 0 || (MaSlutiness >= 5 && MaSlutiness <=6)
+		IsSlooty = akBaseObject.HasKeyword(_SLS_BikiniArmor) || akBaseObject.HasKeyword(_SLS_HalfNakedCoverKw) || StorageUtil.GetIntValue(akBaseObject, "SLAroused.IsSlootyArmor", Missing = -1) > 0 || Menu.Sla.IsBikiniArmor(akBaseObject) || (MaSlutiness >= 5 && MaSlutiness <=6)
 	EndIf
 	If !IsSlooty && AndInstalled
 		; Dressed but visibly exposed (sheer/skimpy/partial), or down to bra/panties - the

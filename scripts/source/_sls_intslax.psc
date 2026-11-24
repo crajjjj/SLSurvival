@@ -1,5 +1,10 @@
 Scriptname _SLS_IntSlax  Hidden
 
+; SL Aroused's own keyword native (KeywordUtil ships with every fork that has the bikini keyword)
+Function AddKeywordToForm(Form akForm, Keyword akKeyword) Global
+	KeywordUtil.AddKeywordToForm(akForm, akKeyword)
+EndFunction
+
 Int Function GetVersion(Quest SlaxConfigQuest) Global
 	Return (SlaxConfigQuest as slaConfigScr).GetVersion()
 EndFunction

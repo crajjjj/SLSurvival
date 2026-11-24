@@ -58,6 +58,7 @@ Function DoUpdate()
 	; A bikini piece counts only while nothing else covers it. Under ordinary armor it is armor time
 	; like any other: it used to count as neither, so one piece under full plate kept a rank forever
 	Float OldExp = BikExp
+	MirrorWornBikinis()
 	Bool WornBikini = PlayerRef.WornHasKeyword(_SLS_BikiniArmor) || Sla.WornHasBikiniKeyword(PlayerRef)
 	If WornBikini && _SLS_LicBikiniCurseIsWearingArmor.GetValueInt() == 0
 		CalcExpGain(Hours)
@@ -100,8 +101,22 @@ Bool Function WearsOrdinaryArmor()
 	Return false
 EndFunction
 
+; Worn pieces SL Aroused calls a bikini get SLS's own keyword, the only one the plugin's spell and
+; perk conditions can test (see _SLS_InterfaceSlax.MirrorBikiniKeyword). The keyword does not survive
+; a restart, and the curse's equip handler only sees pieces put on this session
+Function MirrorWornBikinis()
+	Int Slot = 0x00000004
+	While Slot <= 0x40000000 && Slot > 0
+		Form Piece = PlayerRef.GetWornForm(Slot)
+		If Piece
+			Sla.MirrorBikiniKeyword(Piece, _SLS_BikiniArmor)
+		EndIf
+		Slot *= 2
+	EndWhile
+EndFunction
+
 Bool Function IsBikiniPiece(Armor Piece)
-	Return Piece.HasKeyword(_SLS_BikiniArmor) || (Sla.SlaVersion >= 29 && Piece.HasKeyword(Sla.SlaBikiniKeyword))
+	Return Piece.HasKeyword(_SLS_BikiniArmor) || Sla.IsBikiniArmor(Piece)
 EndFunction
 
 Function CalcExpGain(Float Hours)

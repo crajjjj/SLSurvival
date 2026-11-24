@@ -1017,7 +1017,7 @@ Bool Function ActorHasNonBikiniArmor(ObjectReference akTarget) ; Not necessary a
 		i -= 1
 		Item = akTarget.GetNthForm(i)
 		If Item as Armor && (Item as Armor).GetWeightClass() < 2 && Item.HasKeyword(VendorItemArmor)
-			If !Item.HasKeyword(_SLS_BikiniArmor) && StorageUtil.GetIntValue(Item, "SLAroused.IsBikiniArmor", Missing = -1) <= 0 && !Item.HasKeyword(SexLabNoStrip) && Item.IsPlayable() && Item.GetName() != ""
+			If !Item.HasKeyword(_SLS_BikiniArmor) && !Menu.Sla.IsBikiniArmor(Item) && !Item.HasKeyword(SexLabNoStrip) && Item.IsPlayable() && Item.GetName() != ""
 				If akTargetActor == PlayerRef
 					Return true
 				Else
@@ -1045,7 +1045,7 @@ Bool Function IsActorWearingNonBikiniArmor(ObjectReference akTarget)
 			akBaseItem = akTargetActor.GetWornForm(SlotMasks[i])
 			If akBaseItem
 				If (akBaseItem as Armor).GetWeightClass() < 2
-					If !akBaseItem.HasKeyword(_SLS_BikiniArmor) && StorageUtil.GetIntValue(akBaseItem, "SLAroused.IsBikiniArmor", Missing = -1) <= 0 && !akBaseItem.HasKeyword(SexLabNoStrip) && akBaseItem.GetName() != "" && !akBaseItem.HasKeyword(ArmorShield) && !_SLS_LicExceptionsArmor.HasForm(akBaseItem) && !akBaseItem.HasKeyword(ArmorBoots) && !akBaseItem.HasKeyword(ArmorGauntlets) && !akBaseItem.HasKeyword(ArmorHelmet)
+					If !akBaseItem.HasKeyword(_SLS_BikiniArmor) && !Menu.Sla.IsBikiniArmor(akBaseItem) && !akBaseItem.HasKeyword(SexLabNoStrip) && akBaseItem.GetName() != "" && !akBaseItem.HasKeyword(ArmorShield) && !_SLS_LicExceptionsArmor.HasForm(akBaseItem) && !akBaseItem.HasKeyword(ArmorBoots) && !akBaseItem.HasKeyword(ArmorGauntlets) && !akBaseItem.HasKeyword(ArmorHelmet)
 						Return true
 					EndIf
 				EndIf
@@ -1430,7 +1430,7 @@ Function ConfiscateWornFullArmors(Actor akTarget)
 		akBaseItem = akTarget.GetWornForm(SlotMasks[i])
 		If akBaseItem
 			If (akBaseItem as Armor).GetWeightClass() < 2
-				If !akBaseItem.HasKeyword(_SLS_BikiniArmor) && StorageUtil.GetIntValue(akBaseItem, "SLAroused.IsBikiniArmor", Missing = -1) <= 0 && !akBaseItem.HasKeyword(SexLabNoStrip) && akBaseItem.GetName() != "" && !akBaseItem.HasKeyword(ArmorShield) && !_SLS_LicExceptionsArmor.HasForm(akBaseItem) && !akBaseItem.HasKeyword(ArmorBoots) && !akBaseItem.HasKeyword(ArmorGauntlets) && !akBaseItem.HasKeyword(ArmorHelmet)
+				If !akBaseItem.HasKeyword(_SLS_BikiniArmor) && !Menu.Sla.IsBikiniArmor(akBaseItem) && !akBaseItem.HasKeyword(SexLabNoStrip) && akBaseItem.GetName() != "" && !akBaseItem.HasKeyword(ArmorShield) && !_SLS_LicExceptionsArmor.HasForm(akBaseItem) && !akBaseItem.HasKeyword(ArmorBoots) && !akBaseItem.HasKeyword(ArmorGauntlets) && !akBaseItem.HasKeyword(ArmorHelmet)
 					akTarget.RemoveItem(akBaseItem, akTarget.GetItemCount(akBaseItem), abSilent = true, akOtherContainer = _SLS_LicenceConfiscationsArmors)
 				EndIf
 			EndIf
@@ -1496,7 +1496,7 @@ Function ConfiscateNonBikiniArmors(ObjectReference akTarget)
 		If Item as Armor
 			If (Item as Armor).GetWeightClass() < 2
 				If Item.HasKeyword(VendorItemArmor) && !Item.HasKeyword(SexLabNoStrip) && Item.IsPlayable() && Item.GetName() != "" && !_SLS_LicExceptionsArmor.HasForm(Item)
-					If !Item.HasKeyword(_SLS_BikiniArmor) && StorageUtil.GetIntValue(Item, "SLAroused.IsBikiniArmor", Missing = -1) <= 0
+					If !Item.HasKeyword(_SLS_BikiniArmor) && !Menu.Sla.IsBikiniArmor(Item)
 						akTarget.RemoveItem(Item, akTarget.GetItemCount(Item), abSilent = true, akOtherContainer = _SLS_LicenceConfiscationsArmors)
 					EndIf
 				EndIf
