@@ -3,7 +3,7 @@ Scriptname SLS_Main extends ReferenceAlias
 ; EVENTS =================================================================================================================
 
 Event OnInit()
-	Version = 0.808
+	Version = 0.809
 	Util.Api.SetVersion(Version)
 	UiExtensionsCheck()
 	bSexLabPP = _SLS_IntSlpp.GetIsInstalled()
@@ -903,9 +903,13 @@ Function VersionCheck()
 	; tick announced the restored rank as a gain: put the rank back silently
 	If Version < 0.808
 		If Menu._SLS_BikiniExpTrainingQuest.IsRunning()
-			Menu.BikiniExp.CalcLevel(false)
+			Menu.BikiniExp.CalcLevel()
 		EndIf
 		UpdateVersion(0.808)
+	EndIf
+
+	If Version < 0.809
+		UpdateVersion(0.809)
 	EndIf
 EndFunction
 

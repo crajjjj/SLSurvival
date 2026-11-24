@@ -15,7 +15,7 @@ EndFunction
 ; stored experience at once and silently (the next hourly tick used to announce it as a gain), and
 ; the hourly loop runs from now, so time spent with the option off is never credited
 Function Resume()
-	CalcLevel(false)
+	CalcLevel()
 	BeginUpdates()
 EndFunction
 
@@ -32,42 +32,67 @@ Event OnUpdateGameTime()
 EndEvent
 
 Function DoUpdate()
+	; The hourly tick and the bikini curse's outfit check both land here, at times together. The span
+	; is claimed before anything else: nothing between the clock read and the assignment lets a second
+	; thread in, so the same hours are never credited twice
+	Float Now = Utility.GetCurrentGameTime()
+	Float Hours = (Now - LastUpdate) * 24.0
+	LastUpdate = Now
+
+	; The outfit is only sampled now, at the end of the span. A jail term jumps the clock by days and
+	; hands the gear back, so the whole sentence used to count as worn (or as time in armor): a span
+	; with a sentence in it counts for nothing, and no jump counts for more than a day
+	Int Jailed = Game.QueryStat("Days Jailed")
+	If Jailed != DaysJailed
+		If DaysJailed >= 0
+			Hours = 0.0
+		EndIf
+		DaysJailed = Jailed
+	EndIf
+	If Hours > 24.0
+		Hours = 24.0
+	ElseIf Hours < 0.0
+		Hours = 0.0
+	EndIf
+
+	Float OldExp = BikExp
 	If PlayerRef.WornHasKeyword(_SLS_BikiniArmor) || Sla.WornHasBikiniKeyword(PlayerRef)
 		If _SLS_LicBikiniCurseIsWearingArmor.GetValueInt() == 0
-			CalcExpGain()
+			CalcExpGain(Hours)
 		EndIf
-	
+
 	ElseIf PlayerRef.WornHasKeyword(ArmorLight) || PlayerRef.WornHasKeyword(ArmorHeavy)
-		CalcExpLoss()
-		
-	;Else
-	;	Debug.Messagebox("No Change")
+		CalcExpLoss(Hours)
 	EndIf
+
+	; A rank change is announced only when this update moved the experience the same way: a rank that
+	; was merely out of step with the stored experience is put right silently
+	Int OldLevel = _SLS_BikiniExpLevel.GetValueInt()
 	CalcLevel()
-	LastUpdate = Utility.GetCurrentGameTime()
+	Int NewLevel = _SLS_BikiniExpLevel.GetValueInt()
+	If NewLevel > OldLevel && BikExp > OldExp
+		Debug.Messagebox("You've gained more experience wearing bikini armors\nBikini Experience Rank: " + GetBikRankString())
+	ElseIf NewLevel < OldLevel && BikExp < OldExp
+		Debug.Messagebox("You've lost bikini armor experience\nBikini Experience Rank: " + GetBikRankString())
+	EndIf
 	RegisterForSingleUpdateGameTime(1.0)
 EndFunction
 
-Function CalcExpGain()
-	;Float OldExp = BikExp
-	;Float ExpGain = ((Utility.GetCurrentGameTime() - LastUpdate) * 24.0) * Menu.BikTrainingSpeed
-	BikExp += ((Utility.GetCurrentGameTime() - LastUpdate) * 24.0) * Menu.BikTrainingSpeed
+Function CalcExpGain(Float Hours)
+	BikExp += Hours * Menu.BikTrainingSpeed
 	If BikExp > ExpPerLevel * 7.5 ; Cap experience
 		BikExp = ExpPerLevel * 7.5
 	EndIf
-	;Debug.Messagebox("OldExp: " + OldExp + "\nExpGain: " + ExpGain + "\nNewExp: " + BikExp)
 EndFunction
 
-Function CalcExpLoss()
-	BikExp -= ((Utility.GetCurrentGameTime() - LastUpdate) * 24.0) * Menu.BikUntrainingSpeed
+Function CalcExpLoss(Float Hours)
+	BikExp -= Hours * Menu.BikUntrainingSpeed
 	If BikExp < 0.0
 		BikExp = 0.0
 	EndIf
-	;Debug.Messagebox("ExpLoss")
 EndFunction
 
-Function CalcLevel(Bool abNotify = true) ; abNotify false = set the rank without announcing a change
-	Int OldLevel = _SLS_BikiniExpLevel.GetValueInt()
+Function CalcLevel() ; sets the rank from the stored experience; DoUpdate does the announcing
 	If BikExp > ExpPerLevel * 5.5
 		_SLS_BikiniExpLevel.SetValueInt(4)
 	ElseIf BikExp > ExpPerLevel * 3.5
@@ -78,17 +103,6 @@ Function CalcLevel(Bool abNotify = true) ; abNotify false = set the rank without
 		_SLS_BikiniExpLevel.SetValueInt(1)
 	Else
 		_SLS_BikiniExpLevel.SetValueInt(0)
-	EndIf
-	
-	Int NewLevel = _SLS_BikiniExpLevel.GetValueInt()
-	If !abNotify
-		Return
-	EndIf
-	If NewLevel > OldLevel
-		Debug.Messagebox("You've gained more experience wearing bikini armors\nBikini Experience Rank: " + GetBikRankString())
-		
-	ElseIf NewLevel < OldLevel
-		Debug.Messagebox("You've lost bikini armor experience\nBikini Experience Rank: " + GetBikRankString())
 	EndIf
 EndFunction
 
@@ -110,6 +124,7 @@ EndFunction
 Float Property BikExp = 0.0 Auto Hidden
 Float Property ExpPerLevel = 100.0 Auto Hidden
 Float LastUpdate = 0.0
+Int DaysJailed = -1 ; the "Days Jailed" stat at the last update, -1 until the first one reads it
 
 Quest Property MQ101 Auto
 
