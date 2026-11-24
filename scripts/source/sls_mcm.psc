@@ -1991,7 +1991,11 @@ event OnPageReset(string page)
 		
 		SetCursorFillMode(TOP_TO_BOTTOM)
 		AddHeaderOption("$SLS_hBikiniExperience")
-		BikiniExpOID = AddToggleOption("$SLS_BikiniExp", BikiniExpT)
+		Int BikExpToggleFlag = OPTION_FLAG_NONE
+		If BikiniExpT && IsHardcoreLocked ; a trained rank cuts the rating of ordinary armor: hardcore keeps it on
+			BikExpToggleFlag = OPTION_FLAG_DISABLED
+		EndIf
+		BikiniExpOID = AddToggleOption("$SLS_BikiniExp", BikiniExpT, BikExpToggleFlag)
 		BikiniExpPerLevelOID_S = AddSliderOption("$SLS_BikiniExpPerLevel", ExpPerLevel, "$SLS_Hours0", BikExpFlag)
 		BikiniExpTrainOID_S = AddSliderOption("$SLS_BikiniExpTrain", BikTrainingSpeed, "{1}x", BikExpFlag)
 		BikiniExpUntrainOID_S = AddSliderOption("$SLS_BikiniExpUntrain", BikUntrainingSpeed, "{1}x", BikExpFlag)
@@ -4553,7 +4557,7 @@ Event OnOptionSelect(int option)
 	
 	ElseIf (option == BikiniExpOID)
 		If BikiniExpT
-			If ShowMessage("Are you sure you want to toggle off Bikini Experience?\nAll bikini training experience will be lost!")
+			If ShowMessage("Are you sure you want to toggle off Bikini Experience?\nYour rank and its effects are suspended. The experience is kept and the rank returns when you switch it back on.")
 				BikiniExpT = !BikiniExpT
 				DoToggleBikiniExp = true
 			EndIf

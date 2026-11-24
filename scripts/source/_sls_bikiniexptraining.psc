@@ -55,12 +55,16 @@ Function DoUpdate()
 		Hours = 0.0
 	EndIf
 
+	; A bikini piece counts only while nothing else covers it. Under ordinary armor it is armor time
+	; like any other: it used to count as neither, so one piece under full plate kept a rank forever
 	Float OldExp = BikExp
-	If PlayerRef.WornHasKeyword(_SLS_BikiniArmor) || Sla.WornHasBikiniKeyword(PlayerRef)
-		If _SLS_LicBikiniCurseIsWearingArmor.GetValueInt() == 0
-			CalcExpGain(Hours)
+	Bool WornBikini = PlayerRef.WornHasKeyword(_SLS_BikiniArmor) || Sla.WornHasBikiniKeyword(PlayerRef)
+	If WornBikini && _SLS_LicBikiniCurseIsWearingArmor.GetValueInt() == 0
+		CalcExpGain(Hours)
+	ElseIf WornBikini
+		If WearsOrdinaryArmor() ; the piece itself is light armor, so the keyword test below cannot tell
+			CalcExpLoss(Hours)
 		EndIf
-
 	ElseIf PlayerRef.WornHasKeyword(ArmorLight) || PlayerRef.WornHasKeyword(ArmorHeavy)
 		CalcExpLoss(Hours)
 	EndIf
@@ -76,6 +80,28 @@ Function DoUpdate()
 		Debug.Messagebox("You've lost bikini armor experience\nBikini Experience Rank: " + GetBikRankString())
 	EndIf
 	RegisterForSingleUpdateGameTime(1.0)
+EndFunction
+
+; Light or heavy armor that is not itself a bikini piece, in the slots the bikini curse looks at
+; (helmet, gauntlets, boots and shield never count there either)
+Bool Function WearsOrdinaryArmor()
+	Int Slot = 0x00000004 ; body, then every slot above it
+	While Slot <= 0x40000000 && Slot > 0
+		If Slot != 0x00000008 && Slot != 0x00000080 && Slot != 0x00000200 ; hands, feet, shield
+			Armor Piece = PlayerRef.GetWornForm(Slot) as Armor
+			If Piece && Piece.GetWeightClass() < 2 && !IsBikiniPiece(Piece)
+				If !Piece.HasKeywordString("ArmorHelmet") && !Piece.HasKeywordString("ArmorGauntlets") && !Piece.HasKeywordString("ArmorBoots") && !Piece.HasKeywordString("ArmorShield")
+					Return true
+				EndIf
+			EndIf
+		EndIf
+		Slot *= 2
+	EndWhile
+	Return false
+EndFunction
+
+Bool Function IsBikiniPiece(Armor Piece)
+	Return Piece.HasKeyword(_SLS_BikiniArmor) || (Sla.SlaVersion >= 29 && Piece.HasKeyword(Sla.SlaBikiniKeyword))
 EndFunction
 
 Function CalcExpGain(Float Hours)
